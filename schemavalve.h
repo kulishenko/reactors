@@ -16,8 +16,8 @@ public:
     qreal FlowCoeffitient;
     qreal MaxFlow;
 signals:
-    increase();
-    decrease();
+    void increase();
+    void decrease();
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 };
