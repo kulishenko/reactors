@@ -50,6 +50,8 @@
 #  include <QPrinter>
 #  include <QPrintEngine>
 #else
+#  include <QtPrintSupport/QPrinter>
+#  include <QtPrintSupport/QPrintEngine>
 #  include <QtNumeric>
 //#  include <QtPrintSupport>
 #endif
