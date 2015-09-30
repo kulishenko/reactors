@@ -105,8 +105,10 @@ void SchemaCSTR::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 QGraphicsPathItem::paint(painter,option,widget);
 
   }
+
 void SchemaCSTR::mousePressEvent(QGraphicsSceneMouseEvent *event)
-    {
-        qDebug() << "Custom item clicked.";
-        setLevel(0.5);
-    }
+{
+    Q_UNUSED(event)
+    qDebug() << "Custom item clicked.";
+    setLevel(0.5);
+}
