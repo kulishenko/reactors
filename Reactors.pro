@@ -24,7 +24,11 @@ SOURCES += main.cpp\
     schemavessel.cpp \
     pfdcontrol.cpp \
     qcustomplot/qcustomplot.cpp \
-    schemacstr.cpp
+    schemacstr.cpp \
+    libxls/src/ole.c \
+    libxls/src/xls.c \
+    libxls/src/xls2csv.c \
+    libxls/src/xlstool.c
 
 HEADERS  += mainwindow.h \
     schemapipeline.h \
@@ -37,7 +41,15 @@ HEADERS  += mainwindow.h \
     schemavessel.h \
     pfdcontrol.h \
     qcustomplot/qcustomplot.h \
-    schemacstr.h
+    schemacstr.h \
+    libxls/include/libxls/brdb.c.h \
+    libxls/include/libxls/brdb.h \
+    libxls/include/libxls/ole.h \
+    libxls/include/libxls/xls.h \
+    libxls/include/libxls/xlsstruct.h \
+    libxls/include/libxls/xlstool.h \
+    libxls/include/libxls/xlstypes.h \
+    libxls/include/libxls/config.h
 
 FORMS    += mainwindow.ui
 
