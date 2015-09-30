@@ -361,28 +361,31 @@ void MainWindow::newFile()
 void MainWindow::open()
 {
 
-      QString QfileName = QFileDialog::getOpenFileName(this,
-        tr("Open File"),"", tr("Simulation Playback files (*.xls)"));
-      char* fileName=QfileName.toLatin1().data();
+    QString QfileName = QFileDialog::getOpenFileName(
+                this, tr("Open File"), "",
+                tr("Simulation Playback files (*.xls)"));
+    char* fileName = QfileName.toLatin1().data();
 
+    struct st_row::st_row_data* row;
+    xlsWorkBook* pWB = xls_open(
+                fileName, (char*) "iso-8859-15//TRANSLIT");
 
-      struct st_row::st_row_data* row;
-      xlsWorkBook* pWB =xls_open(fileName, (char*) "iso-8859-15//TRANSLIT");
-      // process workbook if found
-      if (pWB!=NULL)
-      {
+    // process workbook if found
+    if (pWB != NULL)
+    {
         int i;
         int iDataWorkSheet;
-   //     bool isParsed;
-        for(i=0;i<pWB->sheets.count;i++){
+
+        //     bool isParsed;
+        for(i=0; i<pWB->sheets.count; i++){
             qDebug() << pWB->sheets.sheet[i].name;
-            if( strcmp(pWB->sheets.sheet[i].name,"Tabelle1")==0) {
+            if(strcmp(pWB->sheets.sheet[i].name,"Tabelle1") == 0) {
                 iDataWorkSheet=i;
             }
 
         }
         if(iDataWorkSheet != 0) {
-            xlsWorkSheet* pWS=xls_getWorkSheet(pWB,iDataWorkSheet);
+            xlsWorkSheet* pWS = xls_getWorkSheet(pWB,iDataWorkSheet);
             xls_parseWorkSheet(pWS);
             Control = new PFDControl();
 
@@ -390,13 +393,15 @@ void MainWindow::open()
             int t=8; int tt=2;
             do {
                 row=&pWS->rows.row[t];
-                QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg(row->cells.cell[1].d));
+                QTableWidgetItem *newItem = new QTableWidgetItem(
+                            tr("%1").arg(row->cells.cell[1].d));
                 // Put the data into Control
                 Control->Time.push_back(row->cells.cell[1].d);
 
                 tableWidget->setItem(t-8, 0, newItem);
 
-                newItem = new QTableWidgetItem(tr("%1").arg(row->cells.cell[2].d));
+                newItem = new QTableWidgetItem(
+                            tr("%1").arg(row->cells.cell[2].d));
                 Control->Conductivity.push_back(row->cells.cell[2].d);
                 tableWidget->setItem(t-8, 1, newItem);
 
@@ -404,7 +409,9 @@ void MainWindow::open()
                 tableWidget->setRowCount(t-6);
                 t++;
             }
-            while(row->cells.cell[tt].id==0x27e || row->cells.cell[tt].id==0x0BD || row->cells.cell[tt].id==0x203);
+            while(row->cells.cell[tt].id==0x27e
+                  || row->cells.cell[tt].id==0x0BD
+                  || row->cells.cell[tt].id==0x203);
 
 
             thread = new QThread(this);
@@ -416,38 +423,32 @@ void MainWindow::open()
             QObject::connect(thread, SIGNAL(started()), timer, SLOT(start()));
             QObject::connect(timer, SIGNAL(timeout()), Control, SLOT(tick()));
 
-
-           // QObject::connect(reactorItem1, SIGNAL(test()),Control,SLOT(test()));
-
+            // QObject::connect(reactorItem1, SIGNAL(test()),Control,SLOT(test()));
 
             QObject::connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
             QObject::connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
 
-
             for(int i=0;i<reactorItems.size();i++)
                 QObject::connect(Control, SIGNAL(setLevel1()),reactorItems.at(i),SLOT(fill()));
-
 
             QObject::connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
             QObject::connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
 
-
-            qDebug() << QString::number(Control->Time.size()) << " " << QString::number(Control->Conductivity.size());
+            qDebug() << QString::number(Control->Time.size())
+                     << " " << QString::number(Control->Conductivity.size());
             qDebug() << QString::number(Control->Time.last());
-
 
             plotWidget->graph(0)->setData(Control->Time, Control->Conductivity);
             plotWidget->rescaleAxes();
             plotWidget->replot();
             QDateTime EventTime(QDateTime::currentDateTime());
 
-            eventsWidget->addItems(QStringList() << EventTime.toString("[hh:mm:ss.zzz]: ")+tr("Opened the playback file: ")+QfileName);
+            eventsWidget->addItems(QStringList() << EventTime.toString("[hh:mm:ss.zzz]: ")
+                                   + tr("Opened the playback file: ")+QfileName);
             thread->start();
-
-
-      }
-
-} }
+        }
+    }
+}
 
 void MainWindow::save()
 {
