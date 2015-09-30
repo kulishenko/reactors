@@ -6,7 +6,7 @@
 
 QT       += core gui multimediawidgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets #printsupport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = Reactors
 TEMPLATE = app
@@ -27,7 +27,6 @@ SOURCES += main.cpp\
     schemacstr.cpp \
     libxls/src/ole.c \
     libxls/src/xls.c \
-    libxls/src/xls2csv.c \
     libxls/src/xlstool.c
 
 HEADERS  += mainwindow.h \

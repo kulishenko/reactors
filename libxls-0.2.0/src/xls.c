@@ -21,7 +21,7 @@
  * Copyright 2008 David Hoerl
  */
 
-#include <config.h>
+#include <libxls/config.h>
 
 #include <stdio.h>
 #include <stdlib.h>

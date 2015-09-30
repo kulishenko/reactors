@@ -21,7 +21,7 @@
  * Copyright 2008 David Hoerl
  */
 
-#include <config.h>
+#include <libxls/config.h>
 #include <math.h>
 #include <sys/types.h>
 #include <wchar.h>
