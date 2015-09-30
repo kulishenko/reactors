@@ -26,8 +26,8 @@ void PFDControl::test(){
 void PFDControl::flowrate_increase(){
     qDebug() << "Flowrate Increased";
     if(!isStarted) {
-    setLevel1();
-    startSim();
+    emit setLevel1();
+    emit startSim();
     }
 
 }
