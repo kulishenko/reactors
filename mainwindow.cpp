@@ -9,6 +9,8 @@
 #include <QVideoSurfaceFormat>
 #include <QGraphicsVideoItem>
 
+#include <stdio.h>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -388,6 +390,7 @@ void MainWindow::open()
             }
 
         }
+
         if(iDataWorkSheet != 0) {
             xlsWorkSheet* pWS = xls_getWorkSheet(pWB,iDataWorkSheet);
             xls_parseWorkSheet(pWS);
@@ -451,6 +454,12 @@ void MainWindow::open()
                                    + tr("Opened the playback file: ")+QfileName);
             thread->start();
         }
+    }
+    else
+    {
+        perror("File open failure");
+        QMessageBox::warning(this, tr("File open failure"),
+                             tr("Failed to open %0").arg(QfileName));
     }
 }
 
