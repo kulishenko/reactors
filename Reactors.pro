@@ -55,39 +55,19 @@ FORMS    += mainwindow.ui
 TRANSLATIONS    = Reactors_ru.ts \
                   Reactors_de.ts
 
-
-
-
-win32: LIBS += -L$$PWD/libxls/lib/ -lxlsreader
-
 INCLUDEPATH += $$PWD/libxls/include
 DEPENDPATH += $$PWD/libxls/include
-
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/libxls/lib/xlsreader.lib
-else:win32-g++: PRE_TARGETDEPS += $$PWD/libxls/lib/libxlsreader.a
 
 RESOURCES += \
     reactors.qrc
 
 DISTFILES +=
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/qcustomplot/build-sharedlib-compilation-Desktop_Qt_5_4_1_MinGW_32bit-Release/release/ -lqcustomplot1
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/qcustomplot/build-sharedlib-compilation-Desktop_Qt_5_4_1_MinGW_32bit-Release/debug/ -lqcustomplotd1
-
-INCLUDEPATH += $$PWD/qcustomplot/build-sharedlib-compilation-Desktop_Qt_5_4_1_MinGW_32bit-Release/release
-DEPENDPATH += $$PWD/qcustomplot/build-sharedlib-compilation-Desktop_Qt_5_4_1_MinGW_32bit-Release/release
-
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/qcustomplot/build-sharedlib-compilation-Desktop_Qt_5_4_1_MinGW_32bit-Release/release/libqcustomplot1.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/qcustomplot/build-sharedlib-compilation-Desktop_Qt_5_4_1_MinGW_32bit-Release/debug/libqcustomplotd1.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/qcustomplot/build-sharedlib-compilation-Desktop_Qt_5_4_1_MinGW_32bit-Release/release/qcustomplot1.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/qcustomplot/build-sharedlib-compilation-Desktop_Qt_5_4_1_MinGW_32bit-Release/debug/qcustomplotd1.lib
-
-
-
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/gsl-1.8-lib/lib/ -llibgsl
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/gsl-1.8-lib/lib/ -llibgsl
-unix: CONFIG += link_pkgconfig
-unix: PKGCONFIG += gsl
 
 win32:INCLUDEPATH += $$PWD/gsl-1.8-lib/include
 win32:DEPENDPATH += $$PWD/gsl-1.8-lib/include
+
+unix: CONFIG += link_pkgconfig
+unix: PKGCONFIG += gsl
