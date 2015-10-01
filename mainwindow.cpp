@@ -364,7 +364,11 @@ void MainWindow::open()
     QString QfileName = QFileDialog::getOpenFileName(
                 this, tr("Open File"), "",
                 tr("Simulation Playback files (*.xls)"));
-    char* fileName = QfileName.toLatin1().data();
+
+    // the transcoded filename container must not go out of scope
+    // while it is still referenced by char* fileName
+    QByteArray latin1FileName = QfileName.toLatin1();
+    char* fileName = latin1FileName.data();
 
     struct st_row::st_row_data* row;
     xlsWorkBook* pWB = xls_open(
