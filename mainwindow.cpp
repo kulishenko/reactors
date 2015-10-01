@@ -1,6 +1,8 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QSettings>
+#include <QApplication>
 #include <QGridLayout>
 #include <QEvent>
 #include <QResizeEvent>
@@ -17,8 +19,10 @@ MainWindow::MainWindow(QWidget *parent) :
    ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
- //   QGraphicsScene* scene = new QGraphicsScene(this);
- //   ui->graphicsView->setScene(scene);
+
+    m_sSettingsFile = QApplication::applicationDirPath().left(1) + ":/settings.ini";
+//    loadSettings();
+
 
     createActions();
     createMenus();
@@ -32,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setMinimumSize(50, 50);
 
 
-    graphicsView = new QGraphicsView();
+    graphicsView = new SchemaView();
 
 
     m_scene = new QGraphicsScene();
@@ -48,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Creating CSTR Items
     for(int i=1; i<=5; i++)
-        reactorItems.push_back(new SchemaVessel(120,90,i*200,i*100,0.1));
+        reactorItems.push_back(new SchemaVessel(120,90,i*200,i*100,0.1,i-1));
 
 
     SchemaFlowmeter* Flowmeter1 = new SchemaFlowmeter(25,200,125,50,0);
@@ -83,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     graphicsView->viewport()->installEventFilter(this);
     graphicsView->setRenderHint(QPainter::Antialiasing);
 
+    graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
     this->setCentralWidget(graphicsView);
     this->adjustSize();
 
@@ -187,6 +192,33 @@ void MainWindow::createActions()
     connect(setParagraphSpacingAct, SIGNAL(triggered()),
             this, SLOT(setParagraphSpacing()));
 
+
+    zoomInAct = new QAction(tr("Zoom &In"),this);
+    zoomInAct->setShortcut(QKeySequence::ZoomIn);
+    zoomInAct->setStatusTip(tr("Zoom In the schema"));
+    connect(zoomInAct,SIGNAL(triggered()),this,SLOT(zoomIn()));
+
+    zoomOutAct = new QAction(tr("Zoom &Out"),this);
+    zoomOutAct->setShortcut(QKeySequence::ZoomOut);
+    zoomOutAct->setStatusTip(tr("Zoom Out the schema"));
+    connect(zoomOutAct,SIGNAL(triggered()),this,SLOT(zoomOut()));
+
+    playbackAct = new QAction(tr("&Offline"),this);
+    playbackAct->setCheckable(true);
+    playbackAct->setStatusTip(tr("Enable the playback mode"));
+ //   connect(playbackAct, SIGNAL(triggered()), this, SLOT(about()));
+
+    onlineAct = new QAction(tr("&Online"),this);
+    onlineAct->setCheckable(true);
+    onlineAct->setStatusTip(tr("Enable the online mode and connect to remote Lab server"));
+ //   connect(playbackAct, SIGNAL(triggered()), this, SLOT(about()));
+
+    modeGroup = new QActionGroup(this);
+    modeGroup->addAction(playbackAct);
+    modeGroup->addAction(onlineAct);
+    playbackAct->setChecked(true);
+    onlineAct->setDisabled(true);
+
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
@@ -246,6 +278,16 @@ void MainWindow::createMenus()
     editMenu->addAction(copyAct);
     editMenu->addAction(pasteAct);
     editMenu->addSeparator();
+
+    viewMenu = menuBar()->addMenu(tr("&View"));
+    zoomMenu = viewMenu->addMenu(tr("&Zoom"));
+    zoomMenu->addAction(zoomInAct);
+    zoomMenu->addAction(zoomOutAct);
+
+
+    modeMenu = menuBar()->addMenu(tr("&Mode"));
+    modeMenu->addAction(playbackAct);
+    modeMenu->addAction(onlineAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
@@ -349,7 +391,7 @@ void MainWindow::createToolBars()
 void MainWindow::newFile()
 {
 
-     QGraphicsView* graphicsViewNew = new QGraphicsView();
+     QGraphicsView* graphicsViewNew = new SchemaView();
      QGraphicsScene* m_sceneNew = new QGraphicsScene();
      graphicsViewNew->setScene(m_sceneNew);
      graphicsViewNew->viewport()->installEventFilter(this);
@@ -366,11 +408,17 @@ void MainWindow::open()
     QString QfileName = QFileDialog::getOpenFileName(
                 this, tr("Open File"), "",
                 tr("Simulation Playback files (*.xls)"));
+    QFileInfo fileInfo(QfileName);
+
+      QString pbParams = fileInfo.fileName().split(".").first();
+      // Extract the Flowrate from Filename (Temp KOCTIb/|b)
+      int pbFlowrate = pbParams.split("-").at(2).toInt();
 
     // the transcoded filename container must not go out of scope
     // while it is still referenced by char* fileName
-    QByteArray latin1FileName = QfileName.toLatin1();
-    char* fileName = latin1FileName.data();
+//    QByteArray encodedFileName = QfileName.toUtf8();
+    QByteArray encodedFileName = QfileName.toLocal8Bit();
+    char* fileName = encodedFileName.data();
 
     struct st_row::st_row_data* row;
     xlsWorkBook* pWB = xls_open(
@@ -420,6 +468,7 @@ void MainWindow::open()
                   || row->cells.cell[tt].id==0x0BD
                   || row->cells.cell[tt].id==0x203);
 
+            Control->setFlowrate((qreal) pbFlowrate);
 
             thread = new QThread(this);
             timer = new QTimer();
@@ -430,13 +479,12 @@ void MainWindow::open()
             QObject::connect(thread, SIGNAL(started()), timer, SLOT(start()));
             QObject::connect(timer, SIGNAL(timeout()), Control, SLOT(tick()));
 
-            // QObject::connect(reactorItem1, SIGNAL(test()),Control,SLOT(test()));
 
             QObject::connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
             QObject::connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
 
             for(int i=0;i<reactorItems.size();i++)
-                QObject::connect(Control, SIGNAL(setLevel1()),reactorItems.at(i),SLOT(fill()));
+                QObject::connect(Control, SIGNAL(setLevel()),reactorItems.at(i),SLOT(fill()));
 
             QObject::connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
             QObject::connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
@@ -450,8 +498,12 @@ void MainWindow::open()
             plotWidget->replot();
             QDateTime EventTime(QDateTime::currentDateTime());
 
-            eventsWidget->addItems(QStringList() << EventTime.toString("[hh:mm:ss.zzz]: ")
-                                   + tr("Opened the playback file: ")+QfileName);
+            eventsWidget->addItems(QStringList()
+                << EventTime.toString("[hh:mm:ss.zzz]: ")
+                    + tr("Opened the playback file: %1").arg(QfileName)
+                << EventTime.toString("[hh:mm:ss.zzz]: ")
+                    + tr("Please, set the volume flowrate %1 l/hr in order to begin the simulation playback")
+                        .arg(pbFlowrate));
             thread->start();
         }
     }
@@ -459,7 +511,7 @@ void MainWindow::open()
     {
         perror("File open failure");
         QMessageBox::warning(this, tr("File open failure"),
-                             tr("Failed to open %0").arg(QfileName));
+                             tr("Failed to open %1").arg(QfileName));
     }
 }
 
@@ -557,10 +609,13 @@ void MainWindow::aboutQt()
 
 void MainWindow::updateWidgets()
 {
+    if(Control->TimeNow==0.0f) return;
+    // TODO: Fix repeated addition of the same point
     int i = 0;
     do i++;
-    while ((fabs(Control->TimeNow - Control->Time.at(i)) > 1 ) && i <= Control->Time.size());
+    while ((fabs(Control->TimeNow - Control->Time.at(i)) > 0.5 ) && i < Control->Time.size()-1);
 
+    if(i==Control->Time.size()-1) return;
 
     plotWidget->graph(0)->addData(Control->Time.at(i), Control->Conductivity.at(i));
     plotWidget->replot();
@@ -590,29 +645,20 @@ void MainWindow::Run()
     eventsWidget->addItems(QStringList() << EventTime.toString("[hh:mm:ss.zzz]: ")+tr("Simulation playback started"));
 }
 
-
- /*
- bool MainWindow::eventFilter(QObject *, QEvent *event)
-{
-    if(event->type() == QEvent::Resize )
-    {
-   //     QResizeEvent *res = reinterpret_cast<QResizeEvent*>(event);
-   //     m_elipse->setRect(0, 0, res->size().width(), res->size().height());
-
-        return true;
+void MainWindow::resizeEvent(QResizeEvent *event){
+   // graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
+  /*  if(event->oldSize().width()!=-1) {
+     //   qDebug() << "Width="+QString::number(event->oldSize().width());
+        qreal sc=event->size().width()/event->oldSize().width()*20;
+        graphicsView->scale(sc,sc);
+       // graphicsView->update();
     }
-    if(event->type() == QEvent::MouseButtonPress)
-    {
-  //  reactorItem1->LiquidLevel=0.9;
- //   reactorItem1->setLevel(0.8);
-  //  reactorItem1->Item->update();
-  // QMessageBox msgBox;
-  // reactorItem1->Item->setBrush( QBrush(Qt::red));
-//    msgBox.setText("Changing CSTR1 Level.");
-  //   msgBox.exec();reactorItem1->update();
-
-        return true;
-    }
-    return false;
+    */
+    event->accept();
 }
-*/
+void MainWindow::zoomIn(){
+
+}
+void MainWindow::zoomOut(){
+
+}

@@ -28,6 +28,6 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.show();
-    qDebug() <<  QLocale::system().name();
+   // qDebug() <<  QLocale::system().name();
     return a.exec();
 }

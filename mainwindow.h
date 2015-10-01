@@ -32,6 +32,7 @@
 #include "schemapipeline.h"
 #include "schemaflowmeter.h"
 #include "schemastream.h"
+#include "schemaview.h"
 
 extern "C" {
 
@@ -83,12 +84,15 @@ private slots:
     void aboutQt();
     void updateWidgets();
     void Run();
+    //    void wheelEvent(QWheelEvent *e);
+    void zoomIn();
+    void zoomOut();
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *m_scene;
+    QString m_sSettingsFile;
 
-
-    QGraphicsView * graphicsView;
+    SchemaView* graphicsView;
 
     SchemaValve* valveItem1;
 
@@ -101,9 +105,13 @@ private:
     void createDockWindows();
     QMenu *fileMenu;
         QMenu *editMenu;
+        QMenu *viewMenu;
+        QMenu *zoomMenu;
+        QMenu *modeMenu;
         QMenu *formatMenu;
         QMenu *helpMenu;
         QActionGroup *alignmentGroup;
+        QActionGroup *modeGroup;
         QAction *newAct;
         QAction *openAct;
         QAction *saveAct;
@@ -122,6 +130,12 @@ private:
         QAction *centerAct;
         QAction *setLineSpacingAct;
         QAction *setParagraphSpacingAct;
+
+        QAction *zoomInAct;
+        QAction *zoomOutAct;
+
+        QAction *playbackAct;
+        QAction *onlineAct;
         QAction *aboutAct;
         QAction *aboutQtAct;
         QLabel *infoLabel;
@@ -137,7 +151,8 @@ private:
           QTimer* timer;
           PFDControl* Control;
           bool isSimRun;
-//    qreal Flowrate;
+          //    qreal Flowrate;
+          void resizeEvent(QResizeEvent *event);
 };
 
 #endif // MAINWINDOW_H

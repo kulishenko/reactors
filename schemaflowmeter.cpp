@@ -32,8 +32,8 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
 
-    Flowrate=0.0;
-    Flowrateset=0.0;
+    Flowrate=0.0f;
+    Flowrateset=0.0f;
   //  OutletPipe->setPen(Qt::black);
  //   InletPort = boundingRect().bottomLeft();
 }
@@ -45,7 +45,7 @@ SchemaFlowmeter::~SchemaFlowmeter()
 
 void SchemaFlowmeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     if(fabs(Flowrate-Flowrateset)>0.001){
-        Flowrate += (Flowrate < Flowrateset) ? 0.0005 : -0.0005;
+        Flowrate += (Flowrate < Flowrateset) ? 0.00005 : -0.00005;
         Floater->setPos(boundingRect().bottomLeft()+QPointF(0,-0.75*Width - Flowrate*Height*0.9));
 }
 QGraphicsRectItem::paint(painter,option,widget);

@@ -1,17 +1,28 @@
 #include "schemavessel.h"
 #include <QLinearGradient>
 #include <QFont>
+#include <QTimeLine>
+#include <pfdcontrol.h>
 
-SchemaVessel::SchemaVessel(int Height, int Width , int xPos, int yPos, qreal StartLevel)
+SchemaVessel::SchemaVessel(int Height, int Width , int xPos, int yPos, qreal StartLevel, int Index)
 {
     if(StartLevel!=0.0)
         LiquidLevel = LiquidLevelSet = StartLevel;
-
+    // Initial Mixer Angle - adding some randomnicity
     MixerAngle=rand();
     isWorking = false;
-
+    isReady = false;
+    numInCascade = Index;
     InletPort = new SchemaPort(10+xPos,yPos+10, this);
     OutletPort = new SchemaPort(Width+xPos,yPos+80, this);
+
+//  What color is the best?
+//    LiquidBottomColor = QColor(Qt::darkBlue);
+//    LiquidTopColor = QColor(Qt::blue);
+    LiquidBottomColor.setRgb(102,204,255);
+    LiquidTopColor = LiquidBottomColor.light();
+//    LiquidTopColor.setRgb(194,235,255);
+    GasColor = QColor(Qt::white);
 
 
     // Drawing Vessel
@@ -23,10 +34,10 @@ SchemaVessel::SchemaVessel(int Height, int Width , int xPos, int yPos, qreal Sta
 
     // Drawing Liquid
     Gradient=new QLinearGradient(path->boundingRect().bottomLeft(),path->boundingRect().topLeft());
-    Gradient->setColorAt(1,Qt::white);
-    Gradient->setColorAt(LiquidLevel,Qt::white);
-    Gradient->setColorAt(LiquidLevel-1e-10,Qt::blue);
-    Gradient->setColorAt(0,Qt::darkBlue);
+    Gradient->setColorAt(1,const_cast<QColor &> (GasColor));
+    Gradient->setColorAt(LiquidLevel,const_cast<QColor &> (GasColor));
+    Gradient->setColorAt(LiquidLevel-1e-10,const_cast<QColor &> (LiquidTopColor));
+    Gradient->setColorAt(0,const_cast<QColor &> (LiquidBottomColor));
     //       path.setFillRule(Qt::WindingFill);
     setPath(*path);
     setBrush(*Gradient);
@@ -62,6 +73,7 @@ SchemaVessel::SchemaVessel(int Height, int Width , int xPos, int yPos, qreal Sta
  //   Mixer->setPen( QPen(Qt::black) );
     Mixer->setBrush( Qt::gray );
     Mixer->setPos(Width/2-15,100-10);
+    Mixer->setTransform(QTransform().translate(15,0).rotate(MixerAngle,Qt::YAxis).translate(-15,0));
 
 }
 
@@ -69,54 +81,79 @@ SchemaVessel::~SchemaVessel()
 {
 
 }
-void SchemaVessel::setLevel(qreal Level) {
+
+
+void SchemaVessel::setLevel(qreal Level, int TransTime) {
 
     LiquidLevelSet = Level;
+//    if(TransTime==0) TransTime = 5000;// Transient time
+
+    QTimeLine *anim = new QTimeLine(TransTime,this);
+    anim->setUpdateInterval(30);
+    connect(anim, SIGNAL (valueChanged(qreal)), SLOT (animLevel(qreal)));
+    connect(anim, SIGNAL (finished()), SLOT (animFinished()));
+    anim->start();
 
 }
 
-void SchemaVessel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void SchemaVessel::animLevel(qreal Value){
 
-// Liquid Level Animations
-    if(fabs(LiquidLevel-LiquidLevelSet)>0.001){
-        qreal dL = 0.0005;
-        LiquidLevel += dL;
-        setBrush(Qt::white);
-        delete Gradient;
-      //  QLinearGradient* Gradient1=new QLinearGradient(path->boundingRect().bottomLeft(),path->boundingRect().topLeft());
-        Gradient = new QLinearGradient(path->boundingRect().bottomLeft(),path->boundingRect().topLeft());
-// TODO: Garbage Cleaning for Gradient1
-         Gradient->setColorAt(1,Qt::white);
-         Gradient->setColorAt(LiquidLevel,Qt::white);
-         Gradient->setColorAt(LiquidLevel-1e-10,Qt::blue);
-         Gradient->setColorAt(0,Qt::darkBlue);
+    qreal CurrentFrameLevel = LiquidLevel + (LiquidLevelSet - LiquidLevel) * Value;
 
+    setBrush(Qt::white);
+    delete Gradient;
+    Gradient = new QLinearGradient(path->boundingRect().bottomLeft(),path->boundingRect().topLeft());
+    Gradient->setColorAt(1,const_cast<QColor &> (GasColor));
+    Gradient->setColorAt(CurrentFrameLevel,const_cast<QColor &> (GasColor));
+    Gradient->setColorAt(CurrentFrameLevel-1e-10,const_cast<QColor &> (LiquidTopColor));
+    Gradient->setColorAt(0,const_cast<QColor &> (LiquidBottomColor));
+    setBrush(*Gradient);
 
-      setBrush(*Gradient);
+}
 
-    }
-// Mixer Animation
-    if(isWorking) {
-        MixerAngle += 0.5;
-      // KOCTbI/\b
-      Mixer->setTransform(QTransform().translate(15,0).rotate(MixerAngle,Qt::YAxis).translate(-15,0));
+void SchemaVessel::animMotor(qreal Value)
+{
+    // KOCTbI/\b
+    Mixer->setTransform(QTransform().translate(15,0).rotate(MixerAngle+Value*180,Qt::YAxis).translate(-15,0));
+}
 
-    }
-QGraphicsPathItem::paint(painter,option,widget);
-
-  }
+void SchemaVessel::animFinished()
+{
+    LiquidLevel = LiquidLevelSet;
+    isReady = true;
+    sender()->~QObject();
+}
 void SchemaVessel::mousePressEvent(QGraphicsSceneMouseEvent *event)
-    {
-        qDebug() << "Custom item clicked.";
-       // setLevel(0.5);
-     //   test();
-        clicked();
-    }
+{
+    Q_UNUSED(event)
+    qDebug() << "Custom item clicked.";
+    // setLevel(0.5);
+
+    clicked();
+}
+
 void SchemaVessel::changeLevel(){
-        setLevel(0.5);
+        setLevel(0.5, 0);
 }
 void SchemaVessel::fill(){
-        setLevel(0.8);
-        isWorking=true;
-        this->update();
+    // Sorry about that... It was lazy to do it via SIGNAL-SLOT
+        PFDControl* Ctrl = static_cast <PFDControl *> (sender());
+        qreal transTime = Ctrl->Tau.at(numInCascade)*3600*1000;
+        qDebug() << "Flowrate is "+ QString::number(Ctrl->Flowrate);
+        qDebug() << "CSTR" + QString::number(numInCascade) + " tau = " + QString::number(transTime);
+        setLevel(1, (int)transTime);
+        if(!isWorking) activateMotor();
+
+}
+
+void SchemaVessel::activateMotor()
+{
+    isWorking = true;
+    QTimeLine *anim = new QTimeLine(1000,this);
+    anim->setLoopCount(0);
+    anim->setUpdateInterval(30);
+    anim->setCurveShape(QTimeLine::LinearCurve);
+    connect(anim, SIGNAL (valueChanged(qreal)), SLOT (animMotor(qreal)));
+    anim->start();
+
 }
