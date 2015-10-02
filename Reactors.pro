@@ -29,6 +29,8 @@ SOURCES += main.cpp\
     libxls/src/xls.c \
     libxls/src/xlstool.c
 
+win32: SOURCES += libxls/src/localcharset.c
+
 HEADERS  += mainwindow.h \
     schemapipeline.h \
     schemaflowmeter.h \
@@ -49,6 +51,8 @@ HEADERS  += mainwindow.h \
     libxls/include/libxls/xlstool.h \
     libxls/include/libxls/xlstypes.h \
     libxls/include/libxls/config.h
+
+win32: HEADERS += libxls/include/libxls/localcharset.h
 
 FORMS    += mainwindow.ui
 
