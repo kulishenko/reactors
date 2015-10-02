@@ -39,7 +39,7 @@ void PFDControl::Start()
 void PFDControl::calcTau(){
 
     // Get experimental data from file
-    QFile file(QApplication::applicationDirPath() + "/tau.csv");
+    QFile file(":/resources/tau.csv");
 
     if(false == file.open(QIODevice::ReadOnly))
       qDebug() << file.fileName();
