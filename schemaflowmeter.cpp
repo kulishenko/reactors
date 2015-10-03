@@ -1,13 +1,16 @@
 #include "schemaflowmeter.h"
 #include <QLinearGradient>
 
-SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos)
+SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow)
 {
     setRect(0,0,Width,Height);
     setPos(PosX,PosY);
     Pos = 0.0;
+    isEnabled = true;
     this->Height = Height;
     this->Width = Width;
+    this->MaxFlow = MaxFlow;
+    PFD = NULL;
     Floater = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 2, 0 )  << QPointF( Width-2, 0 ) << QPointF( Width/2,0.75*Width ) << QPointF(2,0)), this);
 //    Floater->setPen( QPen(Qt::black) );
 
@@ -47,12 +50,14 @@ void SchemaFlowmeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     if(fabs(Flowrate-Flowrateset)>0.001){
         Flowrate += (Flowrate < Flowrateset) ? 0.00005 : -0.00005;
         Floater->setPos(boundingRect().bottomLeft()+QPointF(0,-0.75*Width - Flowrate*Height*0.9));
-}
-QGraphicsRectItem::paint(painter,option,widget);
+    }
+    QGraphicsRectItem::paint(painter,option,widget);
 
   }
 void SchemaFlowmeter::setFlowrate(qreal Value) {
 
     Flowrateset = Value;
+    if(PFD!=NULL)
+        PFD->setFlowrate(Value*MaxFlow);
 
 }

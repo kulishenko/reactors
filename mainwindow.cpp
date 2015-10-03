@@ -55,19 +55,19 @@ MainWindow::MainWindow(QWidget *parent) :
         reactorItems.push_back(new SchemaVessel(120,90,i*200,i*70,0.1,i-1));
 
 
-    SchemaFlowmeter* Flowmeter1 = new SchemaFlowmeter(25,200,125,50,0);
+    flowmeterItem = new SchemaFlowmeter(25,200,125,50,0);
 
-    m_scene->addItem(Flowmeter1);
+    m_scene->addItem(flowmeterItem);
 
     // Connecting Items
     SchemaPipeline* Line000 = new SchemaPipeline(streamItem1,valveItem1);
-    SchemaPipeline* Line00 = new SchemaPipeline(valveItem1,Flowmeter1);
+    SchemaPipeline* Line00 = new SchemaPipeline(valveItem1,flowmeterItem);
 
-    valveItem1->Descedant = Flowmeter1;
+    valveItem1->Descedant = flowmeterItem;
 
     // Connecting CSTRs
 
-    pipelineItems.push_back(new SchemaPipeline(Flowmeter1,reactorItems.at(0)));
+    pipelineItems.push_back(new SchemaPipeline(flowmeterItem,reactorItems.at(0)));
     for(int i=0;i<reactorItems.size()-1;i++)
         pipelineItems.push_back(new SchemaPipeline(reactorItems.at(i),reactorItems.at(i+1)));
 
@@ -451,31 +451,34 @@ void MainWindow::open()
             int t=8; int tt=2;
             do {
                 row=&pWS->rows.row[t];
-                QTableWidgetItem *newItem = new QTableWidgetItem(
-                            tr("%1").arg(row->cells.cell[1].d));
+                //QTableWidgetItem *newItem = new QTableWidgetItem(
+                //            tr("%1").arg(row->cells.cell[1].d));
                 // Put the data into Control
                 Control->Time.push_back(row->cells.cell[1].d);
 
-                tableWidget->setItem(t-8, 0, newItem);
+                //tableWidget->setItem(t-8, 0, newItem);
 
-                newItem = new QTableWidgetItem(
-                            tr("%1").arg(row->cells.cell[2].d));
+                //newItem = new QTableWidgetItem(
+                //            tr("%1").arg(row->cells.cell[2].d));
                 Control->Conductivity.push_back(row->cells.cell[2].d);
-                tableWidget->setItem(t-8, 1, newItem);
+                //tableWidget->setItem(t-8, 1, newItem);
 
 
-                tableWidget->setRowCount(t-6);
+                //tableWidget->setRowCount(t-6);
                 t++;
             }
             while(row->cells.cell[tt].id==0x27e
                   || row->cells.cell[tt].id==0x0BD
                   || row->cells.cell[tt].id==0x203);
 
-            Control->setFlowrate((qreal) pbFlowrate);
+            Control->setPlaybackFlowrate((qreal) pbFlowrate);
             Control->reactorItems = &reactorItems;
 
             for(int i=0; i<reactorItems.size();i++)
-                reactorItems.at(i)->PFD = Control;
+                Control->addItem(reactorItems.at(i));
+
+            Control->addItem(flowmeterItem);
+            Control->calcTau();
 
             thread = new QThread(this);
             timer = new QTimer();
@@ -503,6 +506,9 @@ void MainWindow::open()
             plotWidget->graph(0)->setData(Control->Time, Control->Conductivity);
             plotWidget->rescaleAxes();
             plotWidget->replot();
+            plotWidget->graph(0)->clearData();
+            plotWidget->replot();
+
             QDateTime EventTime(QDateTime::currentDateTime());
 
             eventsWidget->addItems(QStringList()
@@ -511,6 +517,7 @@ void MainWindow::open()
                 << EventTime.toString("[hh:mm:ss.zzz]: ")
                     + tr("Please, set the volume flowrate %1 l/hr in order to begin the simulation playback")
                         .arg(pbFlowrate));
+
             thread->start();
         }
     }
@@ -644,8 +651,8 @@ void MainWindow::updateWidgets()
 
 void MainWindow::Run()
 {
-    plotWidget->graph(0)->clearData();
-    tableWidget->setRowCount(1);
+    //plotWidget->graph(0)->clearData();
+    //tableWidget->setRowCount(1);
     Control->Start();
     MediaPlayer->play();
     QDateTime EventTime(QDateTime::currentDateTime());

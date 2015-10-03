@@ -4,6 +4,7 @@ PFDControl::PFDControl(QObject *parent) : QObject(parent)
 {
     TimeNow=0;
     isStarted = false;
+    isFlowrateSet = false;
 }
 
 PFDControl::~PFDControl()
@@ -20,11 +21,12 @@ void PFDControl::tick(){
     }
 }
 void PFDControl::flowrate_increase(){
-    qDebug() << "Flowrate Increased";
-    if(!isStarted) {
-        calcTau();
+    qDebug() << tr("Flowrate Increased: V = %1 (waiting for %2)").arg(QString::number(Flowrate),QString::number(PlaybackFlowrate));
+
+    if(!isFlowrateSet && fabs(PlaybackFlowrate-Flowrate)<0.001) {
+        isFlowrateSet = true;
         emit setLevel();
-        emit startSim();
+  //      emit startSim(); Moved to SchemaVessel::animFinished()
     }
 
 }
@@ -55,19 +57,22 @@ void PFDControl::calcTau(){
        foreach(const QString &item, items){
            res.push_back(item.toDouble());
        }
-       if(res.first()==Flowrate) {
+       if(res.first()==PlaybackFlowrate) {
            Tau = res; Tau.removeFirst();
        }
        result.append(res);
     }
 
-
- /*   Tau = result.at(5);
-    Tau.removeFirst(); */
-
-   // qDebug() << result;
-
 }
 void PFDControl::setFlowrate(qreal Value){
     Flowrate = Value;
+}
+
+void PFDControl::setPlaybackFlowrate(qreal Value)
+{
+    PlaybackFlowrate = Value;
+}
+void PFDControl::addItem(SchemaItem* item)
+{
+    item->PFD=this;
 }

@@ -94,6 +94,7 @@ private:
 
     SchemaView* graphicsView;
 
+    SchemaFlowmeter* flowmeterItem;
     SchemaValve* valveItem1;
 
     QVector<SchemaVessel*> reactorItems;

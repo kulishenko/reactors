@@ -5,13 +5,13 @@
 #include <QTimer>
 #include <QDebug>
 #include <QGraphicsPathItem>
-//#include <schemaitem.h>
+#include <schemaitem.h>
 #include <QVector>
 #include <QList>
 #include <QFile>
 #include <QApplication>
-#include <schemavessel.h>
-
+//#include <schemavessel.h>
+class SchemaItem;
 class SchemaVessel; // Why doesn't it works from header?
 class PFDControl : public QObject
 {
@@ -21,12 +21,16 @@ public:
     explicit PFDControl(QObject *parent = 0);
     ~PFDControl();
     qreal Flowrate;
+    qreal PlaybackFlowrate;
     QVector<SchemaVessel*> *reactorItems;
     QVector<qreal> Time;
     QVector<qreal> Conductivity;
     QVector<qreal> Tau;
     qreal TimeNow;
     bool isStarted;
+    bool isFlowrateSet;
+    void addItem(SchemaItem *item);
+    void calcTau();
 signals:
     void setLevel();
     void doSim();
@@ -38,8 +42,7 @@ public slots:
     void flowrate_decrease();
     void Start();
     void setFlowrate(qreal Value);
-private slots:
-    void calcTau();
+    void setPlaybackFlowrate(qreal Value);
 };
 
 #endif // PFDCONTROL_H

@@ -128,6 +128,7 @@ void SchemaVessel::animFinished()
 {
     LiquidLevel = LiquidLevelSet;
     isReady = true;
+    if(this == PFD->reactorItems->last()) emit PFD->startSim();
     sender()->~QObject();
 }
 void SchemaVessel::mousePressEvent(QGraphicsSceneMouseEvent *event)

@@ -6,16 +6,16 @@
 #include <schemaitem.h>
 #include <QDebug>
 #include <QColor>
-#include <pfdcontrol.h>
+//#include <pfdcontrol.h>
 
-class PFDControl;
+//class PFDControl;
 class SchemaVessel : public QObject, public QGraphicsPathItem, public SchemaItem {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 public:
     SchemaVessel(int Height, int Width , int xPos, int yPos, qreal StartLevel, int Index = 1);
     ~SchemaVessel();
-    PFDControl* PFD;
+//    PFDControl* PFD;
     QLinearGradient* Gradient;
     QPainterPath* path;
     QPainterPath* Stirpath;
