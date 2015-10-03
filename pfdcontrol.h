@@ -5,11 +5,14 @@
 #include <QTimer>
 #include <QDebug>
 #include <QGraphicsPathItem>
-#include <schemaitem.h>
+//#include <schemaitem.h>
 #include <QVector>
+#include <QList>
 #include <QFile>
 #include <QApplication>
+#include <schemavessel.h>
 
+class SchemaVessel; // Why doesn't it works from header?
 class PFDControl : public QObject
 {
     Q_OBJECT
@@ -18,7 +21,7 @@ public:
     explicit PFDControl(QObject *parent = 0);
     ~PFDControl();
     qreal Flowrate;
-    QVector<SchemaItem> PFDItems;
+    QVector<SchemaVessel*> *reactorItems;
     QVector<qreal> Time;
     QVector<qreal> Conductivity;
     QVector<qreal> Tau;

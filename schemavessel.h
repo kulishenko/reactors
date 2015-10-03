@@ -6,19 +6,22 @@
 #include <schemaitem.h>
 #include <QDebug>
 #include <QColor>
+#include <pfdcontrol.h>
 
-
+class PFDControl;
 class SchemaVessel : public QObject, public QGraphicsPathItem, public SchemaItem {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 public:
     SchemaVessel(int Height, int Width , int xPos, int yPos, qreal StartLevel, int Index = 1);
     ~SchemaVessel();
+    PFDControl* PFD;
     QLinearGradient* Gradient;
     QPainterPath* path;
     QPainterPath* Stirpath;
     qreal LiquidLevel;
     qreal LiquidLevelSet;
+    qreal* tau;
     QGraphicsEllipseItem* Motor;
     QGraphicsSimpleTextItem* MotorLabel;
     QGraphicsPathItem* Stir;
@@ -29,6 +32,7 @@ public:
     QColor LiquidTopColor;
     QColor GasColor;
     bool isWorking;
+    bool isFeeding;
     bool isReady;
     qreal MixerAngle;
     int numInCascade;
@@ -43,6 +47,7 @@ public slots:
     void fill();
     void activateMotor();
 
+    void startFeed();
 private slots:
     void animLevel(qreal Value);
     void animMotor(qreal Value);

@@ -472,6 +472,10 @@ void MainWindow::open()
                   || row->cells.cell[tt].id==0x203);
 
             Control->setFlowrate((qreal) pbFlowrate);
+            Control->reactorItems = &reactorItems;
+
+            for(int i=0; i<reactorItems.size();i++)
+                reactorItems.at(i)->PFD = Control;
 
             thread = new QThread(this);
             timer = new QTimer();
@@ -486,8 +490,8 @@ void MainWindow::open()
             QObject::connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
             QObject::connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
 
-            for(int i=0;i<reactorItems.size();i++)
-                QObject::connect(Control, SIGNAL(setLevel()),reactorItems.at(i),SLOT(fill()));
+         //   for(int i=0;i<reactorItems.size();i++)
+                QObject::connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
 
             QObject::connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
             QObject::connect(Control, SIGNAL(startSim()),this,SLOT(Run()));

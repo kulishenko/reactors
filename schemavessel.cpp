@@ -2,7 +2,7 @@
 #include <QLinearGradient>
 #include <QFont>
 #include <QTimeLine>
-#include <pfdcontrol.h>
+
 
 SchemaVessel::SchemaVessel(int Height, int Width , int xPos, int yPos, qreal StartLevel, int Index)
 {
@@ -12,6 +12,7 @@ SchemaVessel::SchemaVessel(int Height, int Width , int xPos, int yPos, qreal Sta
     MixerAngle=rand();
     isWorking = false;
     isReady = false;
+    isFeeding = false;
     numInCascade = Index;
     InletPort = new SchemaPort(10+xPos,yPos+10, this);
     OutletPort = new SchemaPort(Width+xPos,yPos+40, this);
@@ -109,6 +110,12 @@ void SchemaVessel::animLevel(qreal Value){
     Gradient->setColorAt(0,const_cast<QColor &> (LiquidBottomColor));
     setBrush(*Gradient);
 
+    if(!isFeeding &&  Value > 0.8 && this != PFD->reactorItems->last()) {
+        SchemaVessel* next = static_cast<SchemaVessel*>(Descedant);
+        emit next->fill();
+        isFeeding = true;
+    }
+
 }
 
 void SchemaVessel::animMotor(qreal Value)
@@ -137,10 +144,11 @@ void SchemaVessel::changeLevel(){
 }
 void SchemaVessel::fill(){
     // Sorry about that... It was lazy to do it via SIGNAL-SLOT
-        PFDControl* Ctrl = static_cast <PFDControl *> (sender());
-        qreal transTime = Ctrl->Tau.at(numInCascade)*3600*1000;
-        qDebug() << "Flowrate is "+ QString::number(Ctrl->Flowrate);
-        qDebug() << "CSTR" + QString::number(numInCascade) + " tau = " + QString::number(transTime);
+       // PFDControl* Ctrl = static_cast <PFDControl *> (sender());
+
+        qreal transTime = (PFD->Tau.at(numInCascade)-(numInCascade==0 ? 0 : PFD->Tau.at(numInCascade-1) ) ) *3600*1000;
+        qDebug() << "Flowrate is "+ QString::number(PFD->Flowrate);
+        qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(numInCascade),QString::number(transTime));
         setLevel(0.8, (int)transTime);
         if(!isWorking) activateMotor();
 
@@ -155,5 +163,8 @@ void SchemaVessel::activateMotor()
     anim->setCurveShape(QTimeLine::LinearCurve);
     connect(anim, SIGNAL (valueChanged(qreal)), SLOT (animMotor(qreal)));
     anim->start();
+
+}
+void SchemaVessel::startFeed() {
 
 }

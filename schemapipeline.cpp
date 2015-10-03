@@ -10,6 +10,8 @@ SchemaPipeline::SchemaPipeline(SchemaItem* From,SchemaItem* To) : QGraphicsPathI
         LinePath->lineTo(To->InletPort->x(),From->OutletPort->y());
     LinePath->lineTo(*(To->InletPort));
     setPath(*LinePath);
+    // Pointer to the next item in schema
+    From->Descedant = To;
 }
 
 SchemaPipeline::~SchemaPipeline()
