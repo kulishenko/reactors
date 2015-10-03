@@ -65,7 +65,10 @@ DEPENDPATH += $$PWD/libxls/include
 RESOURCES += \
     reactors.qrc
 
-DISTFILES +=
+RC_FILE = icon.rc
+
+DISTFILES += \
+    icon.rc
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/gsl-1.8-lib/lib/ -llibgsl
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/gsl-1.8-lib/lib/ -llibgsl
