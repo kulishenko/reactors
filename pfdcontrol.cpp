@@ -16,15 +16,15 @@ void PFDControl::playback(QGraphicsSceneMouseEvent *event){
 void PFDControl::tick(){
     if(isStarted) {
         TimeNow += 1.0f;
-        doSim();
+        emit doSim();
     }
 }
 void PFDControl::flowrate_increase(){
     qDebug() << "Flowrate Increased";
     if(!isStarted) {
         calcTau();
-     emit setLevel();
-     emit startSim();
+        emit setLevel();
+        emit startSim();
     }
 
 }

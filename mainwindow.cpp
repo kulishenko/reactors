@@ -333,38 +333,40 @@ void MainWindow::createDockWindows()
     plotWidget = new QCustomPlot(dock);
 
     // create plot (from quadratic plot example):
-    QVector<double> x(101), y(101);
+    /*QVector<double> x(101), y(101);
     for (int i=0; i<101; ++i)
     {
     //  x[i] = i/50.0 - 1;
       x[i] = i;
       y[i] = x[i]*x[i];
-    }
+    }*/
     plotWidget->addGraph();
-    plotWidget->graph(0)->setData(x, y);
+    //plotWidget->graph(0)->setData(x, y);
     plotWidget->xAxis->setLabel(tr("Time, s"));
     plotWidget->yAxis->setLabel(tr("Conductivity, mS/cm"));
     plotWidget->rescaleAxes();
     dock->setWidget(plotWidget);
-    dock->setMinimumWidth(400);
+    dock->setMinimumWidth(500);
     dock->setMaximumHeight(400);
     addDockWidget(Qt::RightDockWidgetArea, dock);
 
     dock = new QDockWidget(tr("Table"), this);
-    tableWidget = new QTableWidget(100,2,dock);
+    tableWidget = new QTableWidget(1,2,dock);
 
     QPalette* palette = new QPalette();
     palette->setColor(QPalette::Highlight,Qt::green);
     tableWidget->setPalette(*palette);
 
     tableWidget->setHorizontalHeaderLabels(QStringList() << tr("Time, s") << tr("Conductivity, mS/cm"));
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
+    /*
     for(int row=0; row!=tableWidget->rowCount(); ++row){
         for(int column=0; column!=tableWidget->columnCount(); ++column) {
             QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg((column==0?x[row]:y[row])));
             tableWidget->setItem(row, column, newItem);
         }
     }
-
+    */
     dock->setWidget(tableWidget);
     addDockWidget(Qt::RightDockWidgetArea,dock);
 
