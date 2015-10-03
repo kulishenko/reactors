@@ -408,11 +408,12 @@ void MainWindow::open()
     QString QfileName = QFileDialog::getOpenFileName(
                 this, tr("Open File"), "",
                 tr("Simulation Playback files (*.xls)"));
+    if (QfileName.isNull()) return;
     QFileInfo fileInfo(QfileName);
 
-      QString pbParams = fileInfo.fileName().split(".").first();
+    QString pbParams = fileInfo.fileName().split(".").first();
       // Extract the Flowrate from Filename (Temp KOCTIb/|b)
-      int pbFlowrate = pbParams.split("-").at(2).toInt();
+    int pbFlowrate = pbParams.split("-").at(2).toInt();
 
     // the transcoded filename container must not go out of scope
     // while it is still referenced by char* fileName
