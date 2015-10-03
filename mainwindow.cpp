@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Creating CSTR Items
     for(int i=1; i<=5; i++)
-        reactorItems.push_back(new SchemaVessel(120,90,i*200,i*100,0.1,i-1));
+        reactorItems.push_back(new SchemaVessel(120,90,i*200,i*70,0.1,i-1));
 
 
     SchemaFlowmeter* Flowmeter1 = new SchemaFlowmeter(25,200,125,50,0);

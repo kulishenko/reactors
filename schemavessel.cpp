@@ -14,7 +14,7 @@ SchemaVessel::SchemaVessel(int Height, int Width , int xPos, int yPos, qreal Sta
     isReady = false;
     numInCascade = Index;
     InletPort = new SchemaPort(10+xPos,yPos+10, this);
-    OutletPort = new SchemaPort(Width+xPos,yPos+80, this);
+    OutletPort = new SchemaPort(Width+xPos,yPos+40, this);
 
 //  What color is the best?
 //    LiquidBottomColor = QColor(Qt::darkBlue);
@@ -141,7 +141,7 @@ void SchemaVessel::fill(){
         qreal transTime = Ctrl->Tau.at(numInCascade)*3600*1000;
         qDebug() << "Flowrate is "+ QString::number(Ctrl->Flowrate);
         qDebug() << "CSTR" + QString::number(numInCascade) + " tau = " + QString::number(transTime);
-        setLevel(1, (int)transTime);
+        setLevel(0.8, (int)transTime);
         if(!isWorking) activateMotor();
 
 }
