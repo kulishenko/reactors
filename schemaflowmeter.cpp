@@ -29,6 +29,17 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 
     OutletPort = new SchemaPort(Width/2+PosX, PosY - 40, this);
     OutletPipe = new QGraphicsLineItem(Width/2,  - 40,Width/2, 0, this);
+    QPen gray;
+    QBrush graybrush;
+    graybrush.setColor(Qt::gray);
+    gray.setColor(Qt::gray);
+
+
+    for(int i=1; i<=10; i++){
+        Rulers.push_back(new QGraphicsLineItem(0,0.09*Height*i,Width,0.09*Height*i, this));
+        Rulers.at(i-1)->setPen(gray);
+
+    }
 
 
     InletPort = new SchemaPort(Width/2+PosX, PosY + Height, this);
