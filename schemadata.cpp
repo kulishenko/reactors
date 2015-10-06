@@ -14,20 +14,16 @@ SchemaData::~SchemaData()
 void SchemaData::calcConc()
 {
     qreal t0 = *t_0();
-
-    qreal C1= Calibrate(ExpDataConductivity->at(ExpDataTime->indexOf( t0 )));
-
-    qreal tend = *t_last() ;
-
+    qreal C1 = Calibrate(ExpDataConductivity->at(ExpDataTime->indexOf( t0 )));
+    qreal tend = *t_last();
     qreal C2 = Calibrate(ExpDataConductivity->at(ExpDataTime->indexOf( tend )));
 
     qDebug() << QObject::tr("C1 = %1, C2 = %2").arg(QString::number(C1),QString::number(C2));
+    qreal R = (C1-C2) / (tend - t0);
 
-    qreal R = (C1-C2)/tend;
-
-    for(int i=0; i<ExpDataTime->size();i++){
-        Conc.push_back(Calibrate(ExpDataConductivity->at(i)) - C1 - ExpDataTime->at(i) * R);
-        qDebug() << QString::number(Conc.at(i));
+    for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i++){
+        Conc.push_back(Calibrate(ExpDataConductivity->at(i)) - C1 - (ExpDataTime->at(i) - t0)* R);
+        qDebug() << QString::number(Conc.last());
     }
 
 }
@@ -44,6 +40,23 @@ void SchemaData::calcDimTime()
 
 qreal* SchemaData::t_0()
 {
+    // Simple method to detect the bypass resistor disconnection time
+    int i = 0, j;
+    while(i+5 < ExpDataTime->size()) {
+        i++;
+        if((ExpDataConductivity->first() - ExpDataConductivity->at(i)) > ExpDataConductivity->first() * 0.1
+                && fabs(ExpDataConductivity->at(i) - ExpDataConductivity->at(i+5)) < ExpDataConductivity->at(i) * 0.03)
+        {
+            j = i;
+            qDebug() << "t0_begin = " + QString::number(ExpDataTime->at(j));
+            while(fabs(ExpDataConductivity->first() - ExpDataConductivity->at(j)) > ExpDataConductivity->first() * 0.1
+                    && j < ExpDataTime->size())
+                    j++;
+            qDebug() << "t0_end = " + QString::number(ExpDataTime->at(j));
+            return const_cast<qreal *> (&ExpDataTime->at(j));
+        }
+    }
+    qDebug() << "Couldn't detect t0, using t0 = 0 instead";
     return &ExpDataTime->first();
 }
 
@@ -53,7 +66,8 @@ qreal* SchemaData::t_last()
     return &ExpDataTime->last();
 }
 qreal SchemaData::Calibrate(qreal x){
-    return 2.3480623E-18 * pow(x,5) - 1.3123250E-14 * pow(x,4) + 2.7014011E-11*pow(x,3)
+    x *= 1000; // Convert to mkS/cm
+    return 2.3480623E-18 * pow(x, 5) - 1.3123250E-14 * pow(x, 4) + 2.7014011E-11 * pow(x, 3)
            - 2.4703301E-08 * x * x + 1.7735139E-05 * x;
 }
 
