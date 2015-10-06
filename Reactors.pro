@@ -74,11 +74,16 @@ RC_FILE = icon.rc
 DISTFILES += \
     icon.rc
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/gsl-1.8-lib/lib/ -llibgsl
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/gsl-1.8-lib/lib/ -llibgsl
+win32: LIBS += -L$$PWD/gsl-1.8-lib/lib/ -llibgsl
+
 
 win32:INCLUDEPATH += $$PWD/gsl-1.8-lib/include
 win32:DEPENDPATH += $$PWD/gsl-1.8-lib/include
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += gsl
+
+win32: LIBS += -L$$PWD/gsl-1.8-lib/lib/ -lgslcblas
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/gsl-1.8-lib/lib/gslcblas.lib
+else:win32-g++: PRE_TARGETDEPS += $$PWD/gsl-1.8-lib/lib/libgslcblas.a

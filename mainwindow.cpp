@@ -698,4 +698,6 @@ void MainWindow::fitInView()
 void MainWindow::paramEstimation(){
     SchemaData *Data = new SchemaData(Control);
     Data->calcConc();
+    Data->calcDimTime();
+    Data->estimateNumCells();
 }

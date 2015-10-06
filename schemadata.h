@@ -14,12 +14,16 @@ public:
     PFDControl* Control;
     QVector<qreal> *ExpDataConductivity;
     QVector<qreal> *ExpDataTime;
-    QVector<qreal> Conc; // Tracer concentration
+    qreal* Flowrate; // Volume flowrate, L/hr
+    QVector<qreal> Conc; // Tracer concentration, kmol/m3
     QVector<qreal> DimConc; // Dimensionless tracer concentration
     QVector<qreal> DimTime; // Dimensionless time
+    qreal t0; // Zero time, s
+    qreal tend; // End time, s
     void calcConc();
     void calcDimConc();
     void calcDimTime();
+    void estimateNumCells();
     qreal Calibrate(qreal x);
 private:
     qreal* t_0();
