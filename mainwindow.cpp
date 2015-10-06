@@ -529,7 +529,7 @@ void MainWindow::open()
                 << EventTime.toString("[hh:mm:ss.zzz]: ")
                     + tr("Opened the playback file: %1").arg(QfileName)
                 << EventTime.toString("[hh:mm:ss.zzz]: ")
-                    + tr("Please, set the volume flowrate %1 l/hr in order to begin the simulation playback")
+                    + tr("Please, set the volume flowrate %1 L/hr in order to begin the simulation playback")
                         .arg(pbFlowrate));
 
             thread->start();
@@ -626,7 +626,8 @@ void MainWindow::about()
                "Copyright (C) 2015 St. Petersburg State Institute of Technology & TU Dresden<br><br>"
                "Project supervisor: Prof. Prof. h.c. Dr. rer. nat. habil. Wladimir Reschetilowski<br>"
                "Developers: Dr. Ekaterina Borovinskaya, Dr. Roman Kulishenko<br><br>"
-               "This project uses <a href=\"http://libxls.sourceforge.net/\">libxls</a>"
+               "This project uses <a href=\"http://libxls.sourceforge.net/\">libxls</a>,"
+               " <a href=\"http://www.gnu.org/software/gsl/\">libgsl</a>"
                " and <a href=\"http://qcustomplot.com\">QCustomPlot</a> libraries licensed under GNU GPL"));
 }
 

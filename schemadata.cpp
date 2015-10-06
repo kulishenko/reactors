@@ -60,8 +60,8 @@ void SchemaData::estimateNumCells()
 
       qDebug() << QObject::tr("# best fit: Y = %1 + %2 X\n").arg(QString::number(c0), QString::number(c1));
       qDebug() << QObject::tr("# covariance matrix:\n");
-      printf("# [ %g, %g\n#   %g, %g]\n",
-              cov00, cov01, cov01, cov11);
+//      printf("# [ %g, %g\n#   %g, %g]\n",
+//              cov00, cov01, cov01, cov11);
       qDebug() << QObject::tr("# chisq = %1\n").arg(chisq);
 
       for (i = 0; i < n; i++)
