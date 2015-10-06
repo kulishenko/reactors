@@ -33,6 +33,7 @@
 #include "schemaflowmeter.h"
 #include "schemastream.h"
 #include "schemaview.h"
+#include "schemadata.h"
 
 extern "C" {
 
@@ -87,6 +88,8 @@ private slots:
     //    void wheelEvent(QWheelEvent *e);
     void zoomIn();
     void zoomOut();
+    void fitInView();
+    void paramEstimation();
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *m_scene;
@@ -109,6 +112,8 @@ private:
         QMenu *viewMenu;
         QMenu *zoomMenu;
         QMenu *modeMenu;
+        QMenu *toolsMenu;
+        QMenu *analysisMenu;
         QMenu *formatMenu;
         QMenu *helpMenu;
         QActionGroup *alignmentGroup;
@@ -134,6 +139,9 @@ private:
 
         QAction *zoomInAct;
         QAction *zoomOutAct;
+        QAction *fitInViewAct;
+
+        QAction *paramEstimAct;
 
         QAction *playbackAct;
         QAction *onlineAct;

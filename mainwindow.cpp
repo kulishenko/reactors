@@ -203,6 +203,15 @@ void MainWindow::createActions()
     zoomOutAct->setStatusTip(tr("Zoom Out the schema"));
     connect(zoomOutAct,SIGNAL(triggered()),this,SLOT(zoomOut()));
 
+    fitInViewAct = new QAction(tr("&Fit In View"),this);
+  //  fitInViewAct->setShortcut(QKeySequence::);
+    fitInViewAct->setStatusTip(tr("Fit the schema in view"));
+    connect(fitInViewAct,SIGNAL(triggered()),this,SLOT(fitInView()));
+
+    paramEstimAct = new QAction(tr("&Parameter estimation"),this);
+    paramEstimAct->setStatusTip(tr("Estimate parameters from experimental data"));
+    connect(paramEstimAct,SIGNAL(triggered()),this,SLOT(paramEstimation()));
+
     playbackAct = new QAction(tr("&Offline"),this);
     playbackAct->setCheckable(true);
     playbackAct->setStatusTip(tr("Enable the playback mode"));
@@ -283,11 +292,15 @@ void MainWindow::createMenus()
     zoomMenu = viewMenu->addMenu(tr("&Zoom"));
     zoomMenu->addAction(zoomInAct);
     zoomMenu->addAction(zoomOutAct);
+    zoomMenu->addAction(fitInViewAct);
 
 
     modeMenu = menuBar()->addMenu(tr("&Mode"));
     modeMenu->addAction(playbackAct);
     modeMenu->addAction(onlineAct);
+
+    toolsMenu = menuBar()->addMenu(tr("&Tools"));
+    toolsMenu->addAction(paramEstimAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
@@ -431,19 +444,20 @@ void MainWindow::open()
     if (pWB != NULL)
     {
         int i;
-        int iDataWorkSheet;
+        int *iDataWorkSheet;
+        iDataWorkSheet=NULL;
 
         //     bool isParsed;
         for(i=0; i<pWB->sheets.count; i++){
             qDebug() << pWB->sheets.sheet[i].name;
             if(strcmp(pWB->sheets.sheet[i].name,"Tabelle1") == 0) {
-                iDataWorkSheet=i;
+                iDataWorkSheet= new int(i);
             }
 
         }
 
-        if(iDataWorkSheet != 0) {
-            xlsWorkSheet* pWS = xls_getWorkSheet(pWB,iDataWorkSheet);
+        if(iDataWorkSheet != NULL) {
+            xlsWorkSheet* pWS = xls_getWorkSheet(pWB,*iDataWorkSheet);
             xls_parseWorkSheet(pWS);
             Control = new PFDControl();
 
@@ -671,8 +685,17 @@ void MainWindow::resizeEvent(QResizeEvent *event){
     event->accept();
 }
 void MainWindow::zoomIn(){
-
+    graphicsView->scale(1.25,1.25);
 }
 void MainWindow::zoomOut(){
+    graphicsView->scale(0.8,0.8);
+}
 
+void MainWindow::fitInView()
+{
+    graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
+}
+void MainWindow::paramEstimation(){
+    SchemaData *Data = new SchemaData(Control);
+    Data->calcConc();
 }
