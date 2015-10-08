@@ -158,7 +158,7 @@ void SchemaVessel::fill(){
 void SchemaVessel::activateMotor()
 {
     isWorking = true;
-    QTimeLine *anim = new QTimeLine(1000,this);
+    QTimeLine *anim = new QTimeLine(500,this);
     anim->setLoopCount(0);
     anim->setUpdateInterval(30);
     anim->setCurveShape(QTimeLine::LinearCurve);
