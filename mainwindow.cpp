@@ -210,6 +210,7 @@ void MainWindow::createActions()
 
     paramEstimAct = new QAction(tr("&Parameter estimation"),this);
     paramEstimAct->setStatusTip(tr("Estimate parameters from experimental data"));
+    paramEstimAct->setDisabled(true);
     connect(paramEstimAct,SIGNAL(triggered()),this,SLOT(paramEstimation()));
 
     playbackAct = new QAction(tr("&Offline"),this);
@@ -531,6 +532,7 @@ void MainWindow::open()
                 << EventTime.toString("[hh:mm:ss.zzz]: ")
                     + tr("Please, set the volume flowrate %1 L/hr in order to begin the simulation playback")
                         .arg(pbFlowrate));
+            paramEstimAct->setDisabled(false);
 
             thread->start();
         }
