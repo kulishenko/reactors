@@ -34,6 +34,7 @@
 #include "schemastream.h"
 #include "schemaview.h"
 #include "schemadata.h"
+#include "modelcell.h"
 
 extern "C" {
 

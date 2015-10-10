@@ -2,7 +2,7 @@
 
 SchemaPort::SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem) : QPointF(PosX, PosY)
 {
-parent = parentItem;
+    parent = parentItem;
 }
 
 SchemaPort::~SchemaPort()

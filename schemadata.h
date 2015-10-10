@@ -5,17 +5,6 @@
 #include <QObject>
 #include <pfdcontrol.h>
 
-#define GSL_DLL
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_multifit_nlin.h>
-
-//#include "expfit.c"
-#define N 40
-
 
 class SchemaData
 {

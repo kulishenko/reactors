@@ -702,5 +702,7 @@ void MainWindow::paramEstimation(){
     SchemaData *Data = new SchemaData(Control);
     Data->calcConc();
     Data->calcDimTime();
-    Data->estimateNumCells();
+    //Data->estimateNumCells();
+    ModelCell *Model = new ModelCell(Data);
+    Model->EstimateNumCells();
 }
