@@ -98,6 +98,8 @@ private:
 
     SchemaView* graphicsView;
 
+    SchemaData *Data;
+
     SchemaFlowmeter* flowmeterItem;
     SchemaValve* valveItem1;
 

@@ -7,6 +7,7 @@ SchemaData::SchemaData(PFDControl* Ctrl)
     ExpDataTime = &Ctrl->Time;
     ExpDataConductivity = &Ctrl->Conductivity;
     Flowrate = &Ctrl->PlaybackFlowrate;
+    DataRes = 1;
 }
 
 SchemaData::~SchemaData()
@@ -24,7 +25,7 @@ void SchemaData::calcConc()
     qDebug() << QObject::tr("C1 = %1, C2 = %2").arg(QString::number(C1),QString::number(C2));
     qreal R = (C1-C2) / (tend - t0);
 
-    for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i++){
+    for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes){
         Conc.push_back(Calibrate(ExpDataConductivity->at(i)) - C1 - (ExpDataTime->at(i) - t0)* R);
     //    qDebug() << QString::number(Conc.last());
     }
@@ -39,8 +40,8 @@ void SchemaData::calcDimConc()
 void SchemaData::calcDimTime()
 {
     qreal tau = 0.84*5 / *Flowrate * 3600;
-    for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i++){
-        DimTime.push_back((ExpDataTime->at(i)- t0)/tau);
+    for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes){
+        DimTime.push_back((ExpDataTime->at(i)- t0)/tau + 0.01);
   //      qDebug() << DimTime.last();
     }
 }
@@ -76,6 +77,6 @@ qreal* SchemaData::t_last()
 qreal SchemaData::Calibrate(qreal x){
     x *= 1000; // Conversion to mkS/cm
     return 2.3480623E-18 * pow(x, 5) - 1.3123250E-14 * pow(x, 4) + 2.7014011E-11 * pow(x, 3)
-           - 2.4703301E-08 * x * x + 1.7735139E-05 * x;
+           - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-19;
 }
 

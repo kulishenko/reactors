@@ -699,10 +699,37 @@ void MainWindow::fitInView()
     graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
 }
 void MainWindow::paramEstimation(){
-    SchemaData *Data = new SchemaData(Control);
+    Data = new SchemaData(Control);
     Data->calcConc();
     Data->calcDimTime();
     //Data->estimateNumCells();
     ModelCell *Model = new ModelCell(Data);
-    Model->EstimateNumCells();
+    if(QMessageBox::question(this, tr("Estimation number of cells"),
+                                    tr("Estimate number of cells?"),
+                                    QMessageBox::Yes|QMessageBox::No)
+            == QMessageBox::Yes) {
+           Model->EstimateNumCells();
+           Model->Sim();
+
+           QDockWidget *dock = new QDockWidget(tr("Results plot"), this);
+           QCustomPlot *resPlotWidget = new QCustomPlot(dock);
+
+           resPlotWidget->addGraph();
+           resPlotWidget->graph(0)->setData(Data->DimTime,  *Data->SimConc.at(0));
+
+           resPlotWidget->addGraph();
+           resPlotWidget->graph(1)->setData(Data->DimTime,  Data->Conc);
+
+           resPlotWidget->xAxis->setLabel(tr("Time"));
+           resPlotWidget->yAxis->setLabel(tr("Conc, mol/L"));
+
+
+
+           resPlotWidget->rescaleAxes();
+           dock->setWidget(resPlotWidget);
+           addDockWidget(Qt::RightDockWidgetArea, dock);
+
+
+
+    }
 }
