@@ -208,7 +208,7 @@ void MainWindow::createActions()
     fitInViewAct->setStatusTip(tr("Fit the schema in view"));
     connect(fitInViewAct,SIGNAL(triggered()),this,SLOT(fitInView()));
 
-    paramEstimAct = new QAction(tr("&Parameter estimation"),this);
+    paramEstimAct = new QAction(tr("&Parameter estimation..."),this);
     paramEstimAct->setStatusTip(tr("Estimate parameters from experimental data"));
     paramEstimAct->setDisabled(true);
     connect(paramEstimAct,SIGNAL(triggered()),this,SLOT(paramEstimation()));
@@ -704,32 +704,56 @@ void MainWindow::paramEstimation(){
     Data->calcDimTime();
     //Data->estimateNumCells();
     ModelCell *Model = new ModelCell(Data);
-    if(QMessageBox::question(this, tr("Estimation number of cells"),
+    /*if(QMessageBox::question(this, tr("Estimation number of cells"),
                                     tr("Estimate number of cells?"),
                                     QMessageBox::Yes|QMessageBox::No)
             == QMessageBox::Yes) {
+      */
+
            Model->EstimateNumCells();
            Model->Sim();
+           Data->SmoothData();
 
-           QDockWidget *dock = new QDockWidget(tr("Results plot"), this);
-           QCustomPlot *resPlotWidget = new QCustomPlot(dock);
+           QWidget *wnd = new QWidget();
+           QVBoxLayout* layout = new QVBoxLayout;
+
+           QCustomPlot *resPlotWidget = new QCustomPlot();
+           QLabel* SimResults = new QLabel;
+           SimResults->setText(tr("N = %1, Cin = %2 mol/L").arg(QString::number(Model->Num),QString::number(Model->Cin)));
 
            resPlotWidget->addGraph();
            resPlotWidget->graph(0)->setData(Data->DimTime,  *Data->SimConc.at(0));
+           resPlotWidget->graph(0)->setPen(QPen(Qt::green));
+           resPlotWidget->graph(0)->setName("Simulated");
 
            resPlotWidget->addGraph();
            resPlotWidget->graph(1)->setData(Data->DimTime,  Data->Conc);
+           resPlotWidget->graph(1)->setName("Experiment");
 
-           resPlotWidget->xAxis->setLabel(tr("Time"));
+           resPlotWidget->addGraph();
+           resPlotWidget->graph(2)->setData(Data->DimTime,  Data->SConc);
+           resPlotWidget->graph(2)->setPen(QPen(Qt::red));
+           resPlotWidget->graph(2)->setName("Experiment (smoothed)");
+
+           resPlotWidget->xAxis->setLabel(tr("Dimensionless Time"));
            resPlotWidget->yAxis->setLabel(tr("Conc, mol/L"));
 
-
-
+           resPlotWidget->setMinimumWidth(600);
+           resPlotWidget->setMinimumHeight(400);
+           resPlotWidget->legend->setVisible(true);
            resPlotWidget->rescaleAxes();
-           dock->setWidget(resPlotWidget);
-           addDockWidget(Qt::RightDockWidgetArea, dock);
+           resPlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+           resPlotWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+
+           wnd->setLayout(layout);
+           layout->addWidget(resPlotWidget);
+           layout->addWidget(SimResults);
+           wnd->setWindowTitle(tr("Cell Model (method 2) simulation results"));
+           wnd->show();
 
 
 
-    }
+
+ //   }
 }

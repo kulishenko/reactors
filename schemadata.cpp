@@ -77,6 +77,19 @@ qreal* SchemaData::t_last()
 qreal SchemaData::Calibrate(qreal x){
     x *= 1000; // Conversion to mkS/cm
     return 2.3480623E-18 * pow(x, 5) - 1.3123250E-14 * pow(x, 4) + 2.7014011E-11 * pow(x, 3)
-           - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-19;
+            - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-19;
+}
+
+void SchemaData::SmoothData()
+{
+    SConc.push_back(Conc.first());
+    qreal A = 0.1;
+    for(int i = 1;i<Conc.size();i++){
+
+        if(fabs(Conc.at(i) - Conc.at(i-1))>Conc.at(i)*0.1&&false)
+            SConc.push_back(Conc.at(i));
+        else
+            SConc.push_back(SConc.at(i-1) + A * (Conc.at(i) - SConc.at(i-1)));
+    }
 }
 

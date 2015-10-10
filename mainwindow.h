@@ -28,6 +28,8 @@
 #include <pfdcontrol.h>
 #include <QObject>
 #include <QMessageBox>
+#include <QWindow>
+#include <QLabel>
 #include "schemavessel.h"
 #include "schemapipeline.h"
 #include "schemaflowmeter.h"
