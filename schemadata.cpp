@@ -41,7 +41,7 @@ void SchemaData::calcDimTime()
 {
     qreal tau = 0.84*5 / *Flowrate * 3600;
     for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes){
-        DimTime.push_back((ExpDataTime->at(i)- t0)/tau + 0.01);
+        DimTime.push_back((ExpDataTime->at(i)- t0)/tau + 1e-6);
   //      qDebug() << DimTime.last();
     }
 }

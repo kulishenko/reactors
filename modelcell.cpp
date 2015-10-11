@@ -176,6 +176,7 @@ void ModelCell::EstimateNumCells()
 
       Num = FIT(0);
       Cin = FIT(1);
+      iNum = round(Num);
 
       gsl_multifit_fdfsolver_free (s);
       gsl_matrix_free (covar);
@@ -193,7 +194,7 @@ void ModelCell::Sim()
 qreal ModelCell::Conc(qreal theta)
 {
 
-  return Cin / gsl_sf_gamma(Num) * pow(theta*Num,Num-1)* exp(-theta*Num);
+  return Cin / gsl_sf_gamma(iNum) * pow(theta*iNum,iNum-1)* exp(-theta*iNum);
 
 }
 

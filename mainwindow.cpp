@@ -721,7 +721,9 @@ void MainWindow::paramEstimation(){
 
            QCustomPlot *resPlotWidget = new QCustomPlot();
            QLabel* SimResults = new QLabel;
-           SimResults->setText(tr("N = %1, Cin = %2 mol/L").arg(QString::number(Model->Num),QString::number(Model->Cin)));
+           SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L").arg(QString::number(Model->Num),
+                                                                                 QString::number(Model->iNum),
+                                                                                 QString::number(Model->Cin)));
 
            resPlotWidget->addGraph();
            resPlotWidget->graph(0)->setData(Data->DimTime,  *Data->SimConc.at(0));

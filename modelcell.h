@@ -39,6 +39,7 @@ public:
     void Sim();
     qreal Cin;
     qreal Num;
+    unsigned int iNum;
 private:
     qreal Conc(qreal theta);
 };
