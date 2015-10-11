@@ -1,7 +1,6 @@
 #include "schemadata.h"
 
 
-
 SchemaData::SchemaData(PFDControl* Ctrl)
 {
     ExpDataTime = &Ctrl->Time;
@@ -80,16 +79,27 @@ qreal SchemaData::Calibrate(qreal x){
             - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-19;
 }
 
+
 void SchemaData::SmoothData()
 {
-    SConc.push_back(Conc.first());
-    qreal A = 0.1;
-    for(int i = 1;i<Conc.size();i++){
-
-        if(fabs(Conc.at(i) - Conc.at(i-1))>Conc.at(i)*0.1&&false)
-            SConc.push_back(Conc.at(i));
-        else
-            SConc.push_back(SConc.at(i-1) + A * (Conc.at(i) - SConc.at(i-1)));
+    //  Simple median filter
+    int width = 8;
+    for(int i = 0; i<Conc.size()-width; i++) {
+       QVector<qreal> window;
+       // Get n=width points
+       for(int j=i; j<=i+width;j++)
+            window.push_back(Conc.at(j));
+       qSort(window);
+       if(width % 2 == 0)
+            SConc.push_back((window.at(ceil(width/2)) + window.at(floor(width/2))) / 2);
+       else
+            SConc.push_back(window.at(floor(width/2) + 1));
     }
-}
+    // Simple low-pass filter
+    qreal A = 0.1;
+    for(int i = 1; i<SConc.size();i++){
+        SConc.replace(i, SConc.at(i-1) + A*(SConc.at(i)-SConc.at(i-1)));
+    }
 
+
+}

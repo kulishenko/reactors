@@ -24,7 +24,7 @@ SchemaVessel::SchemaVessel(int Height, int Width , int xPos, int yPos, qreal Sta
     LiquidTopColor = LiquidBottomColor.light();
 //    LiquidTopColor.setRgb(194,235,255);
     GasColor = QColor(Qt::white);
-
+//    GasColor = QColor::fromRgb(240,240,240);
 
     // Drawing Vessel
     path = new QPainterPath();

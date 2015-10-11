@@ -51,11 +51,12 @@ int ModelCell::N_df (const gsl_vector * x, void *data,
     {
       /* Jacobian matrix J(i,j) = dfi / dxj, */
       /* where fi = (Yi - yi)/sigma[i],      */
-      /*       Yi = A * exp(-lambda * i) + b  */
-      /* and the xj are the parameters (A,lambda,b) */
+      /*       Yi   */
+      /* and the xj are the parameters (Num,Cin) */
       double t = arg[i];
       double s = sigma[i];
-      double dCdn = -Cin * exp(-Num*t) * pow(Num*t,Num) * (Num*gsl_sf_psi(Num) - Num*log(Num*t) - Num + Num * t + 1)
+      double dCdn = -Cin * exp(-Num*t) * pow(Num*t,Num)
+              * (Num*gsl_sf_psi(Num) - Num*log(Num*t) - Num + Num * t + 1)
               / (Num*Num * t * gsl_sf_gamma(Num));
       double dCdCin = exp(-Num * t)*pow(Num*t,Num-1)/gsl_sf_gamma(Num);
 
@@ -86,7 +87,6 @@ void ModelCell::print_state(size_t iter, gsl_multifit_fdfsolver *s)
               QString::number(iter),
               QString::number(gsl_vector_get (s->x, 0)),
               QString::number(gsl_vector_get (s->x, 1)),
-           //   QString::number(gsl_vector_get (s->x, 2)),
               QString::number(gsl_blas_dnrm2 (s->f)));
 
 
@@ -98,7 +98,7 @@ void ModelCell::EstimateNumCells()
     gsl_multifit_fdfsolver *s;
     int status;
     unsigned int i, iter = 0;
-    const size_t n = Data->Conc.size() - 1;
+    const size_t n = Data->SConc.size() - 1;
     const size_t p = 2;
 
     gsl_matrix *covar = gsl_matrix_alloc (p, p);
@@ -124,7 +124,7 @@ void ModelCell::EstimateNumCells()
     for (i = 0; i < n; i++)
       {
         //double t = i;
-        y[i] = Data->Conc.at(i);
+        y[i] = Data->SConc.at(i);
         sigma[i] = 1e-6;
         t[i] = Data->DimTime.at(i);
        //qDebug() << QObject::tr("data: %1 %2 %3\n").arg(QString::number(i), QString::number(y[i]), QString::number(sigma[i]));

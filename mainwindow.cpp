@@ -37,9 +37,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     graphicsView = new SchemaView();
-
+    bgColor = QColor::fromRgb(240, 240, 240);
 
     m_scene = new QGraphicsScene();
+    //m_scene->setBackgroundBrush(QBrush(QColor::fromRgb(0, 150, 140), Qt::SolidPattern));
+//    m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
 
     SchemaStream* streamItem1 = new SchemaStream(50,0, 400, 0);
     m_scene->addItem(streamItem1);
@@ -709,10 +711,10 @@ void MainWindow::paramEstimation(){
                                     QMessageBox::Yes|QMessageBox::No)
             == QMessageBox::Yes) {
       */
-
+           Data->SmoothData();
            Model->EstimateNumCells();
            Model->Sim();
-           Data->SmoothData();
+
 
            QWidget *wnd = new QWidget();
            QVBoxLayout* layout = new QVBoxLayout;

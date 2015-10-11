@@ -112,6 +112,9 @@ private:
     void createMenus();
     void createToolBars();
     void createDockWindows();
+
+    QColor bgColor;
+
     QMenu *fileMenu;
         QMenu *editMenu;
         QMenu *viewMenu;
