@@ -25,8 +25,9 @@ void SchemaData::calcConc()
     qreal R = (C1-C2) / (tend - t0);
 
     for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes){
-        Conc.push_back(Calibrate(ExpDataConductivity->at(i)) - C1 - (ExpDataTime->at(i) - t0)* R);
-    //    qDebug() << QString::number(Conc.last());
+        qreal C = Calibrate(ExpDataConductivity->at(i)) - C1 - (ExpDataTime->at(i) - t0)* R;
+        // Added for robustness (check approximation formulas?)
+        Conc.push_back((C > 0) ? C : 0);
     }
 
 }
@@ -76,7 +77,7 @@ qreal* SchemaData::t_last()
 qreal SchemaData::Calibrate(qreal x){
     x *= 1000; // Conversion to mkS/cm
     return 2.3480623E-18 * pow(x, 5) - 1.3123250E-14 * pow(x, 4) + 2.7014011E-11 * pow(x, 3)
-            - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-19;
+            - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-18;
 }
 
 
