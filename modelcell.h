@@ -1,20 +1,19 @@
 #ifndef MODELCELL_H
 #define MODELCELL_H
 #include <schemadata.h>
-#include <gsl/gsl_math.h>
 #include <QDebug>
 
 #define GSL_DLL
 #include <gsl/gsl_math.h>
-//#include <gsl/gsl_rng.h>
-//#include <gsl/gsl_randist.h>
+
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_multifit_nlin.h>
 #include <gsl/gsl_sf.h>
 
-//#include "expfit.c"
-//#define N 40
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_odeiv.h>
 
 
 class ModelCell
@@ -37,9 +36,12 @@ public:
 
     void EstimateNumCells();
     void Sim();
+    void SimODE();
     qreal Cin;
     qreal Num;
     unsigned int iNum;
+    static int jac_C(double t, const double y[], double *dfdy, double dfdt[], void *params);
+    static int func_C(double t, const double y[], double f[], void *params);
 private:
     qreal Conc(qreal theta);
 };
