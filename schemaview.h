@@ -13,8 +13,11 @@ public:
     SchemaView();
     ~SchemaView();
     qreal scale_factor;
+    QPoint lastPos;
 protected:
+    void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 public slots:
     void animFinished();
     void scalingTime(qreal x);

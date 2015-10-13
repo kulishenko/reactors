@@ -1,4 +1,5 @@
 #include "schemaview.h"
+#include <QDebug>
 
 SchemaView::SchemaView() : QGraphicsView()
 {
@@ -13,7 +14,31 @@ SchemaView::~SchemaView()
 void SchemaView::mousePressEvent(QMouseEvent *event)
 {
       //  qDebug() << "Custom view clicked.";
-        QGraphicsView::mousePressEvent(event);
+    setDragMode(QGraphicsView::ScrollHandDrag);
+    lastPos = event->globalPos();
+    //event->accept();
+    QGraphicsView::mousePressEvent(event);
+}
+
+void SchemaView::mouseReleaseEvent(QMouseEvent *event)
+{
+    setDragMode(QGraphicsView::NoDrag);
+    update();
+    QGraphicsView::mouseReleaseEvent(event);
+}
+void SchemaView::mouseMoveEvent(QMouseEvent *event){
+    float dx = (event->globalPos().x()-lastPos.x());
+    float dy = (event->globalPos().y()-lastPos.y());
+
+    if(event->buttons() == Qt::LeftButton){
+       QPointF viewCenter = mapToScene(width() / 2, height() / 2);
+       viewCenter -= QPointF(dx, dy);
+     //  translate(dx,dy);
+      centerOn(viewCenter);
+       update();
+    }
+    lastPos = event->globalPos();
+   // QGraphicsView::mouseMoveEvent(event);
 }
 void SchemaView::wheelEvent(QWheelEvent *event) {
 

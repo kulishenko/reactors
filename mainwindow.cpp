@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     graphicsView = new SchemaView();
+    //graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
     bgColor = QColor::fromRgb(240, 240, 240);
 
     m_scene = new QGraphicsScene();
@@ -88,6 +89,9 @@ MainWindow::MainWindow(QWidget *parent) :
     graphicsView->setScene(m_scene);
     graphicsView->viewport()->installEventFilter(this);
     graphicsView->setRenderHint(QPainter::Antialiasing);
+
+ //   graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
     this->setCentralWidget(graphicsView);
