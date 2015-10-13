@@ -44,6 +44,7 @@ void SchemaValve::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     tmp->setFlowrate(FlowCoeffitient*MaxFlow);
     tmp->Floater->update();
 
+    event->accept();
     qDebug() << "Set Flowrate:" << QString::number(tmp->Flowrateset);
 
 }
