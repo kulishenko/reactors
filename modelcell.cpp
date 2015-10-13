@@ -95,25 +95,50 @@ void ModelCell::print_state(size_t iter, gsl_multifit_fdfsolver *s)
 int ModelCell::func_C (double t, const double y[], double f[],
       void *params)
 {
-  double mu = *(double *)params;
-  f[0] = y[1];
-  f[1] = -y[0] - mu*y[1]*(y[0]*y[0] - 1);
-  return GSL_SUCCESS;
+      // ToDo: Add the cell model ODE here
+     // double mu = *(double *)params;
+      qreal *arg = static_cast<qreal *> (params);
+      int nCells = arg[0];
+      qreal tau = arg[1];
+      qreal C_in = 0;
+      f[0] = 1/tau * (C_in - y[0]);
+      for(int i = 1; i < nCells; i++){
+            f[i] = 1/tau*(y[i-1] - y[i]);
+      }
+      return GSL_SUCCESS;
 }
 int ModelCell::jac_C (double t, const double y[], double *dfdy,
      double dfdt[], void *params)
 {
-  double mu = *(double *)params;
-  gsl_matrix_view dfdy_mat
-    = gsl_matrix_view_array (dfdy, 2, 2);
-  gsl_matrix * m = &dfdy_mat.matrix;
-  gsl_matrix_set (m, 0, 0, 0.0);
-  gsl_matrix_set (m, 0, 1, 1.0);
-  gsl_matrix_set (m, 1, 0, -2.0*mu*y[0]*y[1] - 1.0);
-  gsl_matrix_set (m, 1, 1, -mu*(y[0]*y[0] - 1.0));
-  dfdt[0] = 0.0;
-  dfdt[1] = 0.0;
-  return GSL_SUCCESS;
+      // ToDo: Add the cell model ODE Jacobian here
+    //  double mu = *(double *)params;
+      qreal *arg = static_cast<qreal *> (params);
+      int nCells = arg[0];
+      qreal tau = arg[1];
+   //   qreal C_in = arg[2];
+
+      gsl_matrix_view dfdy_mat
+        = gsl_matrix_view_array (dfdy, nCells, nCells);
+      gsl_matrix * m = &dfdy_mat.matrix;
+
+      gsl_matrix_set (m, 0, 0, -1/tau);
+      for(int i = 1; i < nCells; i++)
+          for(int j = 1; j < nCells; j++)
+          {
+              gsl_matrix_set (m, i, j, 0.0f);
+              if(i == j) {
+              gsl_matrix_set (m, i, i, -1/tau);
+              gsl_matrix_set (m, i, i-1, 1/tau);
+              }
+          }
+
+  /*    gsl_matrix_set (m, 0, 0, 0.0);
+      gsl_matrix_set (m, 0, 1, 1.0);
+      gsl_matrix_set (m, 1, 0, -2.0*mu*y[0]*y[1] - 1.0);
+      gsl_matrix_set (m, 1, 1, -mu*(y[0]*y[0] - 1.0)); */
+      for(int i = 0; i < nCells; i++)
+           dfdt[i] = 0.0;
+      return GSL_SUCCESS;
 }
 
 
@@ -219,6 +244,38 @@ void ModelCell::Sim()
 void ModelCell::SimODE()
 {
 
+    qreal params[3] = {iNum, Data->tau/iNum, Cin};
+      gsl_odeiv2_system sys = {func_C, jac_C, iNum, &params};
+
+      gsl_odeiv2_driver * d =
+        gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd,
+                      1e-6, 1e-6, 0.0);
+      int i;
+      QVector<qreal> *CalcConc = new QVector<qreal>();
+      double t = 0.0;
+      double y[iNum];
+      y[0] = Cin;
+      for (i = 1; i < iNum; i++)
+          y[i] = 0.0f;
+      int nP = Data->DimTime.size()-1;
+      for (i = 1; i <= nP; i++)
+        {
+         // double ti = i * t1 / nP;
+          qreal ti = Data->DimTime.at(i) * Data->tau;
+          int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
+
+          if (status != GSL_SUCCESS)
+        {
+          printf ("error, return value=%d\n", status);
+          break;
+        }
+
+          CalcConc->push_back(y[iNum-1]);
+
+        //  printf ("%.5e %.5e\n", t, y[iNum-1]);
+        }
+      Data->SimConc.push_back(CalcConc);
+      gsl_odeiv2_driver_free (d);
 }
 
 qreal ModelCell::Conc(qreal theta)

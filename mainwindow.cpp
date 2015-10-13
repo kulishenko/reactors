@@ -718,6 +718,7 @@ void MainWindow::paramEstimation(){
            Data->SmoothData();
            Model->EstimateNumCells();
            Model->Sim();
+           Model->SimODE();
 
 
            QWidget *wnd = new QWidget();
@@ -729,19 +730,24 @@ void MainWindow::paramEstimation(){
                                                                                  QString::number(Model->iNum),
                                                                                  QString::number(Model->Cin)));
 
-           resPlotWidget->addGraph();
-           resPlotWidget->graph(0)->setData(Data->DimTime,  *Data->SimConc.at(0));
-           resPlotWidget->graph(0)->setPen(QPen(Qt::green));
-           resPlotWidget->graph(0)->setName("Simulated");
+
 
            resPlotWidget->addGraph();
-           resPlotWidget->graph(1)->setData(Data->DimTime,  Data->Conc);
-           resPlotWidget->graph(1)->setName("Experiment");
+           resPlotWidget->graph(0)->setData(Data->DimTime,  Data->Conc);
+           resPlotWidget->graph(0)->setName("Experiment");
 
            resPlotWidget->addGraph();
-           resPlotWidget->graph(2)->setData(Data->DimTime,  Data->SConc);
-           resPlotWidget->graph(2)->setPen(QPen(Qt::red));
-           resPlotWidget->graph(2)->setName("Experiment (smoothed)");
+           resPlotWidget->graph(1)->setData(Data->DimTime,  Data->SConc);
+           resPlotWidget->graph(1)->setPen(QPen(Qt::red));
+           resPlotWidget->graph(1)->setName("Experiment (smoothed)");
+           Qt::GlobalColor Colors[2] = {Qt::green, Qt::magenta };
+
+           for(int i = 0; i < Data->SimConc.size(); i++) {
+               resPlotWidget->addGraph();
+               resPlotWidget->graph(i+2)->setData(Data->DimTime,  *Data->SimConc.at(i));
+               resPlotWidget->graph(i+2)->setPen(QPen(Colors[i]));
+               resPlotWidget->graph(i+2)->setName(tr("Simulated by method %1").arg(i+1));
+           }
 
            resPlotWidget->xAxis->setLabel(tr("Dimensionless Time"));
            resPlotWidget->yAxis->setLabel(tr("Conc, mol/L"));

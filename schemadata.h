@@ -21,6 +21,7 @@ public:
     QVector<QVector<qreal>* > SimConc;
     qreal t0; // Zero time, s
     qreal tend; // End time, s
+    qreal tau;
     void calcConc();
     void calcDimConc();
     void calcDimTime();
