@@ -22,12 +22,11 @@ int ModelCell::N_f(const gsl_vector *x, void *data, gsl_vector *f)
 
     for (int i = 0; i < n; i++)
       {
-        /* Model Yi = A * exp(-lambda * i) + b */
+
         double t = arg[i];
-        // double Yi = pow(Num, Num) * exp(Num - 1) * exp(-Num * t) /  gsl_sf_fact(ceil(Num)-1);
+
         // Attempt to use Gamma-function instead of factorial
-        //double Yi = pow(Num, Num) * exp(Num - 1) * exp(-Num * t) /  gsl_sf_gamma(Num);
-        //qDebug() << QString::number(Num);
+
         double Yi = Cin / gsl_sf_gamma(Num) * pow(t*Num,Num-1)* exp(-t*Num);
         gsl_vector_set (f, i, (Yi - y[i])/sigma[i]);
       }
@@ -95,8 +94,6 @@ void ModelCell::print_state(size_t iter, gsl_multifit_fdfsolver *s)
 int ModelCell::func_C (double t, const double y[], double f[],
       void *params)
 {
-      // ToDo: Add the cell model ODE here
-     // double mu = *(double *)params;
       qreal *arg = static_cast<qreal *> (params);
       int nCells = arg[0];
       qreal tau = arg[1];
@@ -110,12 +107,11 @@ int ModelCell::func_C (double t, const double y[], double f[],
 int ModelCell::jac_C (double t, const double y[], double *dfdy,
      double dfdt[], void *params)
 {
-      // ToDo: Add the cell model ODE Jacobian here
-    //  double mu = *(double *)params;
+
       qreal *arg = static_cast<qreal *> (params);
       int nCells = arg[0];
       qreal tau = arg[1];
-   //   qreal C_in = arg[2];
+
 
       gsl_matrix_view dfdy_mat
         = gsl_matrix_view_array (dfdy, nCells, nCells);
@@ -132,10 +128,6 @@ int ModelCell::jac_C (double t, const double y[], double *dfdy,
               }
           }
 
-  /*    gsl_matrix_set (m, 0, 0, 0.0);
-      gsl_matrix_set (m, 0, 1, 1.0);
-      gsl_matrix_set (m, 1, 0, -2.0*mu*y[0]*y[1] - 1.0);
-      gsl_matrix_set (m, 1, 1, -mu*(y[0]*y[0] - 1.0)); */
       for(int i = 0; i < nCells; i++)
            dfdt[i] = 0.0;
       return GSL_SUCCESS;
@@ -166,14 +158,10 @@ void ModelCell::EstimateNumCells()
     f.p = p;
     f.params = &d;
 
-    /* This is the data to be fitted */
-
-    // y[i] - array of exp data - Conc(i)
-    // sigma[i] - standard error (?)
 
     for (i = 0; i < n; i++)
       {
-        //double t = i;
+
         y[i] = Data->SConc.at(i);
         sigma[i] = 1e-6;
         t[i] = Data->DimTime.at(i);
@@ -195,7 +183,7 @@ void ModelCell::EstimateNumCells()
 
         printf ("status = %s\n", gsl_strerror (status));
 
-        print_state (iter, s);
+      //  print_state (iter, s);
 
         if (status)
           break;
@@ -260,7 +248,6 @@ void ModelCell::SimODE()
       int nP = Data->DimTime.size()-1;
       for (i = 1; i <= nP; i++)
         {
-         // double ti = i * t1 / nP;
           qreal ti = Data->DimTime.at(i) * Data->tau;
           int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
 
