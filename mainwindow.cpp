@@ -214,6 +214,15 @@ void MainWindow::createActions()
     fitInViewAct->setStatusTip(tr("Fit the schema in view"));
     connect(fitInViewAct,SIGNAL(triggered()),this,SLOT(fitInView()));
 
+    exportToServerAct = new QAction(tr("&Export to server..."),this);
+    exportToServerAct->setStatusTip(tr("Send the experimental data to server"));
+    exportToServerAct->setDisabled(true);
+    connect(exportToServerAct,SIGNAL(triggered()),this,SLOT(exportToServer()));
+
+    importFromServerAct = new QAction(tr("&Import from server..."),this);
+    importFromServerAct->setStatusTip(tr("Get the experimental data from server"));
+    connect(importFromServerAct,SIGNAL(triggered()),this,SLOT(importFromServer()));
+
     paramEstimAct = new QAction(tr("&Parameter estimation..."),this);
     paramEstimAct->setStatusTip(tr("Estimate parameters from experimental data"));
     paramEstimAct->setDisabled(true);
@@ -301,10 +310,13 @@ void MainWindow::createMenus()
     zoomMenu->addAction(zoomOutAct);
     zoomMenu->addAction(fitInViewAct);
 
-
     modeMenu = menuBar()->addMenu(tr("&Mode"));
     modeMenu->addAction(playbackAct);
     modeMenu->addAction(onlineAct);
+
+    dataMenu = menuBar()->addMenu(tr("&Data"));
+    dataMenu->addAction(importFromServerAct);
+    dataMenu->addAction(exportToServerAct);
 
     toolsMenu = menuBar()->addMenu(tr("&Tools"));
     toolsMenu->addAction(paramEstimAct);
@@ -538,7 +550,9 @@ void MainWindow::open()
                 << EventTime.toString("[hh:mm:ss.zzz]: ")
                     + tr("Please, set the volume flowrate %1 L/hr in order to begin the simulation playback")
                         .arg(pbFlowrate));
+            // ToDo: Should be activated at the end of experiment
             paramEstimAct->setDisabled(false);
+            exportToServerAct->setDisabled(false);
 
             thread->start();
         }
@@ -769,5 +783,50 @@ void MainWindow::paramEstimation(){
 
 
 
- //   }
+           //   }
+}
+
+void MainWindow::importFromServer()
+{
+
+}
+
+void MainWindow::exportToServer()
+{
+    if(createConnection()){
+        QSqlQuery query;
+        if(!query.exec("INSERT INTO `Lab` (SchemaID, UserID, LabDateTime) VALUES (1, 1, NOW())"))
+            return;
+
+        int LabID = query.lastInsertId().toInt();
+
+        query.prepare("INSERT INTO `Point` (ParameterID, LabID, PointTime, PointValue) "
+                      "VALUES (:ParameterID, :LabID, :PointTime, :PointValue)");
+        query.bindValue(":ParameterID", 0);
+        query.bindValue(":LabID", LabID);
+        for(int i = 0; i < Control->Conductivity.size(); i++){
+            query.bindValue(":PointTime", Control->Time.at(i));
+            query.bindValue(":PointValue", Control->Conductivity.at(i));
+            query.exec();
+        }
+    }
+}
+
+bool MainWindow::createConnection(){
+    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    db.setHostName("localhost");
+    //db.setPort(13306);
+    db.setDatabaseName("reactors");
+    db.setUserName("reactors");
+    db.setPassword("Dfl2cR38prF2vbT");
+    if (!db.open()) {
+        qDebug() << "Database error occurred";
+        perror("Database connection error");
+        QMessageBox::warning(this, tr("DB connection failure"),
+                             tr("Failed to connect to the database"));
+        return false;
+    }
+
+
+    return true;
 }

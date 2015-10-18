@@ -38,6 +38,12 @@
 #include "schemadata.h"
 #include "modelcell.h"
 
+
+#include <QtSql/QSql>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlDriver>
+#include <QtSql/QSqlQuery>
+
 extern "C" {
 
 #include <libxls/xls.h>
@@ -64,6 +70,7 @@ public:
 
 //private:
 //    bool eventFilter(QObject *, QEvent *);
+    bool createConnection();
 protected:
     void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 private slots:
@@ -93,6 +100,8 @@ private slots:
     void zoomOut();
     void fitInView();
     void paramEstimation();
+    void importFromServer();
+    void exportToServer();
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *m_scene;
@@ -120,6 +129,7 @@ private:
         QMenu *viewMenu;
         QMenu *zoomMenu;
         QMenu *modeMenu;
+        QMenu *dataMenu;
         QMenu *toolsMenu;
         QMenu *analysisMenu;
         QMenu *formatMenu;
@@ -149,6 +159,9 @@ private:
         QAction *zoomOutAct;
         QAction *fitInViewAct;
 
+        QAction *importFromServerAct;
+        QAction *exportToServerAct;
+
         QAction *paramEstimAct;
 
         QAction *playbackAct;
@@ -168,6 +181,7 @@ private:
           QTimer* timer;
           PFDControl* Control;
           bool isSimRun;
+          bool isDBConnected;
           //    qreal Flowrate;
           void resizeEvent(QResizeEvent *event);
 };

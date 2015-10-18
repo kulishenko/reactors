@@ -6,7 +6,7 @@
 
 QT       += core gui multimediawidgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport sql
 
 TARGET = Reactors
 TEMPLATE = app
@@ -65,6 +65,7 @@ TRANSLATIONS    = Reactors_ru.ts \
 
 INCLUDEPATH += $$PWD/libxls/include
 DEPENDPATH += $$PWD/libxls/include
+
 
 RESOURCES += \
     reactors.qrc
