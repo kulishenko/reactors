@@ -505,6 +505,8 @@ void MainWindow::open()
                   || row->cells.cell[tt].id==0x203);
 
             Control->setPlaybackFlowrate((qreal) pbFlowrate);
+            Control->PlaybackFileName = fileInfo.fileName();
+
             Control->reactorItems = &reactorItems;
 
             for(int i=0; i<reactorItems.size();i++)
@@ -795,14 +797,17 @@ void MainWindow::exportToServer()
 {
     if(createConnection()){
         QSqlQuery query;
-        if(!query.exec("INSERT INTO `Lab` (SchemaID, UserID, LabDateTime) VALUES (1, 1, NOW())"))
-            return;
+        query.exec(QString("INSERT INTO `Lab` (SchemaID, UserID, LabDateTime, LabFlowrate, LabComment) "
+                               "VALUES (1, 1, NOW(), %1, '%2')").arg(QString::number(static_cast<int>(Control->PlaybackFlowrate)),
+                                                                   Control->PlaybackFileName));
+
 
         int LabID = query.lastInsertId().toInt();
 
+        qDebug() << LabID;
         query.prepare("INSERT INTO `Point` (ParameterID, LabID, PointTime, PointValue) "
                       "VALUES (:ParameterID, :LabID, :PointTime, :PointValue)");
-        query.bindValue(":ParameterID", 0);
+        query.bindValue(":ParameterID", 1);
         query.bindValue(":LabID", LabID);
         for(int i = 0; i < Control->Conductivity.size(); i++){
             query.bindValue(":PointTime", Control->Time.at(i));
@@ -815,7 +820,7 @@ void MainWindow::exportToServer()
 bool MainWindow::createConnection(){
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("localhost");
-    //db.setPort(13306);
+    db.setPort(13306);
     db.setDatabaseName("reactors");
     db.setUserName("reactors");
     db.setPassword("Dfl2cR38prF2vbT");

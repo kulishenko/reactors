@@ -26,6 +26,7 @@ public:
     QVector<qreal> Time;
     QVector<qreal> Conductivity;
     QVector<qreal> Tau;
+    QString PlaybackFileName;
     qreal TimeNow;
     bool isStarted;
     bool isFlowrateSet;

@@ -39,8 +39,8 @@ void SchemaData::calcDimConc()
 
 void SchemaData::calcDimTime()
 {
-  //  tau = 0.84*5 / *Flowrate * 3600;
-
+    tau = 0.84*5 / *Flowrate * 3600;
+/* Estimate avg tau from
     qreal Sum_C = 0, Sum_tC = 0;
 
     for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes) {
@@ -49,6 +49,7 @@ void SchemaData::calcDimTime()
 
     }
     tau = Sum_tC / Sum_C;
+*/
     for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes){
         DimTime.push_back((ExpDataTime->at(i)- t0)/tau + 1e-6);
   //      qDebug() << DimTime.last();

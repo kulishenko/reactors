@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `Lab` (
   `SchemaID` int(11) NOT NULL,
   `UserID` int(11) NOT NULL,
   `LabDateTime` datetime NOT NULL,
+  `LabFlowrate` int(11) NOT NULL,
   `LabComment` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`LabID`),
   UNIQUE KEY `LabID` (`LabID`),
