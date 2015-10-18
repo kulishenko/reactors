@@ -11,8 +11,10 @@
 #include <QVideoSurfaceFormat>
 #include <QGraphicsVideoItem>
 
-#include <stdio.h>
 
+extern "C" {
+#include <stdio.h>
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -795,16 +797,18 @@ void MainWindow::importFromServer()
 
 void MainWindow::exportToServer()
 {
+   // ToDo: add connection over SSH (libssh) and move to a separate thread (create wrapper class for DB works)
+
+
     if(createConnection()){
         QSqlQuery query;
         query.exec(QString("INSERT INTO `Lab` (SchemaID, UserID, LabDateTime, LabFlowrate, LabComment) "
                                "VALUES (1, 1, NOW(), %1, '%2')").arg(QString::number(static_cast<int>(Control->PlaybackFlowrate)),
                                                                    Control->PlaybackFileName));
 
-
         int LabID = query.lastInsertId().toInt();
 
-        qDebug() << LabID;
+
         query.prepare("INSERT INTO `Point` (ParameterID, LabID, PointTime, PointValue) "
                       "VALUES (:ParameterID, :LabID, :PointTime, :PointValue)");
         query.bindValue(":ParameterID", 1);
@@ -819,7 +823,7 @@ void MainWindow::exportToServer()
 
 bool MainWindow::createConnection(){
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("localhost");
+    db.setHostName("sa.lti-gti.ru");
     db.setPort(13306);
     db.setDatabaseName("reactors");
     db.setUserName("reactors");

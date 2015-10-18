@@ -66,6 +66,9 @@ TRANSLATIONS    = Reactors_ru.ts \
 INCLUDEPATH += $$PWD/libxls/include
 DEPENDPATH += $$PWD/libxls/include
 
+INCLUDEPATH += $$PWD/libssh-0.7.2/include
+DEPENDPATH += $$PWD/libssh-0.7.2/include
+
 
 RESOURCES += \
     reactors.qrc
