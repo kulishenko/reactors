@@ -50,6 +50,7 @@ void SchemaData::calcDimTime()
 qreal* SchemaData::t_0()
 {
     // Simple method to detect the bypass resistor disconnection time
+    // ToDo: FIX 1-50-1.xls file recognition
     int i = 0, j;
     while(i+5 < ExpDataTime->size()) {
         i++;

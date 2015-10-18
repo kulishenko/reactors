@@ -31,3 +31,4 @@ int main(int argc, char *argv[])
    // qDebug() <<  QLocale::system().name();
     return a.exec();
 }
+

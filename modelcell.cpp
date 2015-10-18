@@ -20,7 +20,7 @@ int ModelCell::N_f(const gsl_vector *x, void *data, gsl_vector *f)
     double Num = gsl_vector_get (x, 0);
     double Cin = gsl_vector_get (x, 1);
 
-    for (int i = 0; i < n; i++)
+    for (unsigned int i = 0; i < n; i++)
       {
 
         double t = arg[i];
@@ -46,7 +46,7 @@ int ModelCell::N_df (const gsl_vector * x, void *data,
 
 
 
-  for (int i = 0; i < n; i++)
+  for (size_t i = 0; i < n; i++)
     {
       /* Jacobian matrix J(i,j) = dfi / dxj, */
       /* where fi = (Yi - yi)/sigma[i],      */
@@ -94,6 +94,7 @@ void ModelCell::print_state(size_t iter, gsl_multifit_fdfsolver *s)
 int ModelCell::func_C (double t, const double y[], double f[],
       void *params)
 {
+      Q_UNUSED(t);
       qreal *arg = static_cast<qreal *> (params);
       int nCells = arg[0];
       qreal tau = arg[1];
@@ -107,7 +108,8 @@ int ModelCell::func_C (double t, const double y[], double f[],
 int ModelCell::jac_C (double t, const double y[], double *dfdy,
      double dfdt[], void *params)
 {
-
+      Q_UNUSED(t);
+      Q_UNUSED(y);
       qreal *arg = static_cast<qreal *> (params);
       int nCells = arg[0];
       qreal tau = arg[1];
@@ -238,7 +240,7 @@ void ModelCell::SimODE()
       gsl_odeiv2_driver * d =
         gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd,
                       1e-6, 1e-6, 0.0);
-      int i;
+      unsigned int i;
       QVector<qreal> *CalcConc = new QVector<qreal>();
       double t = 0.0;
       double y[iNum];
