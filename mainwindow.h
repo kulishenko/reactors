@@ -37,12 +37,7 @@
 #include "schemaview.h"
 #include "schemadata.h"
 #include "modelcell.h"
-
-
-#include <QtSql/QSql>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlDriver>
-#include <QtSql/QSqlQuery>
+#include "schemadb.h"
 
 extern "C" {
 
@@ -69,8 +64,9 @@ public:
     ~MainWindow();
 
 //private:
-//    bool eventFilter(QObject *, QEvent *);
-    bool createConnection();
+    //    bool eventFilter(QObject *, QEvent *);
+public slots:
+    void exportFinished(bool result);
 protected:
     void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 private slots:

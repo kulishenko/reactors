@@ -526,6 +526,7 @@ void MainWindow::open()
             QObject::connect(thread, SIGNAL(started()), timer, SLOT(start()));
             QObject::connect(timer, SIGNAL(timeout()), Control, SLOT(tick()));
 
+             QObject::connect(this, SIGNAL(destroyed()), thread, SLOT(quit()));
 
             QObject::connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
             QObject::connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
@@ -797,45 +798,19 @@ void MainWindow::importFromServer()
 
 void MainWindow::exportToServer()
 {
-   // ToDo: add connection over SSH (libssh) and move to a separate thread (create wrapper class for DB works)
+    SchemaDB* worker = new SchemaDB;
+    QThread* thread = new QThread;
+    worker->setData(Control);
+    worker->moveToThread(thread);
 
+    connect(thread, SIGNAL(started()), worker, SLOT(sendLabData()));
+    connect(worker, SIGNAL(finishedResult(bool)), this, SLOT(exportFinished(bool)));
+    connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
 
-    if(createConnection()){
-        QSqlQuery query;
-        query.exec(QString("INSERT INTO `Lab` (SchemaID, UserID, LabDateTime, LabFlowrate, LabComment) "
-                               "VALUES (1, 1, NOW(), %1, '%2')").arg(QString::number(static_cast<int>(Control->PlaybackFlowrate)),
-                                                                   Control->PlaybackFileName));
+    thread->start();
 
-        int LabID = query.lastInsertId().toInt();
-
-
-        query.prepare("INSERT INTO `Point` (ParameterID, LabID, PointTime, PointValue) "
-                      "VALUES (:ParameterID, :LabID, :PointTime, :PointValue)");
-        query.bindValue(":ParameterID", 1);
-        query.bindValue(":LabID", LabID);
-        for(int i = 0; i < Control->Conductivity.size(); i++){
-            query.bindValue(":PointTime", Control->Time.at(i));
-            query.bindValue(":PointValue", Control->Conductivity.at(i));
-            query.exec();
-        }
-    }
 }
-
-bool MainWindow::createConnection(){
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("sa.lti-gti.ru");
-    db.setPort(13306);
-    db.setDatabaseName("reactors");
-    db.setUserName("reactors");
-    db.setPassword("Dfl2cR38prF2vbT");
-    if (!db.open()) {
-        qDebug() << "Database error occurred";
-        perror("Database connection error");
-        QMessageBox::warning(this, tr("DB connection failure"),
-                             tr("Failed to connect to the database"));
-        return false;
-    }
-
-
-    return true;
+void MainWindow::exportFinished(bool result) {
+    if(result) QMessageBox::information(this,tr("Export has been successfuly finished"),tr("Export has been successfuly finished"),QMessageBox::Ok);
+    else QMessageBox::warning(this, tr("Couldn't export the data"),tr("Couldn't export the data"));
 }

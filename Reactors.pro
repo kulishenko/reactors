@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     libxls/src/xls.c \
     libxls/src/xlstool.c \
     modelcell.cpp \
-    schemadata.cpp
+    schemadata.cpp \
+    schemadb.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -54,7 +55,8 @@ HEADERS  += mainwindow.h \
     libxls/include/libxls/xlstypes.h \
     libxls/include/libxls/config.h \
     modelcell.h \
-    schemadata.h
+    schemadata.h \
+    schemadb.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 
