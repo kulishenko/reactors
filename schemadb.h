@@ -7,7 +7,9 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlDriver>
 #include <QtSql/QSqlQuery>
-#include <QtSql/QSqlTableModel>
+#include <QtSql/QSqlQueryModel>
+#include <QtSql/QSqlRecord>
+#include <QtSql/QSqlRelationalTableModel>
 
 class SchemaDB : public QObject
 {
@@ -17,12 +19,12 @@ public:
     ~SchemaDB();
     void setData(PFDControl *data);
     bool getLabsTable();
-    QSqlTableModel* LabsModel;
+    QSqlRelationalTableModel* LabsModel;
 private:
     static QSqlDatabase db;
     static bool isConnected;
     PFDControl* Control;
-
+    int LabID;
 
     bool createConnection();
 
@@ -31,6 +33,8 @@ signals:
     void finishedResult(bool result);
 public slots:
     void sendLabData();
+    void getLabID(QModelIndex index);
+    void getLabData();
 };
 
 #endif // SCHEMADB_H

@@ -11,7 +11,6 @@
 #include <QVideoSurfaceFormat>
 #include <QGraphicsVideoItem>
 
-
 extern "C" {
 #include <stdio.h>
 }
@@ -800,15 +799,15 @@ void MainWindow::importFromServer()
     if(database->getLabsTable()) {
         view->setModel(database->LabsModel);
         view->hideColumn(0);
-        view->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-        view->show();
-
+        view->hideColumn(1);
+        view->setEditTriggers(QTableView::NoEditTriggers);
+        view->setSelectionBehavior(QTableView::SelectRows);
         wnd->setLayout(layout);
         layout->addWidget(view);
-        wnd->setWindowTitle(tr("Labs list"));
-      //  wnd->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+        wnd->setWindowTitle(tr("Select the case study"));
         wnd->resize(view->width(),view->height());
         wnd->show();
+        connect(view,SIGNAL(doubleClicked(QModelIndex)),database,SLOT(getLabID(QModelIndex)));
     }
 
 }

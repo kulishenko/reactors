@@ -54,14 +54,43 @@ void SchemaDB::sendLabData(){
          emit finishedResult(true);
      } else emit finishedResult(false);
 }
+
+void SchemaDB::getLabID(QModelIndex index)
+{
+    if(createConnection() && LabsModel != NULL)
+        LabID = index.sibling(index.row(),0).data().toInt();
+}
+
+void SchemaDB::getLabData()
+{
+    if(createConnection()) {
+        QSqlQueryModel model;
+        model.setQuery("SELECT PointTime, PointValue FROM Point "
+                       "WHERE LabID = " + QString::number(LabID));
+
+        Control = new PFDControl();
+        for (int i = 0; i < model.rowCount(); ++i) {
+            Control->Time.push_back(model.record(i).value("PointTime").toDouble());
+            Control->Conductivity.push_back(model.record(i).value("PointValue").toDouble());
+        }
+
+    }
+}
 void SchemaDB::setData(PFDControl* data) {
     Control = data;
 }
 bool SchemaDB::getLabsTable(){
     if(createConnection()){
-        LabsModel = new QSqlTableModel(this, db);
+        LabsModel = new QSqlRelationalTableModel(this, db);
         LabsModel->setTable("Lab");
+    //    LabsModel->setRelation(1, QSqlRelation("Schema", "SchemaID", "name"));
+        LabsModel->setRelation(2, QSqlRelation("User", "UserID", "UserName"));
+        LabsModel->setHeaderData(2, Qt::Horizontal, tr("User"));
+        LabsModel->setHeaderData(3, Qt::Horizontal, tr("Lab date"));
+        LabsModel->setHeaderData(4, Qt::Horizontal, tr("Flowrate, L/hr"));
+        LabsModel->setHeaderData(5, Qt::Horizontal, tr("Comment"));
         LabsModel->select();
+
         return true;
     } else return false;
 }
