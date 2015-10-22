@@ -793,6 +793,23 @@ void MainWindow::paramEstimation(){
 
 void MainWindow::importFromServer()
 {
+    QWidget *wnd = new QWidget();
+    QVBoxLayout* layout = new QVBoxLayout;
+    QTableView *view = new QTableView;
+    SchemaDB* database = new SchemaDB;
+    if(database->getLabsTable()) {
+        view->setModel(database->LabsModel);
+        view->hideColumn(0);
+        view->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+        view->show();
+
+        wnd->setLayout(layout);
+        layout->addWidget(view);
+        wnd->setWindowTitle(tr("Labs list"));
+      //  wnd->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+        wnd->resize(view->width(),view->height());
+        wnd->show();
+    }
 
 }
 

@@ -2,7 +2,7 @@
 
 SchemaDB::SchemaDB(QObject *parent) : QObject(parent)
 {
-    isConnected = false;
+
 }
 
 SchemaDB::~SchemaDB()
@@ -57,3 +57,13 @@ void SchemaDB::sendLabData(){
 void SchemaDB::setData(PFDControl* data) {
     Control = data;
 }
+bool SchemaDB::getLabsTable(){
+    if(createConnection()){
+        LabsModel = new QSqlTableModel(this, db);
+        LabsModel->setTable("Lab");
+        LabsModel->select();
+        return true;
+    } else return false;
+}
+bool SchemaDB::isConnected = false;
+QSqlDatabase SchemaDB::db;

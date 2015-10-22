@@ -7,6 +7,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlDriver>
 #include <QtSql/QSqlQuery>
+#include <QtSql/QSqlTableModel>
 
 class SchemaDB : public QObject
 {
@@ -15,10 +16,13 @@ public:
     explicit SchemaDB(QObject *parent = 0);
     ~SchemaDB();
     void setData(PFDControl *data);
+    bool getLabsTable();
+    QSqlTableModel* LabsModel;
 private:
-    QSqlDatabase db;
-    bool isConnected;
+    static QSqlDatabase db;
+    static bool isConnected;
     PFDControl* Control;
+
 
     bool createConnection();
 
