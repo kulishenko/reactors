@@ -141,13 +141,14 @@ void ModelCell::EstimateNumCells()
     const gsl_multifit_fdfsolver_type *T;
     gsl_multifit_fdfsolver *s;
     int status;
-    unsigned int i, iter = 0;
-    const size_t n = Data->SConc.size() - 1;
+    unsigned int iter = 0;
+    const size_t n = Data->SConc.size();
     const size_t p = 2;
 
     gsl_matrix *covar = gsl_matrix_alloc (p, p);
-    double y[n], sigma[n], t[n];
-    struct data d = { n, y, t, sigma};
+    QVector<qreal> sigma;
+    sigma.fill(1e-6, n);
+    struct data d = { n, Data->SConc.data(), Data->DimTime.data(), sigma.data()};
     gsl_multifit_function_fdf f;
     double x_init[2] = { 1, 1e-4};
     gsl_vector_view x = gsl_vector_view_array (x_init, p);
@@ -159,16 +160,6 @@ void ModelCell::EstimateNumCells()
     f.n = n;
     f.p = p;
     f.params = &d;
-
-
-    for (i = 0; i < n; i++)
-      {
-
-        y[i] = Data->SConc.at(i);
-        sigma[i] = 1e-6;
-        t[i] = Data->DimTime.at(i);
-       //qDebug() << QObject::tr("data: %1 %2 %3\n").arg(QString::number(i), QString::number(y[i]), QString::number(sigma[i]));
-      }
 
     T = gsl_multifit_fdfsolver_lmsder;
     s = gsl_multifit_fdfsolver_alloc (T, n, p);
@@ -234,20 +225,20 @@ void ModelCell::Sim()
 void ModelCell::SimODE()
 {
 
-    qreal params[3] = {iNum, Data->tau/iNum, Cin};
+      qreal params[3] = {iNum, Data->tau/iNum, Cin};
       gsl_odeiv2_system sys = {func_C, jac_C, iNum, &params};
 
       gsl_odeiv2_driver * d =
         gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd,
                       1e-6, 1e-6, 0.0);
       unsigned int i;
-      QVector<qreal> *CalcConc = new QVector<qreal>();
+      QVector<qreal> *CalcConc = new QVector<qreal>;
       double t = 0.0;
       double y[iNum];
       y[0] = Cin;
       for (i = 1; i < iNum; i++)
           y[i] = 0.0f;
-      int nP = Data->DimTime.size()-1;
+      unsigned int nP = Data->DimTime.size()-1;
       for (i = 1; i <= nP; i++)
         {
           qreal ti = Data->DimTime.at(i) * Data->tau;
