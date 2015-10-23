@@ -1,35 +1,58 @@
-#ifndef SCHEMACSTR_H
-#define SCHEMACSTR_H
+#ifndef SCHEMAVESSEL_H
+#define SCHEMAVESSEL_H
 
 #include <QGraphicsPathItem>
 #include <QLinearGradient>
-#include  <math.h>
 #include <schemaitem.h>
 #include <QDebug>
+#include <QColor>
+//#include <pfdcontrol.h>
 
-class SchemaCSTR : public QGraphicsPathItem, public SchemaItem
-{
+//class PFDControl;
+class SchemaCSTR : public QObject, public QGraphicsPathItem, public SchemaItem {
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 public:
-
-    SchemaCSTR(int Height = 120,  int Width = 90, int xPos = 0 , int yPos = 0,qreal StartLevel = 0.2);
+    SchemaCSTR(int Height, int Width , int xPos, int yPos, qreal StartLevel, int Index = 1);
     ~SchemaCSTR();
+//    PFDControl* PFD;
     QLinearGradient* Gradient;
     QPainterPath* path;
     QPainterPath* Stirpath;
     qreal LiquidLevel;
     qreal LiquidLevelSet;
+    qreal* tau;
     QGraphicsEllipseItem* Motor;
     QGraphicsSimpleTextItem* MotorLabel;
     QGraphicsPathItem* Stir;
     QGraphicsPolygonItem* Mixer;
     QGraphicsRectItem* Ring1;
     QGraphicsRectItem* Ring2;
+    QColor LiquidBottomColor;
+    QColor LiquidTopColor;
+    QColor GasColor;
     bool isWorking;
+    bool isFeeding;
+    bool isReady;
     qreal MixerAngle;
-    void setLevel(qreal Level);
-protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    int numInCascade;
+    void setLevel(qreal Level, int TransTime);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+signals:
+    void test();
+    void clicked();
+
+public slots:
+    void changeLevel();
+    void fill();
+    void activateMotor();
+
+    void startFeed();
+private slots:
+    void animLevel(qreal Value);
+    void animMotor(qreal Value);
+    void animFinished();
 };
 
-#endif // SCHEMACSTR_H
+
+#endif // SCHEMAVESSEL_H

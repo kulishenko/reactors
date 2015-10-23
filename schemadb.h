@@ -32,6 +32,7 @@ private:
 signals:
     void finished();
     void finishedResult(bool result);
+    void getLabDataFinished();
 public slots:
     void sendLabData();
     void getLabID(QModelIndex index);

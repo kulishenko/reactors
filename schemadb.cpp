@@ -60,6 +60,7 @@ void SchemaDB::getLabID(QModelIndex index)
     if(createConnection() && LabsModel != NULL){
         LabID = index.sibling(index.row(),0).data().toInt();
         LabFlowrate = index.sibling(index.row(),4).data().toDouble();
+        getLabData();
     }
 }
 
@@ -70,11 +71,12 @@ void SchemaDB::getLabData()
         model.setQuery("SELECT PointTime, PointValue FROM Point "
                        "WHERE LabID = " + QString::number(LabID));
 
-        Control = new PFDControl();
         for (int i = 0; i < model.rowCount(); ++i) {
             Control->Time.push_back(model.record(i).value("PointTime").toDouble());
             Control->Conductivity.push_back(model.record(i).value("PointValue").toDouble());
         }
+        Control->setPlaybackFlowrate(LabFlowrate);
+        emit getLabDataFinished();
 
     }
 }

@@ -1,6 +1,6 @@
 #ifndef SCHEMAPIPELINE_H
 #define SCHEMAPIPELINE_H
-#include "schemavessel.h"
+#include "schemacstr.h"
 
 class SchemaPipeline : public QGraphicsPathItem
 {

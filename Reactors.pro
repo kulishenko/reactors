@@ -21,16 +21,16 @@ SOURCES += main.cpp\
     schemastream.cpp \
     schemaport.cpp \
     schemaview.cpp \
-    schemavessel.cpp \
     pfdcontrol.cpp \
     qcustomplot/qcustomplot.cpp \
-    schemacstr.cpp \
     libxls/src/ole.c \
     libxls/src/xls.c \
     libxls/src/xlstool.c \
     modelcell.cpp \
     schemadata.cpp \
-    schemadb.cpp
+    schemadb.cpp \
+    modelcstr.cpp \
+    schemacstr.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -42,10 +42,8 @@ HEADERS  += mainwindow.h \
     schemastream.h \
     schemaport.h \
     schemaview.h \
-    schemavessel.h \
     pfdcontrol.h \
     qcustomplot/qcustomplot.h \
-    schemacstr.h \
     libxls/include/libxls/brdb.c.h \
     libxls/include/libxls/brdb.h \
     libxls/include/libxls/ole.h \
@@ -56,7 +54,9 @@ HEADERS  += mainwindow.h \
     libxls/include/libxls/config.h \
     modelcell.h \
     schemadata.h \
-    schemadb.h
+    schemadb.h \
+    modelcstr.h \
+    schemacstr.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 

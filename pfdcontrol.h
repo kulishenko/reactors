@@ -10,9 +10,9 @@
 #include <QList>
 #include <QFile>
 #include <QApplication>
-//#include <schemavessel.h>
+//#include <schemacstr.h>
 class SchemaItem;
-class SchemaVessel; // Why doesn't it works from header?
+class SchemaCSTR; // Why doesn't it works from header?
 class PFDControl : public QObject
 {
     Q_OBJECT
@@ -22,7 +22,7 @@ public:
     ~PFDControl();
     qreal Flowrate;
     qreal PlaybackFlowrate;
-    QVector<SchemaVessel*> *reactorItems;
+    QVector<SchemaCSTR*> *reactorItems;
     QVector<qreal> Time;
     QVector<qreal> Conductivity;
     QVector<qreal> Tau;

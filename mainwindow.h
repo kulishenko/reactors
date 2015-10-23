@@ -10,7 +10,7 @@
 #include <QPolygonF>
 #include <QVector>
 #include <QPointF>
-#include <schemavessel.h>
+#include <schemacstr.h>
 #include <schemaitem.h>
 #include <schemavalve.h>
 #include <QFileDialog>
@@ -30,7 +30,8 @@
 #include <QMessageBox>
 #include <QWindow>
 #include <QLabel>
-#include "schemavessel.h"
+#include <QTextStream>
+#include "schemacstr.h"
 #include "schemapipeline.h"
 #include "schemaflowmeter.h"
 #include "schemastream.h"
@@ -112,7 +113,7 @@ private:
     SchemaFlowmeter* flowmeterItem;
     SchemaValve* valveItem1;
 
-    QVector<SchemaVessel*> reactorItems;
+    QVector<SchemaCSTR*> reactorItems;
     QVector<SchemaPipeline*> pipelineItems;
 
     void createActions();

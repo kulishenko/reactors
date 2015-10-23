@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Creating CSTR Items
     for(int i=1; i<=5; i++)
-        reactorItems.push_back(new SchemaVessel(120,90,i*200,i*70,0.1,i-1));
+        reactorItems.push_back(new SchemaCSTR(120,90,i*200,i*70,0.1,i-1));
 
 
     flowmeterItem = new SchemaFlowmeter(25,200,125,50,0);
@@ -805,7 +805,11 @@ void MainWindow::importFromServerDlg()
     QVBoxLayout* layout = new QVBoxLayout;
     QTableView *view = new QTableView;
     SchemaDB* database = new SchemaDB;
+
+
     if(database->getLabsTable()) {
+        Control = new PFDControl();
+        database->setData(Control);
         view->setModel(database->LabsModel);
         view->hideColumn(0);
         view->hideColumn(1);
@@ -816,15 +820,18 @@ void MainWindow::importFromServerDlg()
         wnd->setWindowTitle(tr("Select the case study"));
         wnd->resize(view->width(),view->height());
         wnd->show();
-        connect(view,SIGNAL(doubleClicked(QModelIndex)),database,SLOT(getLabID(QModelIndex)));
 
+        connect(view,SIGNAL(doubleClicked(QModelIndex)),database,SLOT(getLabID(QModelIndex)));
+        connect(database,SIGNAL(getLabDataFinished()),this,SLOT(importFromServer()));
+        connect(database,SIGNAL(getLabDataFinished()),wnd,SLOT(close()));
     }
 
 }
 
 void MainWindow::importFromServer()
 {
-    Control->setPlaybackFlowrate(10);
+
+    //Control->setPlaybackFlowrate(50);
     //Control->PlaybackFileName = fileInfo.fileName();
     initControl();
 
@@ -835,7 +842,7 @@ void MainWindow::importFromServer()
             + tr("Opened the playback from database").arg(0)
         << EventTime.toString("[hh:mm:ss.zzz]: ")
             + tr("Please, set the volume flowrate %1 L/hr in order to begin the simulation playback")
-                .arg(0));
+                .arg(Control->PlaybackFlowrate));
 
 
     thread->start();

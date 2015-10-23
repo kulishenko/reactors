@@ -26,7 +26,7 @@ void PFDControl::flowrate_increase(){
     if(!isFlowrateSet && fabs(PlaybackFlowrate-Flowrate)<0.001) {
         isFlowrateSet = true;
         emit setLevel();
-  //      emit startSim(); Moved to SchemaVessel::animFinished()
+  //      emit startSim(); Moved to SchemaCSTR::animFinished()
     }
 
 }
