@@ -57,8 +57,10 @@ void SchemaDB::sendLabData(){
 
 void SchemaDB::getLabID(QModelIndex index)
 {
-    if(createConnection() && LabsModel != NULL)
+    if(createConnection() && LabsModel != NULL){
         LabID = index.sibling(index.row(),0).data().toInt();
+        LabFlowrate = index.sibling(index.row(),4).data().toDouble();
+    }
 }
 
 void SchemaDB::getLabData()

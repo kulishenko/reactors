@@ -3,11 +3,10 @@
 #include <QPoint>
 #include <schemaport.h>
 #include <pfdcontrol.h>
-//#include <QObject>
+
 class PFDControl;
-class SchemaItem// : public QObject
+class SchemaItem
 {
-//    Q_OBJECT
 public:
     SchemaItem();
     SchemaPort* OutletPort, *InletPort;
@@ -16,7 +15,7 @@ public:
     qreal Flowrate;
     ~SchemaItem();
  //   void setPos(qreal PosX, qreal PosY);
- //   void setRotation(qreal Angle);
+ //   virtual void setPos(void) = 0;
 };
 
 #endif // SCHEMAITEM_H

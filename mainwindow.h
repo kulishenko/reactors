@@ -96,8 +96,10 @@ private slots:
     void zoomOut();
     void fitInView();
     void paramEstimation();
+    void importFromServerDlg();
     void importFromServer();
     void exportToServer();
+    void addEvents(QStringList events);
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *m_scene;
@@ -117,6 +119,7 @@ private:
     void createMenus();
     void createToolBars();
     void createDockWindows();
+    void initControl();
 
     QColor bgColor;
 

@@ -25,6 +25,7 @@ private:
     static bool isConnected;
     PFDControl* Control;
     int LabID;
+    qreal LabFlowrate;
 
     bool createConnection();
 

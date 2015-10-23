@@ -222,7 +222,7 @@ void MainWindow::createActions()
 
     importFromServerAct = new QAction(tr("&Import from server..."),this);
     importFromServerAct->setStatusTip(tr("Get the experimental data from server"));
-    connect(importFromServerAct,SIGNAL(triggered()),this,SLOT(importFromServer()));
+    connect(importFromServerAct,SIGNAL(triggered()),this,SLOT(importFromServerDlg()));
 
     paramEstimAct = new QAction(tr("&Parameter estimation..."),this);
     paramEstimAct->setStatusTip(tr("Estimate parameters from experimental data"));
@@ -413,6 +413,53 @@ void MainWindow::createDockWindows()
 
 
 }
+
+void MainWindow::initControl()
+{
+
+
+    Control->reactorItems = &reactorItems;
+
+    for(int i=0; i<reactorItems.size();i++)
+        Control->addItem(reactorItems.at(i));
+
+    Control->addItem(flowmeterItem);
+    Control->calcTau();
+
+    thread = new QThread(this);
+    timer = new QTimer();
+    timer->setInterval(1000);
+    timer->moveToThread(thread);
+    Control->moveToThread(thread);
+
+    QObject::connect(thread, SIGNAL(started()), timer, SLOT(start()));
+    QObject::connect(timer, SIGNAL(timeout()), Control, SLOT(tick()));
+
+     QObject::connect(this, SIGNAL(destroyed()), thread, SLOT(quit()));
+
+    QObject::connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
+    QObject::connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
+
+ //   for(int i=0;i<reactorItems.size();i++)
+        QObject::connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
+
+    QObject::connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
+    QObject::connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
+
+    qDebug() << QString::number(Control->Time.size())
+             << " " << QString::number(Control->Conductivity.size());
+    qDebug() << QString::number(Control->Time.last());
+
+    plotWidget->graph(0)->setData(Control->Time, Control->Conductivity);
+    plotWidget->rescaleAxes();
+    plotWidget->replot();
+    plotWidget->graph(0)->clearData();
+    plotWidget->replot();
+
+    // ToDo: Should be activated at the end of experiment
+    paramEstimAct->setDisabled(false);
+    exportToServerAct->setDisabled(false);
+}
 void MainWindow::createToolBars()
 {
     fileToolBar = addToolBar(tr("File"));
@@ -505,46 +552,10 @@ void MainWindow::open()
                   || row->cells.cell[tt].id==0x0BD
                   || row->cells.cell[tt].id==0x203);
 
+
             Control->setPlaybackFlowrate((qreal) pbFlowrate);
             Control->PlaybackFileName = fileInfo.fileName();
-
-            Control->reactorItems = &reactorItems;
-
-            for(int i=0; i<reactorItems.size();i++)
-                Control->addItem(reactorItems.at(i));
-
-            Control->addItem(flowmeterItem);
-            Control->calcTau();
-
-            thread = new QThread(this);
-            timer = new QTimer();
-            timer->setInterval(1000);
-            timer->moveToThread(thread);
-            Control->moveToThread(thread);
-
-            QObject::connect(thread, SIGNAL(started()), timer, SLOT(start()));
-            QObject::connect(timer, SIGNAL(timeout()), Control, SLOT(tick()));
-
-             QObject::connect(this, SIGNAL(destroyed()), thread, SLOT(quit()));
-
-            QObject::connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
-            QObject::connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
-
-         //   for(int i=0;i<reactorItems.size();i++)
-                QObject::connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
-
-            QObject::connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
-            QObject::connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
-
-            qDebug() << QString::number(Control->Time.size())
-                     << " " << QString::number(Control->Conductivity.size());
-            qDebug() << QString::number(Control->Time.last());
-
-            plotWidget->graph(0)->setData(Control->Time, Control->Conductivity);
-            plotWidget->rescaleAxes();
-            plotWidget->replot();
-            plotWidget->graph(0)->clearData();
-            plotWidget->replot();
+            initControl();
 
             QDateTime EventTime(QDateTime::currentDateTime());
 
@@ -554,9 +565,7 @@ void MainWindow::open()
                 << EventTime.toString("[hh:mm:ss.zzz]: ")
                     + tr("Please, set the volume flowrate %1 L/hr in order to begin the simulation playback")
                         .arg(pbFlowrate));
-            // ToDo: Should be activated at the end of experiment
-            paramEstimAct->setDisabled(false);
-            exportToServerAct->setDisabled(false);
+
 
             thread->start();
         }
@@ -790,7 +799,7 @@ void MainWindow::paramEstimation(){
            //   }
 }
 
-void MainWindow::importFromServer()
+void MainWindow::importFromServerDlg()
 {
     QWidget *wnd = new QWidget();
     QVBoxLayout* layout = new QVBoxLayout;
@@ -808,8 +817,28 @@ void MainWindow::importFromServer()
         wnd->resize(view->width(),view->height());
         wnd->show();
         connect(view,SIGNAL(doubleClicked(QModelIndex)),database,SLOT(getLabID(QModelIndex)));
+
     }
 
+}
+
+void MainWindow::importFromServer()
+{
+    Control->setPlaybackFlowrate(10);
+    //Control->PlaybackFileName = fileInfo.fileName();
+    initControl();
+
+    QDateTime EventTime(QDateTime::currentDateTime());
+
+    eventsWidget->addItems(QStringList()
+        << EventTime.toString("[hh:mm:ss.zzz]: ")
+            + tr("Opened the playback from database").arg(0)
+        << EventTime.toString("[hh:mm:ss.zzz]: ")
+            + tr("Please, set the volume flowrate %1 L/hr in order to begin the simulation playback")
+                .arg(0));
+
+
+    thread->start();
 }
 
 void MainWindow::exportToServer()
@@ -822,11 +851,21 @@ void MainWindow::exportToServer()
     connect(thread, SIGNAL(started()), worker, SLOT(sendLabData()));
     connect(worker, SIGNAL(finishedResult(bool)), this, SLOT(exportFinished(bool)));
     connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
-
+    exportToServerAct->setDisabled(true);
     thread->start();
+
+}
+
+void MainWindow::addEvents(QStringList events)
+{
+    QDateTime EventTime(QDateTime::currentDateTime());
+    foreach (const QString & element, events) {
+        eventsWidget->addItem(EventTime.toString("[hh:mm:ss.zzz]: ") + element);
+    }
 
 }
 void MainWindow::exportFinished(bool result) {
     if(result) QMessageBox::information(this,tr("Export has been successfuly finished"),tr("Export has been successfuly finished"),QMessageBox::Ok);
     else QMessageBox::warning(this, tr("Couldn't export the data"),tr("Couldn't export the data"));
+    exportToServerAct->setEnabled(true);
 }
