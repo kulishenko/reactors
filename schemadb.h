@@ -20,6 +20,7 @@ public:
     void setData(PFDControl *data);
     bool getLabsTable();
     QSqlRelationalTableModel* LabsModel;
+    PFDControl *getData();
 private:
     static QSqlDatabase db;
     static bool isConnected;
@@ -32,6 +33,7 @@ private:
 signals:
     void finished();
     void finishedResult(bool result);
+    void getLabDataFinishedResult(bool result);
     void getLabDataFinished();
 public slots:
     void sendLabData();

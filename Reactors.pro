@@ -62,8 +62,8 @@ win32: HEADERS += libxls/include/libxls/localcharset.h
 
 FORMS    += mainwindow.ui
 
-TRANSLATIONS    = Reactors_ru.ts \
-                  Reactors_de.ts
+TRANSLATIONS    = Reactors_ru_RU.ts \
+                  Reactors_de_DE.ts
 
 INCLUDEPATH += $$PWD/libxls/include
 DEPENDPATH += $$PWD/libxls/include

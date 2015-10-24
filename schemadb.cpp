@@ -70,18 +70,21 @@ void SchemaDB::getLabData()
         QSqlQueryModel model;
         model.setQuery("SELECT PointTime, PointValue FROM Point "
                        "WHERE LabID = " + QString::number(LabID));
-
+        Control = new PFDControl();
         for (int i = 0; i < model.rowCount(); ++i) {
             Control->Time.push_back(model.record(i).value("PointTime").toDouble());
             Control->Conductivity.push_back(model.record(i).value("PointValue").toDouble());
         }
         Control->setPlaybackFlowrate(LabFlowrate);
         emit getLabDataFinished();
-
-    }
+        emit getLabDataFinishedResult(true);
+    } else emit getLabDataFinishedResult(false);
 }
 void SchemaDB::setData(PFDControl* data) {
     Control = data;
+}
+PFDControl* SchemaDB::getData() {
+    return Control;
 }
 bool SchemaDB::getLabsTable(){
     if(createConnection()){

@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
 
     QTranslator myappTranslator;
-    myappTranslator.load("Reactors_" + QLocale::system().name());
+    myappTranslator.load(":/Reactors_" + QLocale::system().name());
     a.installTranslator(&myappTranslator);
 
     MainWindow w;

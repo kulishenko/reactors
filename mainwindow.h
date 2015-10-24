@@ -41,7 +41,6 @@
 #include "schemadb.h"
 
 extern "C" {
-
 #include <libxls/xls.h>
 }
 
@@ -95,7 +94,7 @@ private slots:
     void fitInView();
     void paramEstimation();
     void importFromServerDlg();
-    void importFromServer();
+    void importFromServer(bool result);
     void exportToServer();
 
 private:
@@ -112,6 +111,8 @@ private:
 
     QVector<SchemaCSTR*> reactorItems;
     QVector<SchemaPipeline*> pipelineItems;
+    void loadSettings();
+    void saveSettings();
 
     void createActions();
     void createMenus();
@@ -178,6 +179,7 @@ private:
     QThread* thread;
     QTimer* timer;
     PFDControl* Control;
+    SchemaDB* database;
 
     bool isSimRun;
     bool isDBConnected;

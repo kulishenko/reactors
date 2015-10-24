@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru_RU">
+<TS version="2.1" language="de_DE">
 <context>
     <name>MainWindow</name>
     <message>
@@ -21,77 +21,77 @@
     <message>
         <location filename="mainwindow.cpp" line="69"/>
         <source>&amp;New</source>
-        <translation>Новый</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="71"/>
         <source>Create a new file</source>
-        <translation>Создать новый файл</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="74"/>
         <source>&amp;Open...</source>
-        <translation>Открыть...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="76"/>
         <source>Open an existing file</source>
-        <translation>Открыть существующий файл</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="79"/>
         <source>&amp;Save</source>
-        <translation>Сохранить</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="81"/>
         <source>Save the document to disk</source>
-        <translation>Сохранить файл на диск</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="84"/>
         <source>&amp;Print...</source>
-        <translation>Печать...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="86"/>
         <source>Print the document</source>
-        <translation>Печать документа</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="89"/>
         <source>E&amp;xit</source>
-        <translation>Выход</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="91"/>
         <source>Exit the application</source>
-        <translation>Выход из приложения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="94"/>
         <source>&amp;Undo</source>
-        <translation>Отмена</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="96"/>
         <source>Undo the last operation</source>
-        <translation>Отменить последнюю операцию</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="99"/>
         <source>&amp;Redo</source>
-        <translation>Отменить</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="101"/>
         <source>Redo the last operation</source>
-        <translation>Отменить последнюю операцию</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="104"/>
         <source>Cu&amp;t</source>
-        <translation>Вырезать</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="106"/>
@@ -191,67 +191,67 @@
     <message>
         <location filename="mainwindow.cpp" line="168"/>
         <source>&amp;Export to server...</source>
-        <translation>Выгрузить на сервер...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="169"/>
         <source>Send the experimental data to server</source>
-        <translation>Отправить данные эксперимента на сервер</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="173"/>
         <source>&amp;Import from server...</source>
-        <translation>Получить с сервера...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="174"/>
         <source>Get the experimental data from server</source>
-        <translation>Получить данные эксперимента с сервера</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="177"/>
         <source>&amp;Parameter estimation...</source>
-        <translation>Определение параметров...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="178"/>
         <source>Estimate parameters from experimental data</source>
-        <translation>Определить параметры по экспериментальным данным</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="182"/>
         <source>&amp;Offline</source>
-        <translation>Офлайн</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="184"/>
         <source>Enable the playback mode</source>
-        <translation>Активировать режим воспроизведения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="187"/>
         <source>&amp;Online</source>
-        <translation>Онлайн</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="189"/>
         <source>Enable the online mode and connect to remote Lab server</source>
-        <translation>Активировать онлайн режим и подключиться к удаленному серверу лабораторых работ</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="198"/>
         <source>&amp;About</source>
-        <translation>О программе</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="199"/>
         <source>Show the application&apos;s About box</source>
-        <translation>Показать сведения о программе</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="202"/>
         <source>About &amp;Qt</source>
-        <translation>О платформе Qt</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="203"/>
@@ -321,109 +321,109 @@
     <message>
         <location filename="mainwindow.cpp" line="241"/>
         <source>&amp;File</source>
-        <translation>Файл</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="249"/>
         <source>&amp;Edit</source>
-        <translation>Правка</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="258"/>
         <source>&amp;View</source>
-        <translation>Вид</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="259"/>
         <source>&amp;Zoom</source>
-        <translation>Масштаб</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="264"/>
         <source>&amp;Mode</source>
-        <translation>Режим</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="268"/>
         <source>&amp;Data</source>
-        <translation>Данные</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="272"/>
         <source>&amp;Tools</source>
-        <translation>Инструменты</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="275"/>
         <source>&amp;Help</source>
-        <translation>Помощь</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="279"/>
         <source>&amp;Format</source>
-        <translation>Формат</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="282"/>
         <source>Alignment</source>
-        <translation>Выравнивание</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="296"/>
         <source>Video</source>
-        <translation>Видео</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="314"/>
         <source>Plot</source>
-        <translation>Переходная характеристика</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="320"/>
         <location filename="mainwindow.cpp" line="335"/>
         <source>Time, s</source>
-        <translation>Время, с</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="321"/>
         <location filename="mainwindow.cpp" line="335"/>
         <source>Conductivity, mS/cm</source>
-        <translation>Электропроводность, мС/см</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="328"/>
         <source>Table</source>
-        <translation>Таблица</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="450"/>
         <source>Schema controls are initialized</source>
-        <translation>Управление схемой инциализировано</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="465"/>
         <source>Parameter estimation is now available</source>
-        <translation>Доступно определение параметров</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="555"/>
         <source>Opened the playback file: %1</source>
-        <translation>Открыт файл записи: %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="556"/>
         <source>Please, set the volume flowrate %1 L/hr to begin the simulation playback</source>
-        <translation>Пожалуйста, установите объемный расход %1 л/ч для начала воспроизведения запси</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="566"/>
         <source>File open failure</source>
-        <translation>Ошибка открытия файла</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="567"/>
         <source>Failed to open %1</source>
-        <translation>Невозможно открыть файл %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="650"/>
@@ -439,32 +439,32 @@
     <message>
         <location filename="mainwindow.cpp" line="730"/>
         <source>N = %1 (rounded to: %2), Cin = %3 mol/L</source>
-        <translation>N = %1 (округлено до: %2), Cin = %3 моль/л</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="749"/>
         <source>Simulated by method %1</source>
-        <translation>Моделирование методом %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="752"/>
         <source>Dimensionless Time</source>
-        <translation>Безразмерное время</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="753"/>
         <source>Tracer Concentration, mol/L</source>
-        <translation>Концентрация трасера, моль/л</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="765"/>
         <source>Cell Model (method 2) simulation results</source>
-        <translation>Результаты расчета по ячеечной модели (метод 2)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="790"/>
         <source>Select the case study</source>
-        <translation>Выберите опыт</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="808"/>
@@ -484,62 +484,62 @@
     <message>
         <location filename="mainwindow.cpp" line="860"/>
         <source>Export successful</source>
-        <translation>Выгрузка завершена успешно</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="861"/>
         <source>Export has been successfuly finished</source>
-        <translation>Выгрузка была завершена успешно</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="862"/>
         <source>Exported the lab data to remote server</source>
-        <translation>Данные эксперимента выгружены на удаленный сервер</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="865"/>
         <source>Couldn&apos;t export the data</source>
-        <translation>Невозможно выгрузить данные</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="348"/>
         <source>Event Log</source>
-        <translation>Журнал событий</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="354"/>
         <source>Program started</source>
-        <translation>Приложение запущено</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="469"/>
         <source>File</source>
-        <translation>Файл</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="474"/>
         <source>Edit</source>
-        <translation>Правка</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="495"/>
         <source>Open File</source>
-        <translation>Открыть файл</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="496"/>
         <source>Simulation Playback files (*.xls)</source>
-        <translation>Файлы записей опытов (*.xls)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="649"/>
         <source>About Reactors Lab</source>
-        <translation>О программе Reactors Lab</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="700"/>
         <source>Simulation playback started</source>
-        <translation>Запущено воспроизведение записи эксперимента</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

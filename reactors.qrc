@@ -6,5 +6,6 @@
         <file>images/undo.png</file>
         <file>resources/tau.csv</file>
         <file>resources/reactors-db.ppk</file>
+        <file>Reactors_ru_RU.qm</file>
     </qresource>
 </RCC>

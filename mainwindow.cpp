@@ -14,21 +14,20 @@
 extern "C" {
 #include <stdio.h>
 }
+
 void operator<<(QListWidget* Log, const QString& Event)
 {
-        QDateTime EventTime(QDateTime::currentDateTime());
-        Log->addItem(EventTime.toString("[hh:mm:ss.zzz]: ") + Event);
-        Log->scrollToBottom();
+    QDateTime EventTime(QDateTime::currentDateTime());
+    Log->addItem(EventTime.toString("[hh:mm:ss.zzz]: ") + Event);
+    Log->scrollToBottom();
 }
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-   ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow)
 {
-  ui->setupUi(this);
+    ui->setupUi(this);
 
 
-    m_sSettingsFile = QApplication::applicationDirPath().left(1) + ":/settings.ini";
-//    loadSettings();
 
     createActions();
     createMenus();
@@ -44,14 +43,15 @@ MainWindow::MainWindow(QWidget *parent) :
     setMinimumSize(50, 50);
 
 
-
     this->setCentralWidget(graphicsView);
     this->adjustSize();
+    loadSettings();
 
 }
 
 MainWindow::~MainWindow()
 {
+    saveSettings();
     delete ui;
 }
 
@@ -651,8 +651,8 @@ void MainWindow::about()
                "Copyright (C) 2015 St. Petersburg State Institute of Technology & TU Dresden<br><br>"
                "Project supervisor: Prof. Prof. h.c. Dr. rer. nat. habil. Wladimir Reschetilowski<br>"
                "Developers: Dr. Ekaterina Borovinskaya, Dr. Roman Kulishenko<br><br>"
-               "This project uses <a href=\"http://libxls.sourceforge.net/\">libxls</a>,"
-               " <a href=\"http://www.gnu.org/software/gsl/\">libgsl</a>"
+               "This project uses <a href=\"http://www.gnu.org/software/gsl/\">GSL</a>,"
+               " <a href=\"http://libxls.sourceforge.net/\">libxls</a>"
                " and <a href=\"http://qcustomplot.com\">QCustomPlot</a> libraries licensed under GNU GPL"));
 }
 
@@ -750,7 +750,7 @@ void MainWindow::paramEstimation(){
     }
 
     resPlotWidget->xAxis->setLabel(tr("Dimensionless Time"));
-    resPlotWidget->yAxis->setLabel(tr("Conc, mol/L"));
+    resPlotWidget->yAxis->setLabel(tr("Tracer Concentration, mol/L"));
 
     resPlotWidget->setMinimumWidth(600);
     resPlotWidget->setMinimumHeight(400);
@@ -770,10 +770,9 @@ void MainWindow::paramEstimation(){
 void MainWindow::importFromServerDlg()
 {
 
-    SchemaDB* database = new SchemaDB;
+    database = new SchemaDB;
 
     if(database->getLabsTable()) {
-        Control = new PFDControl();
 
         QWidget *wnd = new QWidget();
         QVBoxLayout* layout = new QVBoxLayout;
@@ -793,24 +792,26 @@ void MainWindow::importFromServerDlg()
         wnd->show();
 
         connect(view,SIGNAL(doubleClicked(QModelIndex)),database,SLOT(getLabID(QModelIndex)));
-        connect(database,SIGNAL(getLabDataFinished()),this,SLOT(importFromServer()));
+        connect(database,SIGNAL(getLabDataFinishedResult(bool)),this,SLOT(importFromServer(bool)));
         connect(database,SIGNAL(getLabDataFinished()),wnd,SLOT(close()));
     }
 
 }
 
-void MainWindow::importFromServer()
+void MainWindow::importFromServer(bool result)
 {
+    if(result) {
+        Control = database->getData();
+        delete database;
+        initControl();
 
-    //Control->setPlaybackFlowrate(50);
-    //Control->PlaybackFileName = fileInfo.fileName();
-    initControl();
+        eventsWidget << tr("Opened the playback from database");
+        eventsWidget << tr("Please, set the volume flowrate %1 L/hr in order to begin "
+                            "the simulation playback").arg(Control->PlaybackFlowrate);
 
-    eventsWidget << tr("Opened the playback from database");
-    eventsWidget << tr("Please, set the volume flowrate %1 L/hr in order to begin "
-                        "the simulation playback").arg(Control->PlaybackFlowrate);
-
-    thread->start();
+        thread->start();
+    } else
+        QMessageBox::warning(this, tr("Couldn't import the data"),tr("Couldn't import the data"));
 }
 
 void MainWindow::exportToServer()
@@ -827,6 +828,31 @@ void MainWindow::exportToServer()
     exportToServerAct->setDisabled(true);
     thread->start();
 
+}
+
+void MainWindow::loadSettings()
+{
+    QSettings settings("SPbGIT", "ReactosLab");
+    settings.beginGroup("MainWindow");
+    if(settings.contains("size")){
+        QSize size = settings.value("size").toSize();
+        resize(size);
+    }
+    if(settings.contains("pos")){
+        QPoint pos = settings.value("pos").toPoint();
+        move(pos);
+    }
+    settings.endGroup();
+}
+
+void MainWindow::saveSettings()
+{
+    QSettings settings("SPbGIT", "ReactosLab");
+    settings.beginGroup("MainWindow");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
+    settings.sync();
 }
 
 void MainWindow::exportFinished(bool result) {
