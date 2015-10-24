@@ -11,9 +11,6 @@ PFDControl::~PFDControl()
 {
 
 }
-void PFDControl::playback(QGraphicsSceneMouseEvent *event){
-    qDebug() << "bebebe";
-}
 void PFDControl::tick(){
     if(isStarted) {
         TimeNow += 1.0f;
@@ -72,7 +69,7 @@ void PFDControl::setPlaybackFlowrate(qreal Value)
 {
     PlaybackFlowrate = Value;
 }
-void PFDControl::addItem(SchemaItem* item)
+void PFDControl::addItem(SchemaItem *item)
 {
     item->PFD=this;
 }

@@ -21,13 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
     createActions();
     createMenus();
     createToolBars();
     createDockWindows();
     createSchemaView();
-
 
     QString message = tr("A context menu is available by right-clicking");
     statusBar()->showMessage(message);
@@ -35,9 +33,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(tr("Reactors Lab"));
     setMinimumSize(50, 50);
 
-
     this->setCentralWidget(graphicsView);
     this->adjustSize();
+
     loadSettings();
 
 }
@@ -306,15 +304,11 @@ void MainWindow::createDockWindows()
     dock->setWidget(videoWidget);
     dock->setMinimumHeight(150);
 
-
-
-
     addDockWidget(Qt::RightDockWidgetArea, dock);
 
     dock = new QDockWidget(tr("Plot"), this);
 
     plotWidget = new QCustomPlot(dock);
-
 
     plotWidget->addGraph();
     plotWidget->xAxis->setLabel(tr("Time, s"));
@@ -334,14 +328,7 @@ void MainWindow::createDockWindows()
 
     tableWidget->setHorizontalHeaderLabels(QStringList() << tr("Time, s") << tr("Conductivity, mS/cm"));
     tableWidget->horizontalHeader()->setStretchLastSection(true);
-    /*
-    for(int row=0; row!=tableWidget->rowCount(); ++row){
-        for(int column=0; column!=tableWidget->columnCount(); ++column) {
-            QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg((column==0?x[row]:y[row])));
-            tableWidget->setItem(row, column, newItem);
-        }
-    }
-    */
+
     dock->setWidget(tableWidget);
     addDockWidget(Qt::RightDockWidgetArea,dock);
 
@@ -418,7 +405,6 @@ void MainWindow::createSchemaView()
 void MainWindow::initControl()
 {
 
-
     Control->reactorItems = &reactorItems;
 
     for(int i=0; i<reactorItems.size();i++)
@@ -433,26 +419,21 @@ void MainWindow::initControl()
     timer->moveToThread(thread);
     Control->moveToThread(thread);
 
-    QObject::connect(thread, SIGNAL(started()), timer, SLOT(start()));
-    QObject::connect(timer, SIGNAL(timeout()), Control, SLOT(tick()));
+    connect(thread, SIGNAL(started()), timer, SLOT(start()));
+    connect(timer, SIGNAL(timeout()), Control, SLOT(tick()));
 
-     QObject::connect(this, SIGNAL(destroyed()), thread, SLOT(quit()));
+    connect(this, SIGNAL(destroyed()), thread, SLOT(quit()));
 
-    QObject::connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
-    QObject::connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
+    connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
+    connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
 
 
-    QObject::connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
+    connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
 
-    QObject::connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
-    QObject::connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
-
+    connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
+    connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
 
     EventLog << tr("Schema controls are initialized");
-
-    qDebug() << QString::number(Control->Time.size())
-             << " " << QString::number(Control->Conductivity.size());
-    qDebug() << QString::number(Control->Time.last());
 
     plotWidget->graph(0)->setData(Control->Time, Control->Conductivity);
     plotWidget->rescaleAxes();
@@ -478,14 +459,14 @@ void MainWindow::createToolBars()
 void MainWindow::newFile()
 {
 
-     QGraphicsView* graphicsViewNew = new SchemaView();
-     QGraphicsScene* m_sceneNew = new QGraphicsScene();
-     graphicsViewNew->setScene(m_sceneNew);
-     graphicsViewNew->viewport()->installEventFilter(this);
-     graphicsViewNew->setRenderHint(QPainter::Antialiasing);
+    QGraphicsView* graphicsViewNew = new SchemaView();
+    QGraphicsScene* m_sceneNew = new QGraphicsScene();
+    graphicsViewNew->setScene(m_sceneNew);
+    graphicsViewNew->viewport()->installEventFilter(this);
+    graphicsViewNew->setRenderHint(QPainter::Antialiasing);
 
-     this->setCentralWidget(graphicsViewNew);
-     //this->adjustSize();
+    this->setCentralWidget(graphicsViewNew);
+    //this->adjustSize();
 
 }
 
@@ -519,7 +500,6 @@ void MainWindow::open()
         int *iDataWorkSheet;
         iDataWorkSheet=NULL;
 
-        //     bool isParsed;
         for(i=0; i<pWB->sheets.count; i++){
             qDebug() << pWB->sheets.sheet[i].name;
             if(strcmp(pWB->sheets.sheet[i].name,"Tabelle1") == 0) {
@@ -571,77 +551,77 @@ void MainWindow::open()
 
 void MainWindow::save()
 {
- //   infoLabel->setText(tr("Invoked <b>File|Save</b>"));
+
 }
 
 void MainWindow::print()
 {
-//    infoLabel->setText(tr("Invoked <b>File|Print</b>"));
+
 }
 
 void MainWindow::undo()
 {
- //   infoLabel->setText(tr("Invoked <b>Edit|Undo</b>"));
+
 }
 
 void MainWindow::redo()
 {
- //  infoLabel->setText(tr("Invoked <b>Edit|Redo</b>"));
+
 }
 
 void MainWindow::cut()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Cut</b>"));
+
 }
 
 void MainWindow::copy()
 {
-   // infoLabel->setText(tr("Invoked <b>Edit|Copy</b>"));
+
 }
 
 void MainWindow::paste()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Paste</b>"));
+
 }
 
 void MainWindow::bold()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Format|Bold</b>"));
+
 }
 
 void MainWindow::italic()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Format|Italic</b>"));
+
 }
 
 void MainWindow::leftAlign()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Format|Left Align</b>"));
+
 }
 
 void MainWindow::rightAlign()
 {
-   // infoLabel->setText(tr("Invoked <b>Edit|Format|Right Align</b>"));
+
 }
 
 void MainWindow::justify()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Format|Justify</b>"));
+
 }
 
 void MainWindow::center()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Format|Center</b>"));
+
 }
 
 void MainWindow::setLineSpacing()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Format|Set Line Spacing</b>"));
+
 }
 
 void MainWindow::setParagraphSpacing()
 {
-  //  infoLabel->setText(tr("Invoked <b>Edit|Format|Set Paragraph Spacing</b>"));
+
 }
 
 void MainWindow::about()
@@ -659,7 +639,7 @@ void MainWindow::about()
 
 void MainWindow::aboutQt()
 {
-    //   infoLabel->setText(tr("Invoked <b>Help|About Qt</b>"));
+
 }
 
 void MainWindow::updateWidgets()
@@ -693,8 +673,7 @@ void MainWindow::updateWidgets()
 
 void MainWindow::Run()
 {
-    //plotWidget->graph(0)->clearData();
-    //tableWidget->setRowCount(1);
+
     Control->Start();
     MediaPlayer->play();
 
@@ -833,7 +812,7 @@ void MainWindow::exportToServer()
 
 void MainWindow::loadSettings()
 {
-    QSettings settings("SPbGIT", "ReactosLab");
+    QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
     if(settings.contains("size")){
         QSize size = settings.value("size").toSize();
@@ -848,7 +827,7 @@ void MainWindow::loadSettings()
 
 void MainWindow::saveSettings()
 {
-    QSettings settings("SPbGIT", "ReactosLab");
+    QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
     settings.setValue("size", size());
     settings.setValue("pos", pos());

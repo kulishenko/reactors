@@ -145,13 +145,13 @@ void SchemaCSTR::changeLevel(){
 }
 void SchemaCSTR::fill(){
     // Sorry about that... It was lazy to do it via SIGNAL-SLOT
-       // PFDControl* Ctrl = static_cast <PFDControl *> (sender());
+    // PFDControl* Ctrl = static_cast <PFDControl *> (sender());
 
-        qreal transTime = (PFD->Tau.at(numInCascade)-(numInCascade==0 ? 0 : PFD->Tau.at(numInCascade-1) ) ) *3600*1000;
-        qDebug() << "Flowrate is "+ QString::number(PFD->Flowrate);
-        qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(numInCascade),QString::number(transTime));
-        setLevel(0.8, (int)transTime);
-        if(!isWorking) activateMotor();
+    qreal transTime = (PFD->Tau.at(numInCascade)-(numInCascade==0 ? 0 : PFD->Tau.at(numInCascade-1) ) ) *3600*1000;
+    qDebug() << "Flowrate is "+ QString::number(PFD->Flowrate);
+    qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(numInCascade),QString::number(transTime));
+    setLevel(0.8, static_cast<int>(transTime));
+    if(!isWorking) activateMotor();
 
 }
 

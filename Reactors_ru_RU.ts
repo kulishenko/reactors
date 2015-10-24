@@ -191,7 +191,7 @@
     <message>
         <location filename="mainwindow.cpp" line="168"/>
         <source>&amp;Export to server...</source>
-        <translation>Выгрузить на сервер...</translation>
+        <translation>Отправить на сервер...</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="169"/>

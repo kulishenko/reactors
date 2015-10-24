@@ -37,7 +37,6 @@ signals:
     void doSim();
     void startSim();
 public slots:
-    void playback(QGraphicsSceneMouseEvent *event);
     void tick();
     void flowrate_increase();
     void flowrate_decrease();

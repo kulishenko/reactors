@@ -12,10 +12,10 @@ ModelCell::~ModelCell()
 
 int ModelCell::N_f(const gsl_vector *x, void *data, gsl_vector *f)
 {
-    size_t n = ((struct data *)data)->n;
-    double *y = ((struct data *)data)->y;
-    double *sigma = ((struct data *) data)->sigma;
-    double *arg = ((struct data *) data)->x;
+    size_t n = (static_cast<struct data *> (data))->n;
+    double *y = (static_cast<struct data *> (data))->y;
+    double *sigma = (static_cast<struct data *> (data))->sigma;
+    double *arg = (static_cast<struct data *> (data))->x;
 
     double Num = gsl_vector_get (x, 0);
     double Cin = gsl_vector_get (x, 1);
@@ -37,16 +37,14 @@ int ModelCell::N_f(const gsl_vector *x, void *data, gsl_vector *f)
 int ModelCell::N_df (const gsl_vector * x, void *data,
          gsl_matrix * J)
 {
-  size_t n = ((struct data *)data)->n;
-  double *sigma = ((struct data *) data)->sigma;
-  double *arg = ((struct data *) data)->x;
+    size_t n = (static_cast<struct data *> (data))->n;
+    double *sigma = (static_cast<struct data *> (data))->sigma;
+    double *arg = (static_cast<struct data *> (data))->x;
 
-  double Num = gsl_vector_get (x, 0);
-  double Cin = gsl_vector_get (x, 1);
+    double Num = gsl_vector_get (x, 0);
+    double Cin = gsl_vector_get (x, 1);
 
-
-
-  for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
     {
       /* Jacobian matrix J(i,j) = dfi / dxj, */
       /* where fi = (Yi - yi)/sigma[i],      */
@@ -59,12 +57,11 @@ int ModelCell::N_df (const gsl_vector * x, void *data,
               / (Num*Num * t * gsl_sf_gamma(Num));
       double dCdCin = exp(-Num * t)*pow(Num*t,Num-1)/gsl_sf_gamma(Num);
 
-
     gsl_matrix_set (J, i, 0, dCdn/s);
     gsl_matrix_set (J, i, 1, dCdCin/s);
 
     }
-  return GSL_SUCCESS;
+    return GSL_SUCCESS;
 }
 
 
@@ -81,12 +78,12 @@ int ModelCell::N_fdf(const gsl_vector * x, void *data,
 void ModelCell::print_state(size_t iter, gsl_multifit_fdfsolver *s)
 {
 
-      qDebug() << QObject::tr("iter: %1 x = %2 %3"
-              "|f(x)| = %4\n").arg(
-              QString::number(iter),
-              QString::number(gsl_vector_get (s->x, 0)),
-              QString::number(gsl_vector_get (s->x, 1)),
-              QString::number(gsl_blas_dnrm2 (s->f)));
+    qDebug() << QObject::tr("iter: %1 x = %2 %3"
+          "|f(x)| = %4\n").arg(
+          QString::number(iter),
+          QString::number(gsl_vector_get (s->x, 0)),
+          QString::number(gsl_vector_get (s->x, 1)),
+          QString::number(gsl_blas_dnrm2 (s->f)));
 
 
 }
@@ -94,45 +91,45 @@ void ModelCell::print_state(size_t iter, gsl_multifit_fdfsolver *s)
 int ModelCell::func_C (double t, const double y[], double f[],
       void *params)
 {
-      Q_UNUSED(t);
-      qreal *arg = static_cast<qreal *> (params);
-      int nCells = arg[0];
-      qreal tau = arg[1];
-      qreal C_in = 0;
-      f[0] = 1/tau * (C_in - y[0]);
-      for(int i = 1; i < nCells; i++){
-            f[i] = 1/tau*(y[i-1] - y[i]);
-      }
-      return GSL_SUCCESS;
+    Q_UNUSED(t);
+    qreal *arg = static_cast<qreal *> (params);
+    int nCells = arg[0];
+    qreal tau = arg[1];
+    qreal C_in = 0;
+    f[0] = 1/tau * (C_in - y[0]);
+    for(int i = 1; i < nCells; i++){
+        f[i] = 1/tau*(y[i-1] - y[i]);
+    }
+    return GSL_SUCCESS;
 }
 int ModelCell::jac_C (double t, const double y[], double *dfdy,
      double dfdt[], void *params)
 {
-      Q_UNUSED(t);
-      Q_UNUSED(y);
-      qreal *arg = static_cast<qreal *> (params);
-      int nCells = arg[0];
-      qreal tau = arg[1];
+    Q_UNUSED(t);
+    Q_UNUSED(y);
+    qreal *arg = static_cast<qreal *> (params);
+    int nCells = arg[0];
+    qreal tau = arg[1];
 
 
-      gsl_matrix_view dfdy_mat
-        = gsl_matrix_view_array (dfdy, nCells, nCells);
-      gsl_matrix * m = &dfdy_mat.matrix;
+    gsl_matrix_view dfdy_mat
+    = gsl_matrix_view_array (dfdy, nCells, nCells);
+    gsl_matrix * m = &dfdy_mat.matrix;
 
-      gsl_matrix_set (m, 0, 0, -1/tau);
-      for(int i = 1; i < nCells; i++)
-          for(int j = 1; j < nCells; j++)
-          {
-              gsl_matrix_set (m, i, j, 0.0f);
-              if(i == j) {
-              gsl_matrix_set (m, i, i, -1/tau);
-              gsl_matrix_set (m, i, i-1, 1/tau);
-              }
+    gsl_matrix_set (m, 0, 0, -1/tau);
+    for(int i = 1; i < nCells; i++)
+      for(int j = 1; j < nCells; j++)
+      {
+          gsl_matrix_set (m, i, j, 0.0f);
+          if(i == j) {
+          gsl_matrix_set (m, i, i, -1/tau);
+          gsl_matrix_set (m, i, i-1, 1/tau);
           }
+      }
 
-      for(int i = 0; i < nCells; i++)
-           dfdt[i] = 0.0;
-      return GSL_SUCCESS;
+    for(int i = 0; i < nCells; i++)
+       dfdt[i] = 0.0;
+    return GSL_SUCCESS;
 }
 
 
@@ -153,7 +150,6 @@ void ModelCell::EstimateNumCells()
     double x_init[2] = { 1, 1e-4};
     gsl_vector_view x = gsl_vector_view_array (x_init, p);
 
-    // Temp K0CTbI/\b to use C library with their types inside class
     f.f = reinterpret_cast <int(*)(const gsl_vector*, void*, gsl_vector*)> (&N_f);
     f.df = reinterpret_cast <int(*)(const gsl_vector*, void*, gsl_matrix*)> (&N_df);
     f.fdf = reinterpret_cast <int(*)(const gsl_vector*, void*, gsl_vector*, gsl_matrix*)> (&N_fdf);
@@ -225,43 +221,41 @@ void ModelCell::Sim()
 void ModelCell::SimODE()
 {
 
-      qreal params[3] = {iNum, Data->tau/iNum, Cin};
-      gsl_odeiv2_system sys = {func_C, jac_C, iNum, &params};
+    qreal params[3] = {iNum, Data->tau/iNum, Cin};
+    gsl_odeiv2_system sys = {func_C, jac_C, iNum, &params};
 
-      gsl_odeiv2_driver * d =
-        gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd,
-                      1e-6, 1e-6, 0.0);
-      unsigned int i;
-      QVector<qreal> *CalcConc = new QVector<qreal>;
-      double t = 0.0;
-      double y[iNum];
-      y[0] = Cin;
-      for (i = 1; i < iNum; i++)
-          y[i] = 0.0f;
-      unsigned int nP = Data->DimTime.size()-1;
-      for (i = 1; i <= nP; i++)
-        {
-          qreal ti = Data->DimTime.at(i) * Data->tau;
-          int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
+    gsl_odeiv2_driver * d =
+    gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd,
+                  1e-6, 1e-6, 0.0);
+    unsigned int i;
+    QVector<qreal> *CalcConc = new QVector<qreal>;
+    double t = 0.0;
+    double y[iNum];
+    y[0] = Cin;
+    for (i = 1; i < iNum; i++)
+      y[i] = 0.0f;
+    unsigned int nP = Data->DimTime.size()-1;
+    for (i = 1; i <= nP; i++)
+    {
+      qreal ti = Data->DimTime.at(i) * Data->tau;
+      int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
 
-          if (status != GSL_SUCCESS)
-        {
-          printf ("error, return value=%d\n", status);
-          break;
-        }
+      if (status != GSL_SUCCESS)
+    {
+      printf ("error, return value=%d\n", status);
+      break;
+    }
 
-          CalcConc->push_back(y[iNum-1]);
+      CalcConc->push_back(y[iNum-1]);
 
-        //  printf ("%.5e %.5e\n", t, y[iNum-1]);
-        }
-      Data->SimConc.push_back(CalcConc);
-      gsl_odeiv2_driver_free (d);
+    //  printf ("%.5e %.5e\n", t, y[iNum-1]);
+    }
+    Data->SimConc.push_back(CalcConc);
+    gsl_odeiv2_driver_free (d);
 }
 
 qreal ModelCell::Conc(qreal theta)
 {
-
-  return Cin / gsl_sf_gamma(iNum) * pow(theta*iNum,iNum-1)* exp(-theta*iNum);
-
+    return Cin / gsl_sf_gamma(iNum) * pow(theta*iNum,iNum-1)* exp(-theta*iNum);
 }
 
