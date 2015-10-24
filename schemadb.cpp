@@ -30,7 +30,7 @@ bool SchemaDB::createConnection(){
     } else return true;
 }
 void SchemaDB::sendLabData(){
-    // ToDo: add connection over SSH (libssh) and move to a separate thread (create wrapper class for DB works)
+    // ToDo: add connection over SSH (libssh) (Or develop PHP JSON frontend?)
      if(createConnection()){
          QSqlQuery query;
          db.transaction();

@@ -9,12 +9,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="39"/>
+        <location filename="mainwindow.cpp" line="32"/>
         <source>A context menu is available by right-clicking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="42"/>
+        <location filename="mainwindow.cpp" line="35"/>
         <source>Reactors Lab</source>
         <translation type="unfinished"></translation>
     </message>
@@ -101,7 +101,7 @@
     <message>
         <location filename="mainwindow.cpp" line="110"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="112"/>
@@ -111,7 +111,7 @@
     <message>
         <location filename="mainwindow.cpp" line="116"/>
         <source>&amp;Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставить</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="118"/>
@@ -356,7 +356,7 @@
     <message>
         <location filename="mainwindow.cpp" line="275"/>
         <source>&amp;Help</source>
-        <translation>Помощь</translation>
+        <translation>&amp;Справка</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="279"/>
@@ -396,108 +396,108 @@
         <translation>Таблица</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="450"/>
+        <location filename="mainwindow.cpp" line="451"/>
         <source>Schema controls are initialized</source>
         <translation>Управление схемой инциализировано</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="465"/>
+        <location filename="mainwindow.cpp" line="466"/>
         <source>Parameter estimation is now available</source>
         <translation>Доступно определение параметров</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="555"/>
+        <location filename="mainwindow.cpp" line="556"/>
         <source>Opened the playback file: %1</source>
         <translation>Открыт файл записи: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="556"/>
+        <location filename="mainwindow.cpp" line="557"/>
         <source>Please, set the volume flowrate %1 L/hr to begin the simulation playback</source>
         <translation>Пожалуйста, установите объемный расход %1 л/ч для начала воспроизведения запси</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="566"/>
+        <location filename="mainwindow.cpp" line="567"/>
         <source>File open failure</source>
         <translation>Ошибка открытия файла</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="567"/>
+        <location filename="mainwindow.cpp" line="568"/>
         <source>Failed to open %1</source>
         <translation>Невозможно открыть файл %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="650"/>
+        <location filename="mainwindow.cpp" line="651"/>
         <source>&lt;h3&gt;Reactors Lab&lt;/h3&gt;&lt;br&gt;Remote chemical engineering lab software&lt;br&gt;Copyright (C) 2015 St. Petersburg State Institute of Technology &amp; TU Dresden&lt;br&gt;&lt;br&gt;Project supervisor: Prof. Prof. h.c. Dr. rer. nat. habil. Wladimir Reschetilowski&lt;br&gt;Developers: Dr. Ekaterina Borovinskaya, Dr. Roman Kulishenko&lt;br&gt;&lt;br&gt;This project uses &lt;a href=&quot;http://www.gnu.org/software/gsl/&quot;&gt;GSL&lt;/a&gt;, &lt;a href=&quot;http://libxls.sourceforge.net/&quot;&gt;libxls&lt;/a&gt; and &lt;a href=&quot;http://qcustomplot.com&quot;&gt;QCustomPlot&lt;/a&gt; libraries licensed under GNU GPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="682"/>
-        <location filename="mainwindow.cpp" line="685"/>
+        <location filename="mainwindow.cpp" line="683"/>
+        <location filename="mainwindow.cpp" line="686"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="730"/>
+        <location filename="mainwindow.cpp" line="731"/>
         <source>N = %1 (rounded to: %2), Cin = %3 mol/L</source>
         <translation>N = %1 (округлено до: %2), Cin = %3 моль/л</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="749"/>
+        <location filename="mainwindow.cpp" line="750"/>
         <source>Simulated by method %1</source>
         <translation>Моделирование методом %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="752"/>
+        <location filename="mainwindow.cpp" line="753"/>
         <source>Dimensionless Time</source>
         <translation>Безразмерное время</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="753"/>
+        <location filename="mainwindow.cpp" line="754"/>
         <source>Tracer Concentration, mol/L</source>
         <translation>Концентрация трасера, моль/л</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="765"/>
+        <location filename="mainwindow.cpp" line="766"/>
         <source>Cell Model (method 2) simulation results</source>
         <translation>Результаты расчета по ячеечной модели (метод 2)</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="790"/>
+        <location filename="mainwindow.cpp" line="791"/>
         <source>Select the case study</source>
         <translation>Выберите опыт</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="808"/>
-        <source>Opened the playback from database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="mainwindow.cpp" line="809"/>
+        <source>Imported the playback data from server</source>
+        <translation>Загружены данные с сервера для воспроизведения эксперимента</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="810"/>
         <source>Please, set the volume flowrate %1 L/hr in order to begin the simulation playback</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, установите объемный расход %1 л/ч для начала воспроизведения эксперимента</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="814"/>
+        <location filename="mainwindow.cpp" line="815"/>
         <source>Couldn&apos;t import the data</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно импортировать данные</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="860"/>
+        <location filename="mainwindow.cpp" line="861"/>
         <source>Export successful</source>
         <translation>Выгрузка завершена успешно</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="861"/>
+        <location filename="mainwindow.cpp" line="862"/>
         <source>Export has been successfuly finished</source>
         <translation>Выгрузка была завершена успешно</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="862"/>
+        <location filename="mainwindow.cpp" line="863"/>
         <source>Exported the lab data to remote server</source>
         <translation>Данные эксперимента выгружены на удаленный сервер</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="865"/>
+        <location filename="mainwindow.cpp" line="866"/>
         <source>Couldn&apos;t export the data</source>
         <translation>Невозможно выгрузить данные</translation>
     </message>
@@ -507,37 +507,37 @@
         <translation>Журнал событий</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="354"/>
+        <location filename="mainwindow.cpp" line="355"/>
         <source>Program started</source>
         <translation>Приложение запущено</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="469"/>
+        <location filename="mainwindow.cpp" line="470"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="474"/>
+        <location filename="mainwindow.cpp" line="475"/>
         <source>Edit</source>
         <translation>Правка</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="495"/>
+        <location filename="mainwindow.cpp" line="496"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="496"/>
+        <location filename="mainwindow.cpp" line="497"/>
         <source>Simulation Playback files (*.xls)</source>
         <translation>Файлы записей опытов (*.xls)</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="649"/>
+        <location filename="mainwindow.cpp" line="650"/>
         <source>About Reactors Lab</source>
         <translation>О программе Reactors Lab</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="700"/>
+        <location filename="mainwindow.cpp" line="701"/>
         <source>Simulation playback started</source>
         <translation>Запущено воспроизведение записи эксперимента</translation>
     </message>

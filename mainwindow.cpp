@@ -15,18 +15,11 @@ extern "C" {
 #include <stdio.h>
 }
 
-void operator<<(QListWidget* Log, const QString& Event)
-{
-    QDateTime EventTime(QDateTime::currentDateTime());
-    Log->addItem(EventTime.toString("[hh:mm:ss.zzz]: ") + Event);
-    Log->scrollToBottom();
-}
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
 
 
     createActions();
@@ -53,6 +46,13 @@ MainWindow::~MainWindow()
 {
     saveSettings();
     delete ui;
+}
+
+MainWindow &MainWindow::operator<<(const QString &Event)
+{
+    QDateTime EventTime(QDateTime::currentDateTime());
+    eventsWidget->addItem(EventTime.toString("[hh:mm:ss.zzz]: ") + Event);
+    eventsWidget->scrollToBottom();
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
@@ -351,7 +351,8 @@ void MainWindow::createDockWindows()
     dock->setMaximumHeight(100);
     addDockWidget(Qt::BottomDockWidgetArea, dock);
 
-    eventsWidget  << tr("Program started");
+    EventLog.setWidget(eventsWidget);
+    EventLog  << tr("Program started");
 }
 
 void MainWindow::createSchemaView()
@@ -447,7 +448,7 @@ void MainWindow::initControl()
     QObject::connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
 
 
-    eventsWidget << tr("Schema controls are initialized");
+    EventLog << tr("Schema controls are initialized");
 
     qDebug() << QString::number(Control->Time.size())
              << " " << QString::number(Control->Conductivity.size());
@@ -462,7 +463,7 @@ void MainWindow::initControl()
     // ToDo: Should be activated at the end of experiment
     paramEstimAct->setDisabled(false);
     exportToServerAct->setDisabled(false);
-    eventsWidget << tr("Parameter estimation is now available");
+    EventLog << tr("Parameter estimation is now available");
 }
 void MainWindow::createToolBars()
 {
@@ -552,8 +553,8 @@ void MainWindow::open()
             Control->PlaybackFileName = fileInfo.fileName();
             initControl();
 
-            eventsWidget << tr("Opened the playback file: %1").arg(QfileName);
-            eventsWidget << tr("Please, set the volume flowrate %1 L/hr"
+            EventLog << tr("Opened the playback file: %1").arg(QfileName)
+                     << tr("Please, set the volume flowrate %1 L/hr"
                                " to begin the simulation playback").arg(pbFlowrate);
 
 
@@ -697,7 +698,7 @@ void MainWindow::Run()
     Control->Start();
     MediaPlayer->play();
 
-    eventsWidget << tr("Simulation playback started");
+    EventLog << tr("Simulation playback started");
 }
 
 void MainWindow::zoomIn(){
@@ -805,8 +806,8 @@ void MainWindow::importFromServer(bool result)
         delete database;
         initControl();
 
-        eventsWidget << tr("Opened the playback from database");
-        eventsWidget << tr("Please, set the volume flowrate %1 L/hr in order to begin "
+        EventLog << tr("Imported the playback data from server")
+                 << tr("Please, set the volume flowrate %1 L/hr in order to begin "
                             "the simulation playback").arg(Control->PlaybackFlowrate);
 
         thread->start();
@@ -859,7 +860,7 @@ void MainWindow::exportFinished(bool result) {
     if (result) {
         QMessageBox::information(this,tr("Export successful"),
                                            tr("Export has been successfuly finished"),QMessageBox::Ok);
-        eventsWidget << tr("Exported the lab data to remote server");
+        EventLog << tr("Exported the lab data to remote server");
         }
     else
         QMessageBox::warning(this, tr("Couldn't export the data"),tr("Couldn't export the data"));

@@ -39,6 +39,7 @@
 #include "schemadata.h"
 #include "modelcell.h"
 #include "schemadb.h"
+#include "schemalogger.h"
 
 extern "C" {
 #include <libxls/xls.h>
@@ -61,6 +62,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    MainWindow &operator<<(const QString& Event);
 //private:
     //    bool eventFilter(QObject *, QEvent *);
 public slots:
@@ -101,6 +103,8 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *m_scene;
     QString m_sSettingsFile;
+
+    SchemaLogger EventLog;
 
     SchemaView* graphicsView;
 
