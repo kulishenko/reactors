@@ -45,7 +45,6 @@ extern "C" {
 #include <libxls/xls.h>
 }
 
-
 namespace Ui {
 class MainWindow;
 }
@@ -63,7 +62,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
 //private:
     //    bool eventFilter(QObject *, QEvent *);
 public slots:
@@ -92,7 +90,6 @@ private slots:
     void aboutQt();
     void updateWidgets();
     void Run();
-    //    void wheelEvent(QWheelEvent *e);
     void zoomIn();
     void zoomOut();
     void fitInView();
@@ -100,7 +97,7 @@ private slots:
     void importFromServerDlg();
     void importFromServer();
     void exportToServer();
-    void addEvents(QStringList events);
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *m_scene;
@@ -120,70 +117,71 @@ private:
     void createMenus();
     void createToolBars();
     void createDockWindows();
+    void createSchemaView();
     void initControl();
 
     QColor bgColor;
 
     QMenu *fileMenu;
-        QMenu *editMenu;
-        QMenu *viewMenu;
-        QMenu *zoomMenu;
-        QMenu *modeMenu;
-        QMenu *dataMenu;
-        QMenu *toolsMenu;
-        QMenu *analysisMenu;
-        QMenu *formatMenu;
-        QMenu *helpMenu;
-        QActionGroup *alignmentGroup;
-        QActionGroup *modeGroup;
-        QAction *newAct;
-        QAction *openAct;
-        QAction *saveAct;
-        QAction *printAct;
-        QAction *exitAct;
-        QAction *undoAct;
-        QAction *redoAct;
-        QAction *cutAct;
-        QAction *copyAct;
-        QAction *pasteAct;
-        QAction *boldAct;
-        QAction *italicAct;
-        QAction *leftAlignAct;
-        QAction *rightAlignAct;
-        QAction *justifyAct;
-        QAction *centerAct;
-        QAction *setLineSpacingAct;
-        QAction *setParagraphSpacingAct;
+    QMenu *editMenu;
+    QMenu *viewMenu;
+    QMenu *zoomMenu;
+    QMenu *modeMenu;
+    QMenu *dataMenu;
+    QMenu *toolsMenu;
+    QMenu *analysisMenu;
+    QMenu *formatMenu;
+    QMenu *helpMenu;
+    QActionGroup *alignmentGroup;
+    QActionGroup *modeGroup;
+    QAction *newAct;
+    QAction *openAct;
+    QAction *saveAct;
+    QAction *printAct;
+    QAction *exitAct;
+    QAction *undoAct;
+    QAction *redoAct;
+    QAction *cutAct;
+    QAction *copyAct;
+    QAction *pasteAct;
+    QAction *boldAct;
+    QAction *italicAct;
+    QAction *leftAlignAct;
+    QAction *rightAlignAct;
+    QAction *justifyAct;
+    QAction *centerAct;
+    QAction *setLineSpacingAct;
+    QAction *setParagraphSpacingAct;
 
-        QAction *zoomInAct;
-        QAction *zoomOutAct;
-        QAction *fitInViewAct;
+    QAction *zoomInAct;
+    QAction *zoomOutAct;
+    QAction *fitInViewAct;
 
-        QAction *importFromServerAct;
-        QAction *exportToServerAct;
+    QAction *importFromServerAct;
+    QAction *exportToServerAct;
 
-        QAction *paramEstimAct;
+    QAction *paramEstimAct;
 
-        QAction *playbackAct;
-        QAction *onlineAct;
-        QAction *aboutAct;
-        QAction *aboutQtAct;
-        QLabel *infoLabel;
+    QAction *playbackAct;
+    QAction *onlineAct;
+    QAction *aboutAct;
+    QAction *aboutQtAct;
+    QLabel *infoLabel;
 
-          QCustomPlot *plotWidget;
-          QTableWidget *tableWidget;
-          QVideoWidget *videoWidget;
-          QListWidget *eventsWidget;
-          QToolBar *fileToolBar;
-          QToolBar *editToolBar;
-          QMediaPlayer *MediaPlayer;
-          QThread* thread;
-          QTimer* timer;
-          PFDControl* Control;
-          bool isSimRun;
-          bool isDBConnected;
-          //    qreal Flowrate;
-          void resizeEvent(QResizeEvent *event);
+    QCustomPlot *plotWidget;
+    QTableWidget *tableWidget;
+    QVideoWidget *videoWidget;
+    QListWidget *eventsWidget;
+    QToolBar *fileToolBar;
+    QToolBar *editToolBar;
+    QMediaPlayer *MediaPlayer;
+    QThread* thread;
+    QTimer* timer;
+    PFDControl* Control;
+
+    bool isSimRun;
+    bool isDBConnected;
+
 };
 
 #endif // MAINWINDOW_H

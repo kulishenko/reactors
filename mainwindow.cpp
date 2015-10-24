@@ -14,21 +14,28 @@
 extern "C" {
 #include <stdio.h>
 }
-
+void operator<<(QListWidget* Log, const QString& Event)
+{
+        QDateTime EventTime(QDateTime::currentDateTime());
+        Log->addItem(EventTime.toString("[hh:mm:ss.zzz]: ") + Event);
+        Log->scrollToBottom();
+}
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
    ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
 
+
     m_sSettingsFile = QApplication::applicationDirPath().left(1) + ":/settings.ini";
 //    loadSettings();
-
 
     createActions();
     createMenus();
     createToolBars();
     createDockWindows();
+    createSchemaView();
+
 
     QString message = tr("A context menu is available by right-clicking");
     statusBar()->showMessage(message);
@@ -37,64 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setMinimumSize(50, 50);
 
 
-    graphicsView = new SchemaView();
-    //graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
-    bgColor = QColor::fromRgb(240, 240, 240);
 
-    m_scene = new QGraphicsScene();
-    //m_scene->setBackgroundBrush(QBrush(QColor::fromRgb(0, 150, 140), Qt::SolidPattern));
-//    m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
-
-    SchemaStream* streamItem1 = new SchemaStream(50,0, 400, 0);
-    m_scene->addItem(streamItem1);
-
-    SchemaStream* streamItem2 = new SchemaStream(50,1200, 650, 90);
-    m_scene->addItem(streamItem2);
-
-    valveItem1 = new SchemaValve(30,45,122.5,350,-90);
-    m_scene->addItem(valveItem1);
-
-    //Creating CSTR Items
-    for(int i=1; i<=5; i++)
-        reactorItems.push_back(new SchemaCSTR(120,90,i*200,i*70,0.1,i-1));
-
-
-    flowmeterItem = new SchemaFlowmeter(25,200,125,50,0);
-
-    m_scene->addItem(flowmeterItem);
-
-    // Connecting Items
-    SchemaPipeline* Line000 = new SchemaPipeline(streamItem1,valveItem1);
-    SchemaPipeline* Line00 = new SchemaPipeline(valveItem1,flowmeterItem);
-
-    valveItem1->Descedant = flowmeterItem;
-
-    // Connecting CSTRs
-
-    pipelineItems.push_back(new SchemaPipeline(flowmeterItem,reactorItems.at(0)));
-    for(int i=0;i<reactorItems.size()-1;i++)
-        pipelineItems.push_back(new SchemaPipeline(reactorItems.at(i),reactorItems.at(i+1)));
-
-
-    pipelineItems.push_back(new SchemaPipeline(reactorItems.last(),streamItem2));
-    m_scene->addItem(Line000);
-    m_scene->addItem(Line00);
-
-
-    for(int i=0;i<reactorItems.size();i++)
-        m_scene->addItem(reactorItems.at(i));
-
-    for(int i=0;i<pipelineItems.size();i++)
-        m_scene->addItem(pipelineItems.at(i));
-
-    graphicsView->setScene(m_scene);
-    graphicsView->viewport()->installEventFilter(this);
-    graphicsView->setRenderHint(QPainter::Antialiasing);
-
- //   graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//    graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
     this->setCentralWidget(graphicsView);
     this->adjustSize();
 
@@ -365,16 +315,8 @@ void MainWindow::createDockWindows()
 
     plotWidget = new QCustomPlot(dock);
 
-    // create plot (from quadratic plot example):
-    /*QVector<double> x(101), y(101);
-    for (int i=0; i<101; ++i)
-    {
-    //  x[i] = i/50.0 - 1;
-      x[i] = i;
-      y[i] = x[i]*x[i];
-    }*/
+
     plotWidget->addGraph();
-    //plotWidget->graph(0)->setData(x, y);
     plotWidget->xAxis->setLabel(tr("Time, s"));
     plotWidget->yAxis->setLabel(tr("Conductivity, mS/cm"));
     plotWidget->rescaleAxes();
@@ -405,13 +347,71 @@ void MainWindow::createDockWindows()
 
     dock = new QDockWidget(tr("Event Log"), this);
     eventsWidget = new QListWidget(dock);
-    QDateTime EventTime(QDateTime::currentDateTime());
-    eventsWidget->addItems(QStringList() << EventTime.toString("[hh:mm:ss.zzz]: ") + tr("Program started"));
     dock->setWidget(eventsWidget);
     dock->setMaximumHeight(100);
     addDockWidget(Qt::BottomDockWidgetArea, dock);
 
+    eventsWidget  << tr("Program started");
+}
 
+void MainWindow::createSchemaView()
+{
+    graphicsView = new SchemaView();
+
+    bgColor = QColor::fromRgb(240, 240, 240);
+
+    m_scene = new QGraphicsScene();
+//  m_scene->setBackgroundBrush(QBrush(QColor::fromRgb(0, 150, 140), Qt::SolidPattern));
+//  m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
+
+    SchemaStream* streamItem1 = new SchemaStream(50,0, 400, 0);
+    m_scene->addItem(streamItem1);
+
+    SchemaStream* streamItem2 = new SchemaStream(50,1200, 650, 90);
+    m_scene->addItem(streamItem2);
+
+    valveItem1 = new SchemaValve(30,45,122.5,350,-90);
+    m_scene->addItem(valveItem1);
+
+    // Creating CSTR Items
+    for(int i=1; i<=5; i++)
+        reactorItems.push_back(new SchemaCSTR(120,90,i*200,i*70,0.1,i-1));
+
+
+    flowmeterItem = new SchemaFlowmeter(25,200,125,50,0);
+
+    m_scene->addItem(flowmeterItem);
+
+    // Connecting Items
+    SchemaPipeline* Line000 = new SchemaPipeline(streamItem1,valveItem1);
+    SchemaPipeline* Line00 = new SchemaPipeline(valveItem1,flowmeterItem);
+
+    valveItem1->Descedant = flowmeterItem;
+
+    // Connecting CSTRs
+
+    pipelineItems.push_back(new SchemaPipeline(flowmeterItem,reactorItems.at(0)));
+    for(int i=0;i<reactorItems.size()-1;i++)
+        pipelineItems.push_back(new SchemaPipeline(reactorItems.at(i),reactorItems.at(i+1)));
+
+
+    pipelineItems.push_back(new SchemaPipeline(reactorItems.last(),streamItem2));
+    m_scene->addItem(Line000);
+    m_scene->addItem(Line00);
+
+
+    for(int i=0;i<reactorItems.size();i++)
+        m_scene->addItem(reactorItems.at(i));
+
+    for(int i=0;i<pipelineItems.size();i++)
+        m_scene->addItem(pipelineItems.at(i));
+
+    graphicsView->setScene(m_scene);
+    graphicsView->viewport()->installEventFilter(this);
+    graphicsView->setRenderHint(QPainter::Antialiasing);
+
+
+    graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
 }
 
 void MainWindow::initControl()
@@ -440,11 +440,14 @@ void MainWindow::initControl()
     QObject::connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
     QObject::connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
 
- //   for(int i=0;i<reactorItems.size();i++)
-        QObject::connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
+
+    QObject::connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
 
     QObject::connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
     QObject::connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
+
+
+    eventsWidget << tr("Schema controls are initialized");
 
     qDebug() << QString::number(Control->Time.size())
              << " " << QString::number(Control->Conductivity.size());
@@ -459,6 +462,7 @@ void MainWindow::initControl()
     // ToDo: Should be activated at the end of experiment
     paramEstimAct->setDisabled(false);
     exportToServerAct->setDisabled(false);
+    eventsWidget << tr("Parameter estimation is now available");
 }
 void MainWindow::createToolBars()
 {
@@ -494,12 +498,12 @@ void MainWindow::open()
     QFileInfo fileInfo(QfileName);
 
     QString pbParams = fileInfo.fileName().split(".").first();
-      // Extract the Flowrate from Filename (Temp KOCTIb/|b)
+//  Extract the Flowrate from Filename (Temp KOCTIb/|b)
     int pbFlowrate = pbParams.split("-").at(2).toInt();
 
-    // the transcoded filename container must not go out of scope
-    // while it is still referenced by char* fileName
-//    QByteArray encodedFileName = QfileName.toUtf8();
+//  the transcoded filename container must not go out of scope
+//  while it is still referenced by char* fileName
+//  QByteArray encodedFileName = QfileName.toUtf8();
     QByteArray encodedFileName = QfileName.toLocal8Bit();
     char* fileName = encodedFileName.data();
 
@@ -507,7 +511,7 @@ void MainWindow::open()
     xlsWorkBook* pWB = xls_open(
                 fileName, (char*) "iso-8859-15//TRANSLIT");
 
-    // process workbook if found
+//  process workbook if found
     if (pWB != NULL)
     {
         int i;
@@ -532,20 +536,11 @@ void MainWindow::open()
             int t=8; int tt=2;
             do {
                 row=&pWS->rows.row[t];
-                //QTableWidgetItem *newItem = new QTableWidgetItem(
-                //            tr("%1").arg(row->cells.cell[1].d));
+
                 // Put the data into Control
                 Control->Time.push_back(row->cells.cell[1].d);
-
-                //tableWidget->setItem(t-8, 0, newItem);
-
-                //newItem = new QTableWidgetItem(
-                //            tr("%1").arg(row->cells.cell[2].d));
                 Control->Conductivity.push_back(row->cells.cell[2].d);
-                //tableWidget->setItem(t-8, 1, newItem);
 
-
-                //tableWidget->setRowCount(t-6);
                 t++;
             }
             while(row->cells.cell[tt].id==0x27e
@@ -553,18 +548,13 @@ void MainWindow::open()
                   || row->cells.cell[tt].id==0x203);
 
 
-            Control->setPlaybackFlowrate((qreal) pbFlowrate);
+            Control->setPlaybackFlowrate(static_cast<qreal> (pbFlowrate));
             Control->PlaybackFileName = fileInfo.fileName();
             initControl();
 
-            QDateTime EventTime(QDateTime::currentDateTime());
-
-            eventsWidget->addItems(QStringList()
-                << EventTime.toString("[hh:mm:ss.zzz]: ")
-                    + tr("Opened the playback file: %1").arg(QfileName)
-                << EventTime.toString("[hh:mm:ss.zzz]: ")
-                    + tr("Please, set the volume flowrate %1 L/hr in order to begin the simulation playback")
-                        .arg(pbFlowrate));
+            eventsWidget << tr("Opened the playback file: %1").arg(QfileName);
+            eventsWidget << tr("Please, set the volume flowrate %1 L/hr"
+                               " to begin the simulation playback").arg(pbFlowrate);
 
 
             thread->start();
@@ -674,7 +664,8 @@ void MainWindow::aboutQt()
 void MainWindow::updateWidgets()
 {
     if(Control->TimeNow==0.0f) return;
-    // TODO: Fix repeated addition of the same point
+
+//  TODO: Fix repeated addition of the same point
     int i = 0;
     do i++;
     while ((fabs(Control->TimeNow - Control->Time.at(i)) > 0.5 ) && i < Control->Time.size()-1);
@@ -705,21 +696,10 @@ void MainWindow::Run()
     //tableWidget->setRowCount(1);
     Control->Start();
     MediaPlayer->play();
-    QDateTime EventTime(QDateTime::currentDateTime());
-    eventsWidget->addItems(QStringList() << EventTime.toString("[hh:mm:ss.zzz]: ")+tr("Simulation playback started"));
+
+    eventsWidget << tr("Simulation playback started");
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event){
-   // graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
-  /*  if(event->oldSize().width()!=-1) {
-     //   qDebug() << "Width="+QString::number(event->oldSize().width());
-        qreal sc=event->size().width()/event->oldSize().width()*20;
-        graphicsView->scale(sc,sc);
-       // graphicsView->update();
-    }
-    */
-    event->accept();
-}
 void MainWindow::zoomIn(){
     graphicsView->scale(1.25,1.25);
 }
@@ -735,80 +715,70 @@ void MainWindow::paramEstimation(){
     Data = new SchemaData(Control);
     Data->calcConc();
     Data->calcDimTime();
-    //Data->estimateNumCells();
+    Data->SmoothData();
+
     ModelCell *Model = new ModelCell(Data);
-    /*if(QMessageBox::question(this, tr("Estimation number of cells"),
-                                    tr("Estimate number of cells?"),
-                                    QMessageBox::Yes|QMessageBox::No)
-            == QMessageBox::Yes) {
-      */
-           Data->SmoothData();
-           Model->EstimateNumCells();
-           Model->Sim();
-           Model->SimODE();
+
+    Model->EstimateNumCells();
+    Model->Sim();
+    Model->SimODE();
+
+    QWidget *wnd = new QWidget();
+    QVBoxLayout* layout = new QVBoxLayout;
+    QCustomPlot *resPlotWidget = new QCustomPlot();
+    QLabel* SimResults = new QLabel;
+    SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L").arg(QString::number(Model->Num),
+                                                                         QString::number(Model->iNum),
+                                                                         QString::number(Model->Cin)));
 
 
-           QWidget *wnd = new QWidget();
-           QVBoxLayout* layout = new QVBoxLayout;
+    resPlotWidget->addGraph();
+    resPlotWidget->graph(0)->setData(Data->DimTime,  Data->Conc);
+    resPlotWidget->graph(0)->setName("Experiment");
 
-           QCustomPlot *resPlotWidget = new QCustomPlot();
-           QLabel* SimResults = new QLabel;
-           SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L").arg(QString::number(Model->Num),
-                                                                                 QString::number(Model->iNum),
-                                                                                 QString::number(Model->Cin)));
+    resPlotWidget->addGraph();
+    resPlotWidget->graph(1)->setData(Data->DimTime,  Data->SConc);
+    resPlotWidget->graph(1)->setPen(QPen(Qt::red));
+    resPlotWidget->graph(1)->setName("Experiment (smoothed)");
+    Qt::GlobalColor Colors[2] = {Qt::green, Qt::magenta };
 
+    for(int i = 0; i < Data->SimConc.size(); i++) {
+       resPlotWidget->addGraph();
+       resPlotWidget->graph(i+2)->setData(Data->DimTime,  *Data->SimConc.at(i));
+       resPlotWidget->graph(i+2)->setPen(QPen(Colors[i]));
+       resPlotWidget->graph(i+2)->setName(tr("Simulated by method %1").arg(i+1));
+    }
 
+    resPlotWidget->xAxis->setLabel(tr("Dimensionless Time"));
+    resPlotWidget->yAxis->setLabel(tr("Conc, mol/L"));
 
-           resPlotWidget->addGraph();
-           resPlotWidget->graph(0)->setData(Data->DimTime,  Data->Conc);
-           resPlotWidget->graph(0)->setName("Experiment");
+    resPlotWidget->setMinimumWidth(600);
+    resPlotWidget->setMinimumHeight(400);
+    resPlotWidget->legend->setVisible(true);
+    resPlotWidget->rescaleAxes();
+    resPlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    resPlotWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-           resPlotWidget->addGraph();
-           resPlotWidget->graph(1)->setData(Data->DimTime,  Data->SConc);
-           resPlotWidget->graph(1)->setPen(QPen(Qt::red));
-           resPlotWidget->graph(1)->setName("Experiment (smoothed)");
-           Qt::GlobalColor Colors[2] = {Qt::green, Qt::magenta };
+    wnd->setLayout(layout);
+    layout->addWidget(resPlotWidget);
+    layout->addWidget(SimResults);
+    wnd->setWindowTitle(tr("Cell Model (method 2) simulation results"));
+    wnd->show();
 
-           for(int i = 0; i < Data->SimConc.size(); i++) {
-               resPlotWidget->addGraph();
-               resPlotWidget->graph(i+2)->setData(Data->DimTime,  *Data->SimConc.at(i));
-               resPlotWidget->graph(i+2)->setPen(QPen(Colors[i]));
-               resPlotWidget->graph(i+2)->setName(tr("Simulated by method %1").arg(i+1));
-           }
-
-           resPlotWidget->xAxis->setLabel(tr("Dimensionless Time"));
-           resPlotWidget->yAxis->setLabel(tr("Conc, mol/L"));
-
-           resPlotWidget->setMinimumWidth(600);
-           resPlotWidget->setMinimumHeight(400);
-           resPlotWidget->legend->setVisible(true);
-           resPlotWidget->rescaleAxes();
-           resPlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-           resPlotWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
-
-           wnd->setLayout(layout);
-           layout->addWidget(resPlotWidget);
-           layout->addWidget(SimResults);
-           wnd->setWindowTitle(tr("Cell Model (method 2) simulation results"));
-           wnd->show();
-
-
-
-
-           //   }
 }
 
 void MainWindow::importFromServerDlg()
 {
-    QWidget *wnd = new QWidget();
-    QVBoxLayout* layout = new QVBoxLayout;
-    QTableView *view = new QTableView;
-    SchemaDB* database = new SchemaDB;
 
+    SchemaDB* database = new SchemaDB;
 
     if(database->getLabsTable()) {
         Control = new PFDControl();
+
+        QWidget *wnd = new QWidget();
+        QVBoxLayout* layout = new QVBoxLayout;
+        QTableView *view = new QTableView;
+
         database->setData(Control);
         view->setModel(database->LabsModel);
         view->hideColumn(0);
@@ -817,6 +787,7 @@ void MainWindow::importFromServerDlg()
         view->setSelectionBehavior(QTableView::SelectRows);
         wnd->setLayout(layout);
         layout->addWidget(view);
+
         wnd->setWindowTitle(tr("Select the case study"));
         wnd->resize(view->width(),view->height());
         wnd->show();
@@ -835,15 +806,9 @@ void MainWindow::importFromServer()
     //Control->PlaybackFileName = fileInfo.fileName();
     initControl();
 
-    QDateTime EventTime(QDateTime::currentDateTime());
-
-    eventsWidget->addItems(QStringList()
-        << EventTime.toString("[hh:mm:ss.zzz]: ")
-            + tr("Opened the playback from database").arg(0)
-        << EventTime.toString("[hh:mm:ss.zzz]: ")
-            + tr("Please, set the volume flowrate %1 L/hr in order to begin the simulation playback")
-                .arg(Control->PlaybackFlowrate));
-
+    eventsWidget << tr("Opened the playback from database");
+    eventsWidget << tr("Please, set the volume flowrate %1 L/hr in order to begin "
+                        "the simulation playback").arg(Control->PlaybackFlowrate);
 
     thread->start();
 }
@@ -858,21 +823,19 @@ void MainWindow::exportToServer()
     connect(thread, SIGNAL(started()), worker, SLOT(sendLabData()));
     connect(worker, SIGNAL(finishedResult(bool)), this, SLOT(exportFinished(bool)));
     connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
+
     exportToServerAct->setDisabled(true);
     thread->start();
 
 }
 
-void MainWindow::addEvents(QStringList events)
-{
-    QDateTime EventTime(QDateTime::currentDateTime());
-    foreach (const QString & element, events) {
-        eventsWidget->addItem(EventTime.toString("[hh:mm:ss.zzz]: ") + element);
-    }
-
-}
 void MainWindow::exportFinished(bool result) {
-    if(result) QMessageBox::information(this,tr("Export has been successfuly finished"),tr("Export has been successfuly finished"),QMessageBox::Ok);
-    else QMessageBox::warning(this, tr("Couldn't export the data"),tr("Couldn't export the data"));
+    if (result) {
+        QMessageBox::information(this,tr("Export successful"),
+                                           tr("Export has been successfuly finished"),QMessageBox::Ok);
+        eventsWidget << tr("Exported the lab data to remote server");
+        }
+    else
+        QMessageBox::warning(this, tr("Couldn't export the data"),tr("Couldn't export the data"));
     exportToServerAct->setEnabled(true);
 }
