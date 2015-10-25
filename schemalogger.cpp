@@ -1,7 +1,7 @@
 #include "schemalogger.h"
 #include <QDateTime>
 
-SchemaLogger::SchemaLogger()
+SchemaLogger::SchemaLogger() : outWidget(NULL)
 {
 
 }

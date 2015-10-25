@@ -69,6 +69,10 @@ void PFDControl::setPlaybackFlowrate(qreal Value)
 {
     PlaybackFlowrate = Value;
 }
+void PFDControl::setNumCascade(int Value)
+{
+    NumCascade = Value;
+}
 void PFDControl::addItem(SchemaItem *item)
 {
     item->PFD=this;

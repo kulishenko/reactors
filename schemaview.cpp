@@ -13,7 +13,6 @@ SchemaView::~SchemaView()
 }
 void SchemaView::mousePressEvent(QMouseEvent *event)
 {
-      //  qDebug() << "Custom view clicked.";
     if(itemAt(event->pos())==NULL)
         setDragMode(QGraphicsView::ScrollHandDrag);
     QGraphicsView::mousePressEvent(event);

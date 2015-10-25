@@ -34,9 +34,10 @@ void SchemaDB::sendLabData(){
      if(createConnection()){
          QSqlQuery query;
          db.transaction();
-         query.exec(QString("INSERT INTO `Lab` (SchemaID, UserID, LabDateTime, LabFlowrate, LabComment) "
-                                "VALUES (1, 1, NOW(), %1, '%2')").arg(QString::number(static_cast<int>(Control->PlaybackFlowrate)),
-                                                                    Control->PlaybackFileName));
+         query.exec(QString("INSERT INTO `Lab` (SchemaID, UserID, LabDateTime, LabNumCascade, LabFlowrate, LabComment) "
+                                "VALUES (1, 1, NOW(), %1 ,%2, '%3')").arg(QString::number(Control->NumCascade),
+                                                                                          QString::number(static_cast<int>(Control->PlaybackFlowrate)),
+                                                                                          Control->PlaybackFileName));
 
          int LabID = query.lastInsertId().toInt();
 
@@ -59,7 +60,8 @@ void SchemaDB::getLabID(QModelIndex index)
 {
     if(createConnection() && LabsModel != NULL){
         LabID = index.sibling(index.row(),0).data().toInt();
-        LabFlowrate = index.sibling(index.row(),4).data().toDouble();
+        LabNumCascade = index.sibling(index.row(),4).data().toInt();
+        LabFlowrate = index.sibling(index.row(),5).data().toDouble();
         getLabData();
     }
 }
@@ -76,6 +78,7 @@ void SchemaDB::getLabData()
             Control->Conductivity.push_back(model.record(i).value("PointValue").toDouble());
         }
         Control->setPlaybackFlowrate(LabFlowrate);
+        Control->setNumCascade(LabNumCascade);
         emit getLabDataFinished();
         emit getLabDataFinishedResult(true);
     } else emit getLabDataFinishedResult(false);
@@ -94,8 +97,9 @@ bool SchemaDB::getLabsTable(){
         LabsModel->setRelation(2, QSqlRelation("User", "UserID", "UserName"));
         LabsModel->setHeaderData(2, Qt::Horizontal, tr("User"));
         LabsModel->setHeaderData(3, Qt::Horizontal, tr("Lab date"));
-        LabsModel->setHeaderData(4, Qt::Horizontal, tr("Flowrate, L/hr"));
-        LabsModel->setHeaderData(5, Qt::Horizontal, tr("Comment"));
+        LabsModel->setHeaderData(4, Qt::Horizontal, tr("Number of Reactors"));
+        LabsModel->setHeaderData(5, Qt::Horizontal, tr("Flowrate, L/hr"));
+        LabsModel->setHeaderData(6, Qt::Horizontal, tr("Comment"));
         LabsModel->select();
 
         return true;

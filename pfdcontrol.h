@@ -22,6 +22,7 @@ public:
     ~PFDControl();
     qreal Flowrate;
     qreal PlaybackFlowrate;
+    int NumCascade;
     QVector<SchemaCSTR*> *reactorItems;
     QVector<qreal> Time;
     QVector<qreal> Conductivity;
@@ -32,6 +33,7 @@ public:
     bool isFlowrateSet;
     void addItem(SchemaItem *item);
     void calcTau();
+    void setNumCascade(int Value);
 signals:
     void setLevel();
     void doSim();

@@ -27,6 +27,7 @@ private:
     PFDControl* Control;
     int LabID;
     qreal LabFlowrate;
+    int LabNumCascade;
 
     bool createConnection();
 

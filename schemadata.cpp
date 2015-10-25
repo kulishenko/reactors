@@ -6,6 +6,7 @@ SchemaData::SchemaData(PFDControl* Ctrl)
     ExpDataTime = &Ctrl->Time;
     ExpDataConductivity = &Ctrl->Conductivity;
     Flowrate = &Ctrl->PlaybackFlowrate;
+    NumCascade = &Ctrl->NumCascade;
     DataRes = 1;
 }
 
@@ -14,17 +15,34 @@ SchemaData::~SchemaData()
 
 }
 
+void SchemaData::calcAvgTau()
+{
+    qreal Sum_C = 0, Sum_tC = 0, dt;
+
+    for(int i = i_t0; i<ExpDataTime->size();i+=DataRes) {
+        if(i == 0)
+            dt = ExpDataTime->at(DataRes) - ExpDataTime->at(0);
+        else            
+            dt = ExpDataTime->at(i) - ExpDataTime->at(i-DataRes);
+        Sum_tC += Conc.at(i - i_t0) * (ExpDataTime->at(i)- t0) * dt;
+        Sum_C += Conc.at(i - i_t0) * dt;
+
+    }
+    avg_tau = Sum_tC / Sum_C;
+}
+
 void SchemaData::calcConc()
 {
     t0 = *t_0();
-    qreal C1 = Calibrate(ExpDataConductivity->at(ExpDataTime->indexOf( t0 )));
+    i_t0 = ExpDataTime->indexOf( t0 );
+    qreal C1 = Calibrate(ExpDataConductivity->at(i_t0));
     tend = *t_last();
     qreal C2 = Calibrate(ExpDataConductivity->at(ExpDataTime->indexOf( tend )));
 
     qDebug() << QObject::tr("C1 = %1, C2 = %2").arg(QString::number(C1),QString::number(C2));
-    qreal R = (C1-C2) / (tend - t0);
+    qreal R = (C1 - C2) / (tend - t0);
 
-    for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes){
+    for(int i= i_t0; i<ExpDataTime->size();i+=DataRes){
         qreal C = Calibrate(ExpDataConductivity->at(i)) - C1 - (ExpDataTime->at(i) - t0)* R;
         // Added for robustness (check approximation formulas?)
         Conc.push_back((C > 0) ? C : 0);
@@ -39,25 +57,14 @@ void SchemaData::calcDimConc()
 
 void SchemaData::calcDimTime()
 {
-    tau = 0.84*5 / *Flowrate * 3600;
-/* Estimate avg tau from
-    qreal Sum_C = 0, Sum_tC = 0;
-
-    for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes) {
-        Sum_tC += ExpDataConductivity->at(i)*(ExpDataTime->at(i)- t0);
-        Sum_C += ExpDataConductivity->at(i);
-
-    }
-    tau = Sum_tC / Sum_C;
-*/
-    for(int i=ExpDataTime->indexOf( t0 ); i<ExpDataTime->size();i+=DataRes){
+    tau = 0.84 * (*NumCascade) / (*Flowrate) * 3600;
+    for(int i = i_t0; i<ExpDataTime->size();i+=DataRes)
         DimTime.push_back((ExpDataTime->at(i)- t0)/tau + 1e-6);
-  //      qDebug() << DimTime.last();
-    }
+
 }
 
 
-qreal* SchemaData::t_0()
+qreal* SchemaData::t_0() const
 {
     // Simple method to detect the bypass resistor disconnection time
     // ToDo: FIX 1-50-1.xls file recognition
@@ -80,7 +87,7 @@ qreal* SchemaData::t_0()
     return &ExpDataTime->first();
 }
 
-qreal* SchemaData::t_last()
+qreal* SchemaData::t_last() const
 {
     ExpDataTime->pop_back();
     return &ExpDataTime->last();
@@ -94,7 +101,7 @@ qreal SchemaData::Calibrate(qreal x){
 
 void SchemaData::SmoothData()
 {
-    //  Simple median filter
+    //  Simple median filter (fix N = N - 8 ?)
     int width = 8;
     for(int i = 0; i<Conc.size()-width; i++) {
        QVector<qreal> window;

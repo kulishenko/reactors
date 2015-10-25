@@ -46,13 +46,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-MainWindow &MainWindow::operator<<(const QString &Event)
-{
-    QDateTime EventTime(QDateTime::currentDateTime());
-    eventsWidget->addItem(EventTime.toString("[hh:mm:ss.zzz]: ") + Event);
-    eventsWidget->scrollToBottom();
-}
-
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
@@ -467,7 +460,6 @@ void MainWindow::newFile()
 
     this->setCentralWidget(graphicsViewNew);
     //this->adjustSize();
-
 }
 
 void MainWindow::open()
@@ -481,6 +473,7 @@ void MainWindow::open()
 
     QString pbParams = fileInfo.fileName().split(".").first();
 //  Extract the Flowrate from Filename (Temp KOCTIb/|b)
+    int pbNumCascade = pbParams.split("-").at(1).toInt();
     int pbFlowrate = pbParams.split("-").at(2).toInt();
 
 //  the transcoded filename container must not go out of scope
@@ -530,6 +523,7 @@ void MainWindow::open()
 
 
             Control->setPlaybackFlowrate(static_cast<qreal> (pbFlowrate));
+            Control->setNumCascade(pbNumCascade);
             Control->PlaybackFileName = fileInfo.fileName();
             initControl();
 
@@ -696,6 +690,7 @@ void MainWindow::paramEstimation(){
     Data->calcConc();
     Data->calcDimTime();
     Data->SmoothData();
+    Data->calcAvgTau();
 
     ModelCell *Model = new ModelCell(Data);
 
@@ -707,9 +702,12 @@ void MainWindow::paramEstimation(){
     QVBoxLayout* layout = new QVBoxLayout;
     QCustomPlot *resPlotWidget = new QCustomPlot();
     QLabel* SimResults = new QLabel;
-    SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L").arg(QString::number(Model->Num),
-                                                                         QString::number(Model->iNum),
-                                                                         QString::number(Model->Cin)));
+    SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L<br>"
+                           "tau = %4 sec, avg_tau = %5 sec").arg(QString::number(Model->Num),
+                                                             QString::number(Model->iNum),
+                                                             QString::number(Model->Cin),
+                                                             QString::number(Data->tau),
+                                                             QString::number(Data->avg_tau)));
 
 
     resPlotWidget->addGraph();
