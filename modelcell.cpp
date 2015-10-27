@@ -121,9 +121,10 @@ int ModelCell::jac_C (double t, const double y[], double *dfdy,
       for(int j = 1; j < nCells; j++)
       {
           gsl_matrix_set (m, i, j, 0.0f);
-          if(i == j) {
-          gsl_matrix_set (m, i, i, -1/tau);
-          gsl_matrix_set (m, i, i-1, 1/tau);
+          if(i == j)
+          {
+              gsl_matrix_set (m, i, i, -1/tau);
+              gsl_matrix_set (m, i, i-1, 1/tau);
           }
       }
 
@@ -256,6 +257,6 @@ void ModelCell::SimODE()
 
 qreal ModelCell::Conc(qreal theta)
 {
-    return Cin / gsl_sf_gamma(iNum) * pow(theta*iNum,iNum-1)* exp(-theta*iNum);
+    return Cin / gsl_sf_gamma(Num) * pow(theta*Num,Num-1)* exp(-theta*Num);
 }
 
