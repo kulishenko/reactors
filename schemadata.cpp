@@ -101,10 +101,9 @@ qreal SchemaData::Calibrate(qreal x){
 
 void SchemaData::SmoothData()
 {
-    //  Simple median filter (fix N = N - 8 ?)
-    int init_width = 8;
-    int width = init_width;
-    for(int i = 0; i<Conc.size(); i++) {
+    //  Simple median filter
+    int width = 8;
+    for(int i = 0; i < Conc.size(); i++) {
         if(i == Conc.size()-width) width--;
         QVector<qreal> window;
         // Get n=width points
