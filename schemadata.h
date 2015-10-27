@@ -24,10 +24,13 @@ public:
     qreal tend; // End time, s
     qreal tau; // Residence time, s
     qreal avg_tau; // Average residence time, s
+    qreal M2t;
+    qreal Nc;
     void calcAvgTau();
     void calcConc();
     void calcDimConc();
     void calcDimTime();
+    void calcM2t();
     void estimateNumCells();
     qreal Calibrate(qreal x);
     unsigned int DataRes; // Data resolution
@@ -35,6 +38,7 @@ public:
 private:
     qreal* t_0() const;
     qreal* t_last() const;
+    qreal dt(int i);
     int i_t0;
 };
 

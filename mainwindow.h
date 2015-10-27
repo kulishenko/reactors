@@ -37,6 +37,7 @@
 #include "schemastream.h"
 #include "schemaview.h"
 #include "schemadata.h"
+#include "schemacell.h"
 #include "modelcell.h"
 #include "schemadb.h"
 #include "schemalogger.h"

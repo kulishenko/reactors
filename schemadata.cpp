@@ -17,15 +17,11 @@ SchemaData::~SchemaData()
 
 void SchemaData::calcAvgTau()
 {
-    qreal Sum_C = 0, Sum_tC = 0, dt;
+    qreal Sum_C = 0, Sum_tC = 0;
 
     for(int i = i_t0; i<ExpDataTime->size();i+=DataRes) {
-        if(i == 0)
-            dt = ExpDataTime->at(DataRes) - ExpDataTime->at(0);
-        else            
-            dt = ExpDataTime->at(i) - ExpDataTime->at(i-DataRes);
-        Sum_tC += Conc.at(i - i_t0) * (ExpDataTime->at(i)- t0) * dt;
-        Sum_C += Conc.at(i - i_t0) * dt;
+        Sum_tC += Conc.at(i - i_t0) * (ExpDataTime->at(i)- t0) * dt(i);
+        Sum_C += Conc.at(i - i_t0) * dt(i);
 
     }
     avg_tau = Sum_tC / Sum_C;
@@ -52,7 +48,13 @@ void SchemaData::calcConc()
 
 void SchemaData::calcDimConc()
 {
+    qreal Sum_C = 0;
 
+    for(int i = i_t0; i<ExpDataTime->size();i+=DataRes) {
+        Sum_C += Conc.at(i - i_t0) * dt(i);
+    }
+    for(int i = i_t0; i<ExpDataTime->size();i+=DataRes)
+        DimConc.push_back(Conc.at(i - i_t0) / Sum_C);
 }
 
 void SchemaData::calcDimTime()
@@ -60,6 +62,28 @@ void SchemaData::calcDimTime()
     tau = 0.84 * (*NumCascade) / (*Flowrate) * 3600;
     for(int i = i_t0; i<ExpDataTime->size();i+=DataRes)
         DimTime.push_back((ExpDataTime->at(i)- t0)/tau + 1e-6);
+
+}
+
+void SchemaData::calcM2t()
+{
+    M2t = 0;
+    for(int i = i_t0; i<ExpDataTime->size();i+=DataRes) {
+        M2t += ExpDataTime->at(i) * ExpDataTime->at(i) * DimConc.at(i - i_t0) * dt(i);
+    }
+//   qreal sigma_theta_2 = M2t / avg_tau - 1;
+//    Nc = 1 / sigma_theta_2;
+
+    // Temp
+    qreal sigma_theta_22 = 0, t2_C = 0, C = 0;
+    for(int i = i_t0; i<ExpDataTime->size();i+=DataRes) {
+        t2_C += ExpDataTime->at(i) * ExpDataTime->at(i) * Conc.at(i - i_t0) * dt(i);
+        C += Conc.at(i - i_t0) * dt(i);
+    }
+    sigma_theta_22 = t2_C / (C * avg_tau * avg_tau) - 1;
+    qDebug() << sigma_theta_22;
+    qDebug() << QString("N = %1").arg(1/sigma_theta_22);
+    Nc = 1/sigma_theta_22;
 
 }
 
@@ -92,6 +116,14 @@ qreal* SchemaData::t_last() const
     ExpDataTime->pop_back();
     return &ExpDataTime->last();
 }
+
+qreal SchemaData::dt(int i)
+{
+    if(i == 0)
+        return ExpDataTime->at(DataRes) - ExpDataTime->at(0);
+    else
+        return ExpDataTime->at(i) - ExpDataTime->at(i-DataRes);
+}
 qreal SchemaData::Calibrate(qreal x){
     x *= 1000; // Conversion to mkS/cm
     return 2.3480623E-18 * pow(x, 5) - 1.3123250E-14 * pow(x, 4) + 2.7014011E-11 * pow(x, 3)
@@ -106,7 +138,6 @@ void SchemaData::SmoothData()
     for(int i = 0; i < Conc.size(); i++) {
         if(i == Conc.size()-width) width--;
         QVector<qreal> window;
-        // Get n=width points
         for(int j=i; j<=i+width;j++)
             window.push_back(Conc.at(j));
         qSort(window);

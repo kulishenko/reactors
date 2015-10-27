@@ -31,7 +31,9 @@ SOURCES += main.cpp\
     schemadb.cpp \
     modelcstr.cpp \
     schemacstr.cpp \
-    schemalogger.cpp
+    schemalogger.cpp \
+    schemacell.cpp \
+    schemaconfig.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -58,7 +60,9 @@ HEADERS  += mainwindow.h \
     schemadb.h \
     modelcstr.h \
     schemacstr.h \
-    schemalogger.h
+    schemalogger.h \
+    schemacell.h \
+    schemaconfig.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 

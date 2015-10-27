@@ -100,6 +100,7 @@ bool SchemaDB::getLabsTable(){
         LabsModel->setHeaderData(4, Qt::Horizontal, tr("Number of Reactors"));
         LabsModel->setHeaderData(5, Qt::Horizontal, tr("Flowrate, L/hr"));
         LabsModel->setHeaderData(6, Qt::Horizontal, tr("Comment"));
+        LabsModel->sort(6,Qt::AscendingOrder);
         LabsModel->select();
 
         return true;

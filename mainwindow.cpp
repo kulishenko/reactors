@@ -351,6 +351,11 @@ void MainWindow::createSchemaView()
     SchemaStream* streamItem2 = new SchemaStream(50,1200, 650, 90);
     m_scene->addItem(streamItem2);
 
+    // Temp
+    SchemaCell* MeasurementCell = new SchemaCell(100,40,1255, 550);
+
+    m_scene->addItem(MeasurementCell);
+
     valveItem1 = new SchemaValve(30,45,122.5,350,-90);
     m_scene->addItem(valveItem1);
 
@@ -391,8 +396,6 @@ void MainWindow::createSchemaView()
     graphicsView->viewport()->installEventFilter(this);
     graphicsView->setRenderHint(QPainter::Antialiasing);
 
-
-    graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
 }
 
 void MainWindow::initControl()
@@ -691,6 +694,8 @@ void MainWindow::paramEstimation(){
     Data->calcDimTime();
     Data->SmoothData();
     Data->calcAvgTau();
+    Data->calcDimConc();
+    Data->calcM2t();
 
     ModelCell *Model = new ModelCell(Data);
 
@@ -703,11 +708,13 @@ void MainWindow::paramEstimation(){
     QCustomPlot *resPlotWidget = new QCustomPlot();
     QLabel* SimResults = new QLabel;
     SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L<br>"
-                           "tau = %4 sec, avg_tau = %5 sec").arg(QString::number(Model->Num),
-                                                             QString::number(Model->iNum),
-                                                             QString::number(Model->Cin),
-                                                             QString::number(Data->tau),
-                                                             QString::number(Data->avg_tau)));
+                           "tau = %4 sec, avg_tau = %5 sec<br>"
+                           "N = %6").arg(QString::number(Model->Num),
+                                         QString::number(Model->iNum),
+                                         QString::number(Model->Cin),
+                                         QString::number(Data->tau),
+                                         QString::number(Data->avg_tau),
+                                         QString::number(Data->Nc)));
 
 
     resPlotWidget->addGraph();
@@ -812,7 +819,12 @@ void MainWindow::loadSettings()
 {
     QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
-    if(settings.contains("size")){
+    bool maximized;
+    if(settings.contains("maximized")){
+        maximized = settings.value("maximized").toBool();
+        setWindowState(Qt::WindowMaximized);
+    }
+    if(settings.contains("size") && !maximized){
         QSize size = settings.value("size").toSize();
         resize(size);
     }
@@ -820,6 +832,13 @@ void MainWindow::loadSettings()
         QPoint pos = settings.value("pos").toPoint();
         move(pos);
     }
+    if(settings.contains("view_scale_X") && settings.contains("view_scale_Y")){
+        qreal sx = settings.value("view_scale_X").toDouble();
+        qreal sy = settings.value("view_scale_Y").toDouble();
+        graphicsView->scale(sx,sy);
+    }
+    else
+        graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
     settings.endGroup();
 }
 
@@ -827,9 +846,12 @@ void MainWindow::saveSettings()
 {
     QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
+    settings.setValue("maximized", isMaximized());
     settings.setValue("size", size());
     settings.setValue("pos", pos());
-    settings.endGroup();
+    settings.setValue("view_scale_X", graphicsView->transform().m11());
+    settings.setValue("view_scale_Y", graphicsView->transform().m22());
+    settings.endGroup();    
     settings.sync();
 }
 
