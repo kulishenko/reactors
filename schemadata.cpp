@@ -102,20 +102,22 @@ qreal SchemaData::Calibrate(qreal x){
 void SchemaData::SmoothData()
 {
     //  Simple median filter (fix N = N - 8 ?)
-    int width = 8;
-    for(int i = 0; i<Conc.size()-width; i++) {
-       QVector<qreal> window;
-       // Get n=width points
-       for(int j=i; j<=i+width;j++)
+    int init_width = 8;
+    int width = init_width;
+    for(int i = 0; i<Conc.size(); i++) {
+        if(i == Conc.size()-width) width--;
+        QVector<qreal> window;
+        // Get n=width points
+        for(int j=i; j<=i+width;j++)
             window.push_back(Conc.at(j));
-       qSort(window);
-       if(width % 2 == 0)
+        qSort(window);
+        if(width % 2 == 0)
             SConc.push_back((window.at(ceil(width/2)) + window.at(floor(width/2))) / 2);
-       else
+        else
             SConc.push_back(window.at(floor(width/2) + 1));
     }
     // Simple low-pass filter
-    qreal A = 0.1;
+    qreal A = 0.3;
     for(int i = 1; i<SConc.size();i++){
         SConc.replace(i, SConc.at(i-1) + A*(SConc.at(i)-SConc.at(i-1)));
     }
