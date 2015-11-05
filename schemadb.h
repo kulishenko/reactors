@@ -22,7 +22,7 @@ public:
     QSqlRelationalTableModel* LabsModel;
     PFDControl *getData();
 private:
-    static QSqlDatabase db;
+    static QSqlDatabase m_db;
     static bool isConnected;
     PFDControl* Control;
     int LabID;

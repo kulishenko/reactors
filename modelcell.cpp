@@ -2,7 +2,7 @@
 
 ModelCell::ModelCell(SchemaData *Data)
 {
-    this->Data = Data;
+    p_Data = Data;
 }
 
 ModelCell::~ModelCell()
@@ -140,13 +140,13 @@ void ModelCell::EstimateNumCells()
     gsl_multifit_fdfsolver *s;
     int status;
     unsigned int iter = 0;
-    const size_t n = Data->SConc.size();
+    const size_t n = p_Data->SConc.size();
     const size_t p = 2;
 
     gsl_matrix *covar = gsl_matrix_alloc (p, p);
     QVector<qreal> sigma;
     sigma.fill(1e-6, n);
-    struct data d = { n, Data->SConc.data(), Data->DimTime.data(), sigma.data()};
+    struct data d = { n, p_Data->SConc.data(), p_Data->DimTime.data(), sigma.data()};
     gsl_multifit_function_fdf f;
     double x_init[2] = { 1, 1e-4};
     gsl_vector_view x = gsl_vector_view_array (x_init, p);
@@ -213,16 +213,16 @@ void ModelCell::EstimateNumCells()
 void ModelCell::Sim()
 {
     QVector<qreal> *CalcConc = new QVector<qreal>();
-    for(int i = 0; i<Data->DimTime.size();i++)
-        CalcConc->push_back(Conc(Data->DimTime.at(i)));
+    for(int i = 0; i < p_Data->DimTime.size();i++)
+        CalcConc->push_back(Conc(p_Data->DimTime.at(i)));
 
-    Data->SimConc.push_back(CalcConc);
+    p_Data->SimConc.push_back(CalcConc);
 }
 
 void ModelCell::SimODE()
 {
 
-    qreal params[3] = {iNum, Data->tau/iNum, Cin};
+    qreal params[3] = {iNum, p_Data->tau/iNum, Cin};
     gsl_odeiv2_system sys = {func_C, jac_C, iNum, &params};
 
     gsl_odeiv2_driver * d =
@@ -235,10 +235,10 @@ void ModelCell::SimODE()
     y[0] = Cin;
     for (i = 1; i < iNum; i++)
       y[i] = 0.0f;
-    unsigned int nP = Data->DimTime.size()-1;
+    unsigned int nP = p_Data->DimTime.size()-1;
     for (i = 1; i <= nP; i++)
     {
-      qreal ti = Data->DimTime.at(i) * Data->tau;
+      qreal ti = p_Data->DimTime.at(i) * p_Data->tau;
       int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
 
       if (status != GSL_SUCCESS)
@@ -251,7 +251,7 @@ void ModelCell::SimODE()
 
     //  printf ("%.5e %.5e\n", t, y[iNum-1]);
     }
-    Data->SimConc.push_back(CalcConc);
+    p_Data->SimConc.push_back(CalcConc);
     gsl_odeiv2_driver_free (d);
 }
 

@@ -12,13 +12,13 @@ SchemaDB::~SchemaDB()
 
 bool SchemaDB::createConnection(){
     if(!isConnected){
-        db = QSqlDatabase::addDatabase("QMYSQL");
-        db.setHostName("sa.lti-gti.ru");
-        db.setPort(13306);
-        db.setDatabaseName("reactors");
-        db.setUserName("reactors");
-        db.setPassword("Dfl2cR38prF2vbT");
-        if (!db.open()) {
+        m_db = QSqlDatabase::addDatabase("QMYSQL");
+        m_db.setHostName("sa.lti-gti.ru");
+        m_db.setPort(13306);
+        m_db.setDatabaseName("reactors");
+        m_db.setUserName("reactors");
+        m_db.setPassword("Dfl2cR38prF2vbT");
+        if (!m_db.open()) {
             qDebug() << "Database error occurred";
             perror("Database connection error");
             //QMessageBox::warning(this, tr("DB connection failure"),
@@ -33,7 +33,7 @@ void SchemaDB::sendLabData(){
     // ToDo: add connection over SSH (libssh) (Or develop PHP JSON frontend?)
      if(createConnection()){
          QSqlQuery query;
-         db.transaction();
+         m_db.transaction();
          query.exec(QString("INSERT INTO `Lab` (SchemaID, UserID, LabDateTime, LabNumCascade, LabFlowrate, LabComment) "
                                 "VALUES (1, 1, NOW(), %1 ,%2, '%3')").arg(QString::number(Control->NumCascade),
                                                                                           QString::number(static_cast<int>(Control->PlaybackFlowrate)),
@@ -51,7 +51,7 @@ void SchemaDB::sendLabData(){
              query.bindValue(":PointValue", Control->Conductivity.at(i));
              query.exec();
          }
-         db.commit();
+         m_db.commit();
          emit finishedResult(true);
      } else emit finishedResult(false);
 }
@@ -91,7 +91,7 @@ PFDControl* SchemaDB::getData() {
 }
 bool SchemaDB::getLabsTable(){
     if(createConnection()){
-        LabsModel = new QSqlRelationalTableModel(this, db);
+        LabsModel = new QSqlRelationalTableModel(this, m_db);
         LabsModel->setTable("Lab");
     //    LabsModel->setRelation(1, QSqlRelation("Schema", "SchemaID", "name"));
         LabsModel->setRelation(2, QSqlRelation("User", "UserID", "UserName"));
@@ -107,4 +107,4 @@ bool SchemaDB::getLabsTable(){
     } else return false;
 }
 bool SchemaDB::isConnected = false;
-QSqlDatabase SchemaDB::db;
+QSqlDatabase SchemaDB::m_db;

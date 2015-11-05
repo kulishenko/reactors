@@ -41,6 +41,7 @@
 #include "modelcell.h"
 #include "schemadb.h"
 #include "schemalogger.h"
+#include "modelcstr.h"
 
 extern "C" {
 #include <libxls/xls.h>

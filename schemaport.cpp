@@ -16,8 +16,8 @@ void SchemaPort::setRotation(qreal Angle) {
     qreal py = y();
     qreal px = x();
     // O(ox,oy)
-    qreal ox =parent->x();
-    qreal oy =parent->y();
+    qreal ox = parent->x();
+    qreal oy = parent->y();
     setX(c * (px-ox) - s * (py-oy) + ox);
     setY(s * (px-ox) + c * (py-oy) + oy);
 

@@ -11,11 +11,10 @@ class SchemaData
 public:
     SchemaData(PFDControl *Ctrl);
     ~SchemaData();
-    PFDControl* Control;
-    QVector<qreal> *ExpDataConductivity;
-    QVector<qreal> *ExpDataTime;
-    int* NumCascade;
-    qreal* Flowrate; // Volume flowrate, L/hr
+    QVector<qreal> *p_ExpDataConductivity;
+    QVector<qreal> *p_ExpDataTime;
+    int* p_NumCascade;
+    qreal* p_Flowrate; // Volume flowrate, L/hr
     QVector<qreal> Conc, SConc; // Tracer concentration, kmol/m3
     QVector<qreal> DimConc; // Dimensionless tracer concentration
     QVector<qreal> DimTime; // Dimensionless time
@@ -32,14 +31,15 @@ public:
     void calcDimTime();
     void calcM2t();
     void estimateNumCells();
-    qreal Calibrate(qreal x);
-    unsigned int DataRes; // Data resolution
+    unsigned int m_DataRes; // Data resolution
     void SmoothData();
 private:
-    qreal* t_0() const;
-    qreal* t_last() const;
-    qreal dt(int i);
     int i_t0;
+    qreal Calibrate(qreal x);
+    qreal dt(int i);
+    qreal dim_dt(int i);
+    QVector<qreal>::const_iterator t_0() const;
+    QVector<qreal>::const_iterator t_last() const;
 };
 
 #endif // SCHEMADATA_H
