@@ -11,6 +11,8 @@
 #include <QVideoSurfaceFormat>
 #include <QGraphicsVideoItem>
 
+
+
 extern "C" {
 #include <stdio.h>
 }
@@ -360,12 +362,19 @@ void MainWindow::createSchemaView()
     m_scene->addItem(valveItem1);
 
     // Creating CSTR Items
-    for(int i=1; i<=5; i++)
+    for(int i=1; i<=5; i++){
         reactorItems.push_back(new SchemaCSTR(120,90,i*200,i*70,0.1,i-1));
+        ModelCSTR* CSTR = new ModelCSTR();
+        CSTR->setProperty("Level", 0.1);
+    }
 
-    ModelCSTR* CSTR = new ModelCSTR();
-    CSTR->setProperty("Level", 0.1);
+    ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
+    qDebug() << "ElementId: " + FlowmeterModel->property("ElementId").toString();
 
+    SchemaConfig* Config = new SchemaConfig;
+    Config->SerializeObject(FlowmeterModel);
+
+    Config->SerializeObject(valveItem1);
 
     flowmeterItem = new SchemaFlowmeter(25,200,125,50,0);
 
@@ -823,7 +832,7 @@ void MainWindow::loadSettings()
 {
     QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
-    bool maximized;
+    bool maximized = false;
     if(settings.contains("maximized")){
         maximized = settings.value("maximized").toBool();
         setWindowState(Qt::WindowMaximized);

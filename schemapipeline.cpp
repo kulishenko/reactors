@@ -1,6 +1,6 @@
 #include "schemapipeline.h"
 
-SchemaPipeline::SchemaPipeline(SchemaItem* From,SchemaItem* To) : QGraphicsPathItem()
+SchemaPipeline::SchemaPipeline(SchemaItem* From, SchemaItem* To) : QGraphicsPathItem()
 {
 
     LinePath = new QPainterPath();

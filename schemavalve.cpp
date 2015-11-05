@@ -24,7 +24,7 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     InletPort->setRotation(Angle);
 
     MaxFlow=1.0;
-    FlowCoeffitient=0.0;
+    m_Position=0.0;
 }
 
 SchemaValve::~SchemaValve()
@@ -33,15 +33,17 @@ SchemaValve::~SchemaValve()
 }
 void SchemaValve::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     qDebug() << "Valve clicked:" << QString::number(event->pos().x());
-    if(event->pos().x() >= 22 && FlowCoeffitient <= 0.9){
-        FlowCoeffitient += 0.1 ; increase();
+    if(event->pos().x() >= 22 && m_Position <= 0.9){
+        m_Position += 0.1 ;
+        emit increase();
     }
-    else if(event->pos().x() < 22 && FlowCoeffitient >= 0.1){
-        FlowCoeffitient -= 0.1 ; decrease();
+    else if(event->pos().x() < 22 && m_Position >= 0.1){
+        m_Position -= 0.1 ;
+        emit decrease();
     }
     //  K0CTIb/|b
     SchemaFlowmeter *tmp = static_cast<SchemaFlowmeter*>(Descedant);
-    tmp->setFlowrate(FlowCoeffitient*MaxFlow);
+    tmp->setFlowrate(m_Position*MaxFlow);
     tmp->Floater->update();
 
     event->accept();

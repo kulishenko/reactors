@@ -1,9 +1,9 @@
 #ifndef SCHEMAPORT_H
 #define SCHEMAPORT_H
+#define _USE_MATH_DEFINES
 #include <QPointF>
-#include <math.h>
-//#include <schemaitem.h>
 #include <QGraphicsItem>
+#include <math.h>
 
 class SchemaPort : public QPointF
 {

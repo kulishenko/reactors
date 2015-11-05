@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimediawidgets
+QT       += core gui multimediawidgets xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport sql
 
@@ -34,7 +34,9 @@ SOURCES += main.cpp\
     schemalogger.cpp \
     schemacell.cpp \
     schemaconfig.cpp \
-    modelitem.cpp
+    modelitem.cpp \
+    modelvalve.cpp \
+    modelflowmeter.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -64,7 +66,9 @@ HEADERS  += mainwindow.h \
     schemalogger.h \
     schemacell.h \
     schemaconfig.h \
-    modelitem.h
+    modelitem.h \
+    modelvalve.h \
+    modelflowmeter.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 
@@ -87,6 +91,8 @@ RC_FILE = icon.rc
 
 DISTFILES += \
     icon.rc
+
+CONFIG += c++14
 
 win32: LIBS += -L$$PWD/gsl-1.15-lib/lib/ -llibgsl
 

@@ -13,7 +13,7 @@ class SchemaValve : public QObject, public QGraphicsPolygonItem, public SchemaIt
 public:
     SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qreal Angle);
     ~SchemaValve();
-    qreal FlowCoeffitient;
+    qreal m_Position;
     qreal MaxFlow;
 signals:
     void increase();

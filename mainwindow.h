@@ -42,6 +42,8 @@
 #include "schemadb.h"
 #include "schemalogger.h"
 #include "modelcstr.h"
+#include "modelflowmeter.h"
+#include "schemaconfig.h"
 
 extern "C" {
 #include <libxls/xls.h>

@@ -1,11 +1,11 @@
 #include "schemaconfig.h"
 
-SchemaConfig::SchemaConfig(const SchemaItem &sItem)
+SchemaConfig::SchemaConfig()
 {
 
 
-
-
+/*
+SchemaItem &sItem;
 
 
     ElementItemTypes.insert("SchemaCSTR", SchemaCSTR);
@@ -15,7 +15,7 @@ SchemaConfig::SchemaConfig(const SchemaItem &sItem)
 
 
     item->insert("type", ElementItemTypes.find(typeid(sItem).name()).value());
-    Config.append(item);
+    Config.append(item);*/
 }
 
 SchemaConfig::~SchemaConfig()
@@ -45,5 +45,26 @@ void SchemaConfig::ParseXMLConfig(){
        }
        QXmlStreamReader xml(file);
 }
+bool SchemaConfig::SerializeObject(QObject* object){
+    QDomDocument doc;
+    QDomElement root = doc.createElement(object->metaObject()->className());
+    doc.appendChild(root);
 
-
+    for(int i = 0; i < object->metaObject()->propertyCount(); i++)
+    {
+        QMetaProperty prop = object->metaObject()->property(i);
+        QString propName = prop.name();
+        if(propName == "objectName")
+            continue;
+        QDomElement el = doc.createElement(propName);
+        QVariant value = object->property(propName.toLocal8Bit().data());
+        QDomText txt = doc.createTextNode( value.toString() );
+        qDebug() << propName + " " + value.toString();
+        el.appendChild(txt);
+        root.appendChild(el);
+    }
+    QFile output("c:/config.xml");
+    QTextStream stream(&output);
+    doc.save(stream, 2);
+    return true;
+}
