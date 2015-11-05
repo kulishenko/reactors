@@ -45,7 +45,7 @@ void SchemaConfig::ParseXMLConfig(){
        }
        QXmlStreamReader xml(file);
 }
-bool SchemaConfig::SerializeObject(QObject* object){
+bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
     QDomDocument doc;
     QDomElement root = doc.createElement(object->metaObject()->className());
     doc.appendChild(root);
@@ -63,8 +63,32 @@ bool SchemaConfig::SerializeObject(QObject* object){
         el.appendChild(txt);
         root.appendChild(el);
     }
-    QFile output("c:/config.xml");
-    QTextStream stream(&output);
+
+    QTextStream stream(output);
     doc.save(stream, 2);
     return true;
 }
+
+bool SchemaConfig::_deserializeObject(QIODevice *input, QObject *object)
+{
+    QDomDocument doc;
+    if (!doc.setContent(input))
+        return false;
+    QDomElement element = doc.documentElement();
+    for(int i = 0; i < object->metaObject()->propertyCount(); i++)
+    {
+        QMetaProperty prop = object->metaObject()->property(i);
+        QString propName = prop.name();
+        if(propName == "objectName")
+            continue;
+        QDomNodeList nodeList = element.elementsByTagName(propName);
+        if(nodeList.length() < 1)
+            continue;
+        QDomNode node = nodeList.at(0);
+        QVariant value = object->property(propName.toLocal8Bit().data());
+        QString v = node.toElement().text();
+        object->setProperty(propName.toLocal8Bit().data(), QVariant(v));
+    }
+    return true;
+}
+

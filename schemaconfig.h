@@ -20,8 +20,17 @@ public:
     enum SchemaItemType {SchemaCSTR, SchemaPFR};
     int getIntType(SchemaItemType t);
     QMap<QString, SchemaItemType> ElementItemTypes;
-    bool SerializeObject(QObject* object);
+    bool serializeObject(QObject *object, QIODevice *output);
+    template<class T>
+    T* deserialize(QIODevice *input){
+        T* object = new T();
+        if(_deserializeObject(input, object))
+            return object;
+        delete object;
+        return NULL;
+    }
 private:
+    bool _deserializeObject(QIODevice* input, QObject* object);
     void ParseXMLConfig();
 };
 

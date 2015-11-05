@@ -361,20 +361,30 @@ void MainWindow::createSchemaView()
     valveItem1 = new SchemaValve(30,45,122.5,350,-90);
     m_scene->addItem(valveItem1);
 
+    ModelCSTR* CSTRModel;
     // Creating CSTR Items
     for(int i=1; i<=5; i++){
         reactorItems.push_back(new SchemaCSTR(120,90,i*200,i*70,0.1,i-1));
-        ModelCSTR* CSTR = new ModelCSTR();
-        CSTR->setProperty("Level", 0.1);
+        CSTRModel = new ModelCSTR();
+        CSTRModel->setProperty("Level", 0.1);
     }
 
     ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
-    qDebug() << "ElementId: " + FlowmeterModel->property("ElementId").toString();
 
-    SchemaConfig* Config = new SchemaConfig;
-    Config->SerializeObject(FlowmeterModel);
 
-    Config->SerializeObject(valveItem1);
+    SchemaConfig Config;
+    QFile file("c:/config.xml");
+
+    Q_ASSERT(file.open(QIODevice::WriteOnly));
+
+    Config.serializeObject(CSTRModel, &file);
+    file.close();
+
+    Q_ASSERT(file.open(QIODevice::ReadOnly));
+
+    ModelCSTR* CSTRModel2 = Config.deserialize<ModelCSTR>(&file);
+
+    file.close();
 
     flowmeterItem = new SchemaFlowmeter(25,200,125,50,0);
 
