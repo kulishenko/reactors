@@ -845,7 +845,8 @@ void MainWindow::loadSettings()
     bool maximized = false;
     if(settings.contains("maximized")){
         maximized = settings.value("maximized").toBool();
-        setWindowState(Qt::WindowMaximized);
+        if(maximized)
+            setWindowState(Qt::WindowMaximized);
     }
     if(settings.contains("size") && !maximized){
         QSize size = settings.value("size").toSize();
