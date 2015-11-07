@@ -5,10 +5,13 @@ SchemaPipeline::SchemaPipeline(SchemaItem* From, SchemaItem* To) : QGraphicsPath
 
     LinePath = new QPainterPath();
 
-    LinePath->moveTo(*(From->OutletPort));
-    if((From->OutletPort->x() != To->InletPort->x()) || (From->OutletPort->y() != To->InletPort->y()))
-        LinePath->lineTo(To->InletPort->x(),From->OutletPort->y());
-    LinePath->lineTo(*(To->InletPort));
+    QPointF FromPos = From->OutletPort->scenePos();
+    QPointF ToPos = To->InletPort->scenePos();
+
+    LinePath->moveTo(FromPos);
+    if((FromPos.x() != ToPos.x()) || (FromPos.y() != ToPos.y()))
+        LinePath->lineTo(ToPos.x(),FromPos.y());
+    LinePath->lineTo(ToPos);
     setPath(*LinePath);
     // Pointer to the next item in schema
     From->Descedant = To;

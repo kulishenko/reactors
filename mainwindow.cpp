@@ -269,7 +269,7 @@ void MainWindow::createMenus()
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
 
-    formatMenu = editMenu->addMenu(tr("&Format"));
+/*  formatMenu = editMenu->addMenu(tr("&Format"));
     formatMenu->addAction(boldAct);
     formatMenu->addAction(italicAct);
     formatMenu->addSeparator()->setText(tr("Alignment"));
@@ -279,7 +279,7 @@ void MainWindow::createMenus()
     formatMenu->addAction(centerAct);
     formatMenu->addSeparator();
     formatMenu->addAction(setLineSpacingAct);
-    formatMenu->addAction(setParagraphSpacingAct);
+    formatMenu->addAction(setParagraphSpacingAct); */
 }
 
 void MainWindow::createDockWindows()
@@ -361,28 +361,32 @@ void MainWindow::createSchemaView()
     valveItem1 = new SchemaValve(30,45,122.5,350,-90);
     m_scene->addItem(valveItem1);
 
-    ModelCSTR* CSTRModel;
-    // Creating CSTR Items
-    for(int i=1; i<=5; i++){
-        reactorItems.push_back(new SchemaCSTR(120,90,i*200,i*70,0.1,i-1));
-        CSTRModel = new ModelCSTR();
-        CSTRModel->setProperty("Level", 0.1);
-    }
-
-    ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
 
 
     SchemaConfig Config;
     QFile file("c:/config.xml");
 
-    Q_ASSERT(file.open(QIODevice::WriteOnly));
+    assert(file.open(QIODevice::WriteOnly));
 
-    Config.serializeObject(CSTRModel, &file);
+    ModelCSTR* CSTRModel;
+    // Creating CSTR Items
+
+    for(int i=1; i<=5; i++){
+        reactorItems.push_back(new SchemaCSTR(90, 120, i*200, i*70, 0.1, i-1));
+        CSTRModel = new ModelCSTR();
+        CSTRModel->setProperty("Level", 0.1);
+        Config.serializeObject(reactorItems.at(i-1), &file);
+    }
+
+    ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
+
+
+    Config.serializeObject(reactorItems.last(), &file);
     file.close();
 
-    Q_ASSERT(file.open(QIODevice::ReadOnly));
+    assert(file.open(QIODevice::ReadOnly));
 
-    ModelCSTR* CSTRModel2 = Config.deserialize<ModelCSTR>(&file);
+ //   SchemaCSTR* ReactorItem = Config.deserialize<SchemaCSTR>(&file);
 
     file.close();
 
@@ -442,8 +446,8 @@ void MainWindow::initControl()
 
     connect(this, SIGNAL(destroyed()), thread, SLOT(quit()));
 
-    connect(valveItem1, SIGNAL(increase()),Control,SLOT(flowrate_increase()));
-    connect(valveItem1, SIGNAL(decrease()),Control,SLOT(flowrate_decrease()));
+    connect(valveItem1, SIGNAL(FlowIncreased()),Control,SLOT(flowrate_increase()));
+    connect(valveItem1, SIGNAL(FlowDecreased()),Control,SLOT(flowrate_decrease()));
 
 
     connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
@@ -722,10 +726,13 @@ void MainWindow::paramEstimation(){
 
     ModelCell *Model = new ModelCell(Data);
 
+    EventLog << tr("Started parameter estimation and simulation");
+
     Model->EstimateNumCells();
     Model->Sim();
     Model->SimODE();
 
+    EventLog << tr("Cell model parameters have been estimated, see the results...");
     QWidget *wnd = new QWidget();
     QVBoxLayout* layout = new QVBoxLayout;
     QCustomPlot *resPlotWidget = new QCustomPlot();
@@ -815,7 +822,7 @@ void MainWindow::importFromServer(bool result)
 
         EventLog << tr("Imported the playback data from server")
                  << tr("Please, set the volume flowrate %1 L/hr in order to begin "
-                            "the simulation playback").arg(Control->PlaybackFlowrate);
+                       "the simulation playback").arg(Control->PlaybackFlowrate);
 
         thread->start();
     } else
@@ -882,10 +889,10 @@ void MainWindow::saveSettings()
 void MainWindow::exportFinished(bool result) {
     if (result) {
         QMessageBox::information(this,tr("Export successful"),
-                                           tr("Export has been successfuly finished"),QMessageBox::Ok);
+                                 tr("Export has been successfuly finished"),QMessageBox::Ok);
         EventLog << tr("Exported the lab data to remote server");
         }
     else
-        QMessageBox::warning(this, tr("Couldn't export the data"),tr("Couldn't export the data"));
+        QMessageBox::warning(this, tr("Couldn't export the data"), tr("Couldn't export the data"));
     exportToServerAct->setEnabled(true);
 }

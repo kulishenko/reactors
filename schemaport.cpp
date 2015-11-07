@@ -1,16 +1,24 @@
 #include "schemaport.h"
 
-SchemaPort::SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem) : QPointF(PosX, PosY)
+SchemaPort::SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem) :
+    QGraphicsLineItem(PosX,PosY,PosX,PosY, parentItem) //QPointF(PosX, PosY)
 {
-    parent = parentItem;
+//    parent = parentItem;
 }
 
 SchemaPort::~SchemaPort()
 {
 
 }
-void SchemaPort::setRotation(qreal Angle) {
 
+QPointF SchemaPort::scenePos() const
+{
+    QPointF parentPos = QGraphicsLineItem::scenePos();
+    QPointF Pos = line().p1();
+    return  Pos + parentPos;
+}
+//void SchemaPort::setRotation(qreal Angle) {
+/*
     qreal s = sin(Angle*M_PI/180);
     qreal c = cos(Angle*M_PI/180);
     qreal py = y();
@@ -21,8 +29,9 @@ void SchemaPort::setRotation(qreal Angle) {
     setX(c * (px-ox) - s * (py-oy) + ox);
     setY(s * (px-ox) + c * (py-oy) + oy);
 
-}
-void SchemaPort::setPos(qreal dx, qreal dy) {
+}*/
+/*void SchemaPort::setPos(qreal dx, qreal dy) {
+
    setX(x()+dx);
    setY(y()+dy);
-}
+}*/

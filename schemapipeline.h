@@ -6,8 +6,9 @@ class SchemaPipeline : public QGraphicsPathItem
 {
 public:
     SchemaPipeline(SchemaItem *From, SchemaItem *To);
-    QPainterPath* LinePath;
     ~SchemaPipeline();
+private:
+    QPainterPath* LinePath;
 };
 
 #endif // SCHEMAPIPELINE_H

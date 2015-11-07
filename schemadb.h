@@ -28,9 +28,7 @@ private:
     int LabID;
     qreal LabFlowrate;
     int LabNumCascade;
-
     bool createConnection();
-
 signals:
     void finished();
     void finishedResult(bool result);

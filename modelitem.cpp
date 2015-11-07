@@ -4,7 +4,6 @@ ModelItem::ModelItem(QObject *parent) : QObject(parent) , m_ElementId(s_ElementI
 {
     m_InletFlowrate = 0.f;
     m_MaxFlowrate = 0.f;
-   // m_ElementId=s_ElementId++;
 }
 
 ModelItem::~ModelItem()

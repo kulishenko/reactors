@@ -12,23 +12,4 @@ ModelCSTR::~ModelCSTR()
 
 }
 
-void ModelCSTR::setLevel(qreal Value)
-{
-    m_Level = Value;
-}
-
-qreal ModelCSTR::getLevel()
-{
-    return m_Level;
-}
-
-void ModelCSTR::setWorking(bool Value)
-{
-    m_isWorking = Value;
-}
-
-bool ModelCSTR::isWorking()
-{
-    return m_isWorking;
-}
 

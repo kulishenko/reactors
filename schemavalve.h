@@ -6,7 +6,7 @@
 #include <schemaflowmeter.h>
 #include <QObject>
 
-class SchemaValve : public QObject, public QGraphicsPolygonItem, public SchemaItem
+class SchemaValve : public SchemaItem, public QGraphicsPolygonItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
@@ -15,9 +15,11 @@ public:
     ~SchemaValve();
     qreal m_Position;
     qreal MaxFlow;
+private:
+    const qreal m_Width, m_Length;
 signals:
-    void increase();
-    void decrease();
+    void FlowIncreased();
+    void FlowDecreased();
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 };

@@ -1,11 +1,10 @@
 #include "schemaconfig.h"
+#include <QBuffer>
 
 SchemaConfig::SchemaConfig()
 {
-
-
 /*
-SchemaItem &sItem;
+    SchemaItem &sItem;
 
 
     ElementItemTypes.insert("SchemaCSTR", SchemaCSTR);
@@ -58,6 +57,7 @@ bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
             continue;
         QDomElement el = doc.createElement(propName);
         QVariant value = object->property(propName.toLocal8Bit().data());
+
         QDomText txt = doc.createTextNode( value.toString() );
         qDebug() << propName + " " + value.toString();
         el.appendChild(txt);

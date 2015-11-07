@@ -21,8 +21,6 @@ bool SchemaDB::createConnection(){
         if (!m_db.open()) {
             qDebug() << "Database error occurred";
             perror("Database connection error");
-            //QMessageBox::warning(this, tr("DB connection failure"),
-            //                     tr("Failed to connect to the database"));
             return false;
         }
         isConnected = true;

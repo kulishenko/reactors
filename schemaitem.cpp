@@ -1,6 +1,6 @@
 #include "schemaitem.h"
 
-SchemaItem::SchemaItem()
+SchemaItem::SchemaItem() : PFD(NULL)
 {
 
 }

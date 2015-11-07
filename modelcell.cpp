@@ -1,8 +1,8 @@
 #include "modelcell.h"
 
-ModelCell::ModelCell(SchemaData *Data)
+ModelCell::ModelCell(SchemaData *Data) : p_Data(Data)
 {
-    p_Data = Data;
+
 }
 
 ModelCell::~ModelCell()

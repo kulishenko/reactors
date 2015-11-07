@@ -5,14 +5,15 @@
 #include <QGraphicsItem>
 #include <math.h>
 
-class SchemaPort : public QPointF
+class SchemaPort : public  QGraphicsLineItem //QPointF
 {
 public:
     SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem);
     ~SchemaPort();
-    void setRotation(qreal Angle);
-    void setPos(qreal dx, qreal dy);
-    QGraphicsItem* parent;
+//    void setRotation(qreal Angle);
+//    void setPos(qreal dx, qreal dy);
+//    QGraphicsItem* parent;
+    QPointF scenePos() const;
 };
 
 #endif // SCHEMAPORT_H

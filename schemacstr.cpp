@@ -4,77 +4,74 @@
 #include <QTimeLine>
 
 
-SchemaCSTR::SchemaCSTR(int Height, int Width , int xPos, int yPos, qreal StartLevel, int Index)
+SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLevel, int Index) :
+    SchemaItem(), QGraphicsPathItem(), m_numInCascade(Index), m_Size(Width, Height), m_PosX(xPos), m_PosY(yPos)
 {
+
     if(StartLevel!=0.0)
-        LiquidLevel = LiquidLevelSet = StartLevel;
+        m_LiquidLevel = m_LiquidLevelSet = StartLevel;
     // Initial Mixer Angle - adding some randomnicity
-    MixerAngle=rand();
-    isWorking = false;
-    isReady = false;
-    isFeeding = false;
-    numInCascade = Index;
-    InletPort = new SchemaPort(10+xPos,yPos+10, this);
-    OutletPort = new SchemaPort(Width+xPos,yPos+40, this);
+    m_MixerAngle=rand();
+    m_isWorking = false;
+    m_isReady = false;
+    m_isFeeding = false;
+    InletPort = new SchemaPort(Width/9,0.1*Height, this);
+    OutletPort = new SchemaPort(Width,Height/3, this);
 
 //  What color is the best?
-//    LiquidBottomColor = QColor(Qt::darkBlue);
-//    LiquidTopColor = QColor(Qt::blue);
-    LiquidBottomColor.setRgb(102,204,255);
-    LiquidTopColor = LiquidBottomColor.light();
-//    LiquidTopColor.setRgb(194,235,255);
-    GasColor = QColor(Qt::white);
-//    GasColor = QColor::fromRgb(240,240,240);
+//    m_LiquidBottomColor = QColor(Qt::darkBlue);
+//    m_LiquidTopColor = QColor(Qt::blue);
+    m_LiquidBottomColor.setRgb(102,204,255);
+    m_LiquidTopColor = m_LiquidBottomColor.light();
+//    m_LiquidTopColor.setRgb(194,235,255);
+    m_GasColor = QColor(Qt::white);
+//    m_GasColor = QColor::fromRgb(240,240,240);
 
     // Drawing Vessel
-    path = new QPainterPath();
-    path->lineTo(0,Height);
-    path->quadTo(Width/2,Height+40,Width,Height);
-    path->lineTo(Width,0);
-    path->quadTo(Width/2,-40,0,0);
+    p_path = new QPainterPath();
+    p_path->lineTo(0,Height);
+    p_path->quadTo(Width/2,Height*1.33,Width,Height);
+    p_path->lineTo(Width,0);
+    p_path->quadTo(Width/2,-Height*0.33,0,0);
 
     // Drawing Liquid
-    Gradient=new QLinearGradient(path->boundingRect().bottomLeft(),path->boundingRect().topLeft());
-    Gradient->setColorAt(1,const_cast<QColor &> (GasColor));
-    Gradient->setColorAt(LiquidLevel,const_cast<QColor &> (GasColor));
-    Gradient->setColorAt(LiquidLevel-1e-10,const_cast<QColor &> (LiquidTopColor));
-    Gradient->setColorAt(0,const_cast<QColor &> (LiquidBottomColor));
-    //       path.setFillRule(Qt::WindingFill);
-    setPath(*path);
-    setBrush(*Gradient);
+    p_Gradient=new QLinearGradient(p_path->boundingRect().bottomLeft(),p_path->boundingRect().topLeft());
+    p_Gradient->setColorAt(1,const_cast<QColor &> (m_GasColor));
+    p_Gradient->setColorAt(m_LiquidLevel,const_cast<QColor &> (m_GasColor));
+    p_Gradient->setColorAt(m_LiquidLevel-1e-10,const_cast<QColor &> (m_LiquidTopColor));
+    p_Gradient->setColorAt(0,const_cast<QColor &> (m_LiquidBottomColor));
+    //       p_path.setFillRule(Qt::WindingFill);
+    setPath(*p_path);
+    setBrush(*p_Gradient);
     setPos(xPos,yPos);
 
     // Drawing Rings
-    Ring1 = new QGraphicsRectItem(this);
-    Ring1->setRect(-5,20,Width+10,5);
-    Ring2 = new QGraphicsRectItem(this);
-    Ring2->setRect(-5,25,Width+10,5);
+    p_Ring1 = new QGraphicsRectItem(this);
+    p_Ring1->setRect(-5,20,Width+10,5);
+    p_Ring2 = new QGraphicsRectItem(this);
+    p_Ring2->setRect(-5,25,Width+10,5);
 
     // Drawing Motor Block
-    Motor = new QGraphicsEllipseItem(this);
+    p_Motor = new QGraphicsEllipseItem(this);
     int MotorRadius = 40;
-    Motor->setRect(QRect(Width/2-MotorRadius/2,-80,MotorRadius,MotorRadius));
+    p_Motor->setRect(QRect(Width/2-MotorRadius/2,-80,MotorRadius,MotorRadius));
 
-    MotorLabel = new QGraphicsSimpleTextItem("M",Motor);
-    MotorLabel->setPos(Motor->boundingRect().topLeft());
-    MotorLabel->moveBy(MotorLabel->boundingRect().width(),0);
+    p_MotorLabel = new QGraphicsSimpleTextItem("M",p_Motor);
+    p_MotorLabel->setPos(p_Motor->boundingRect().topLeft());
+    p_MotorLabel->moveBy(p_MotorLabel->boundingRect().width(),0);
     QFont MotorLabelFont("Calibri", 22, QFont::Bold);
-    MotorLabel->setFont(MotorLabelFont);
-//    MotorLabel->
+    p_MotorLabel->setFont(MotorLabelFont);
 
+    p_Stir = new QGraphicsPathItem(p_Motor);
+    p_Stirpath = new QPainterPath();
+    p_Stirpath->moveTo(Width/2,-40);
+    p_Stirpath->lineTo(Width/2,100);
+    p_Stir->setPath(*p_Stirpath);
 
-    Stir = new QGraphicsPathItem(Motor);
-    Stirpath = new QPainterPath();
-    Stirpath->moveTo(Width/2,-40);
-    Stirpath->lineTo(Width/2,100);
-    Stir->setPath(*Stirpath);
-
-
-    Mixer = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 0, 0 )  << QPointF( 0, 20 ) << QPointF( 15, 10 ) << QPointF(30,20)  << QPointF(30,0) << QPointF( 15, 10 ) ), this);
- //   Mixer->setPen( QPen(Qt::black) );
-    Mixer->setBrush( Qt::gray );
-    Mixer->setPos(Width/2-15,100-10);
-    Mixer->setTransform(QTransform().translate(15,0).rotate(MixerAngle,Qt::YAxis).translate(-15,0));
+    p_Mixer = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 0, 0 )  << QPointF( 0, 20 ) << QPointF( 15, 10 ) << QPointF(30,20)  << QPointF(30,0) << QPointF( 15, 10 ) ), this);
+    p_Mixer->setBrush( Qt::gray );
+    p_Mixer->setPos(Width/2-15,100-10);
+    p_Mixer->setTransform(QTransform().translate(15,0).rotate(m_MixerAngle,Qt::YAxis).translate(-15,0));
 
 }
 
@@ -86,7 +83,7 @@ SchemaCSTR::~SchemaCSTR()
 
 void SchemaCSTR::setLevel(qreal Level, int TransTime) {
 
-    LiquidLevelSet = Level;
+    m_LiquidLevelSet = Level;
 //    if(TransTime==0) TransTime = 5000;// Transient time
 
     QTimeLine *anim = new QTimeLine(TransTime,this);
@@ -99,21 +96,21 @@ void SchemaCSTR::setLevel(qreal Level, int TransTime) {
 
 void SchemaCSTR::animLevel(qreal Value){
 
-    qreal CurrentFrameLevel = LiquidLevel + (LiquidLevelSet - LiquidLevel) * Value;
+    qreal CurrentFrameLevel = m_LiquidLevel + (m_LiquidLevelSet - m_LiquidLevel) * Value;
 
     setBrush(Qt::white);
-    delete Gradient;
-    Gradient = new QLinearGradient(path->boundingRect().bottomLeft(),path->boundingRect().topLeft());
-    Gradient->setColorAt(1,const_cast<QColor &> (GasColor));
-    Gradient->setColorAt(CurrentFrameLevel,const_cast<QColor &> (GasColor));
-    Gradient->setColorAt(CurrentFrameLevel-1e-10,const_cast<QColor &> (LiquidTopColor));
-    Gradient->setColorAt(0,const_cast<QColor &> (LiquidBottomColor));
-    setBrush(*Gradient);
+    delete p_Gradient;
+    p_Gradient = new QLinearGradient(p_path->boundingRect().bottomLeft(),p_path->boundingRect().topLeft());
+    p_Gradient->setColorAt(1,const_cast<QColor &> (m_GasColor));
+    p_Gradient->setColorAt(CurrentFrameLevel,const_cast<QColor &> (m_GasColor));
+    p_Gradient->setColorAt(CurrentFrameLevel-1e-10,const_cast<QColor &> (m_LiquidTopColor));
+    p_Gradient->setColorAt(0,const_cast<QColor &> (m_LiquidBottomColor));
+    setBrush(*p_Gradient);
 
-    if(!isFeeding &&  Value > 0.8 && this != PFD->reactorItems->last()) {
+    if(!m_isFeeding &&  Value > 0.8 && this != PFD->reactorItems->last()) {
         SchemaCSTR* next = static_cast<SchemaCSTR*>(Descedant);
         emit next->fill();
-        isFeeding = true;
+        m_isFeeding = true;
     }
 
 }
@@ -121,16 +118,34 @@ void SchemaCSTR::animLevel(qreal Value){
 void SchemaCSTR::animMotor(qreal Value)
 {
     // KOCTbI/\b
-    Mixer->setTransform(QTransform().translate(15,0).rotate(MixerAngle+Value*180,Qt::YAxis).translate(-15,0));
+    p_Mixer->setTransform(QTransform().translate(15,0).rotate(m_MixerAngle+Value*180,Qt::YAxis).translate(-15,0));
 }
 
 void SchemaCSTR::animFinished()
 {
-    LiquidLevel = LiquidLevelSet;
-    isReady = true;
+    m_LiquidLevel = m_LiquidLevelSet;
+    m_isReady = true;
     if(this == PFD->reactorItems->last()) emit PFD->startSim();
     sender()->~QObject();
 }
+
+void SchemaCSTR::setSize(QSize Value)
+{
+
+}
+
+void SchemaCSTR::setPosX(int Value)
+{
+    m_PosX = Value;
+    setPos(m_PosX, m_PosY);
+}
+
+void SchemaCSTR::setPosY(int Value)
+{
+    m_PosY = Value;
+    setPos(m_PosX, m_PosY);
+}
+
 void SchemaCSTR::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event)
@@ -141,23 +156,22 @@ void SchemaCSTR::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 void SchemaCSTR::changeLevel(){
+    // For testing purposes only
         setLevel(0.5, 0);
 }
 void SchemaCSTR::fill(){
-    // Sorry about that... It was lazy to do it via SIGNAL-SLOT
-    // PFDControl* Ctrl = static_cast <PFDControl *> (sender());
 
-    qreal transTime = (PFD->Tau.at(numInCascade)-(numInCascade==0 ? 0 : PFD->Tau.at(numInCascade-1) ) ) *3600*1000;
+    qreal transTime = (PFD->Tau.at(m_numInCascade)-(m_numInCascade==0 ? 0 : PFD->Tau.at(m_numInCascade-1) ) ) *3600*1000;
     qDebug() << "Flowrate is "+ QString::number(PFD->Flowrate);
-    qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(numInCascade),QString::number(transTime));
+    qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(m_numInCascade),QString::number(transTime));
     setLevel(0.8, static_cast<int>(transTime));
-    if(!isWorking) activateMotor();
+    if(!m_isWorking) activateMotor();
 
 }
 
 void SchemaCSTR::activateMotor()
 {
-    isWorking = true;
+    m_isWorking = true;
     QTimeLine *anim = new QTimeLine(500,this);
     anim->setLoopCount(0);
     anim->setUpdateInterval(30);

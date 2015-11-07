@@ -31,9 +31,9 @@ public:
     void calcDimTime();
     void calcM2t();
     void estimateNumCells();
-    unsigned int m_DataRes; // Data resolution
     void SmoothData();
 private:
+    unsigned int m_DataRes; // Data resolution
     int i_t0;
     qreal Calibrate(qreal x);
     qreal dt(int i);
