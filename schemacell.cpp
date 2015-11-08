@@ -25,6 +25,9 @@ SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qrea
     OutletPort = new SchemaPort(0,Height*0.5,this, -90);
     InletPort = new SchemaPort(Width,Height*0.5,this, -90);
 
+    p_Electrode = new QGraphicsRectItem(Width*0.775, Height * 0.2, Width*0.05, Height * 1.3,this);
+    p_Electrode->setBrush(Qt::black);
+
     setRotation(Angle);
     setPos(PosX,PosY);
 

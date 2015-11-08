@@ -26,7 +26,14 @@ void SchemaPipeline::drawLine()
 
     LinePath->moveTo(FromPos);
     if((FromPos.x() != ToPos.x()) || (FromPos.y() != ToPos.y()))
-        LinePath->lineTo(ToPos.x(),FromPos.y());
+        if(fabs(m_From->OutletPort->getAngle() - m_To->InletPort->getAngle()) > 1e-2)
+            LinePath->lineTo(ToPos.x(), FromPos.y());
+        else
+        {
+            LinePath->lineTo((ToPos.x() + FromPos.x())/2,  FromPos.y());
+            LinePath->lineTo((ToPos.x() + FromPos.x())/2,  ToPos.y());
+        }
+
     LinePath->lineTo(ToPos);
     setPath(*LinePath);
 

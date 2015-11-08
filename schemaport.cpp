@@ -32,8 +32,18 @@ QPointF SchemaPort::scenePos() const
     result.setX(c * (px-ox) - s * (py-oy) + ox);
     result.setY(s * (px-ox) + c * (py-oy) + oy);
 
-    return  result;
+    return result;
 
+}
+
+qreal SchemaPort::getAngle() const
+{
+    qreal x = line().angle() + parentItem()->rotation();
+    x = fmod(x,360);
+    if (x < 0)
+        x += 360;
+    qDebug() << x;
+    return x;
 }
 //void SchemaPort::setRotation(qreal Angle) {
 /*

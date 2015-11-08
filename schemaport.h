@@ -14,6 +14,7 @@ public:
 //    void setPos(qreal dx, qreal dy);
 //    QGraphicsItem* parent;
     QPointF scenePos() const;
+    qreal getAngle() const;
 };
 
 #endif // SCHEMAPORT_H
