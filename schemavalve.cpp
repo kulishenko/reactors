@@ -6,7 +6,8 @@
 
 
 //TODO : Remove Length or Width !
-SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qreal Angle) : SchemaItem(), QGraphicsPolygonItem(), m_Width(Width), m_Length(Length)
+SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qreal Angle) :
+    SchemaItem(), QGraphicsPolygonItem(), m_Width(Width), m_Length(Length)
 {
     setPolygon(QPolygonF( QVector<QPointF>() << QPointF( 0, 0 )  << QPointF( 0, Width ) << QPointF( 0.75* Width, 0.5* Width ) << QPointF(Length,30)  << QPointF(Length,0) << QPointF( 0.75* Width,  0.5* Width )));
     setPen( QPen(Qt::black) );

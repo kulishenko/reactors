@@ -4,7 +4,15 @@
 
 SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos = 0.0, int MaxFlow)
 {
-    setRect(0,0,Width,Height);
+    setRect(0, 0, Width, Height);
+
+    QLinearGradient* Gradient=new QLinearGradient(0, 0, Width, 0);
+
+    Gradient->setColorAt(1,QColor::fromRgb(245, 252, 255));
+    Gradient->setColorAt(0.5,Qt::white);
+    Gradient->setColorAt(0,QColor::fromRgb(209, 244, 255));
+
+    setBrush(*Gradient);
     setPos(PosX,PosY);
     isEnabled = true;
     m_Height = Height;
@@ -15,7 +23,7 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
                                                    << QPointF( Width/2,0.75*Width )
                                                    << QPointF( 2, 0 ) ), this);
 
-    QLinearGradient* Gradient=new QLinearGradient(Floater->boundingRect().topLeft(),Floater->boundingRect().topRight());
+    Gradient=new QLinearGradient(Floater->boundingRect().topLeft(),Floater->boundingRect().topRight());
 
     Gradient->setColorAt(1,Qt::lightGray);
     Gradient->setColorAt(0,Qt::black);

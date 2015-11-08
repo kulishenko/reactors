@@ -16,6 +16,13 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
+    QFile file(":/resources/darkorange.qss");
+    file.open(QFile::ReadOnly);
+    QString styleSheet = QLatin1String(file.readAll());
+    a.setStyle("plastique");
+   // a.setStyleSheet(styleSheet);
+    file.close();
+
     QTranslator qtTranslator;
        qtTranslator.load("qt_" + QLocale::system().name(),
                QLibraryInfo::location(QLibraryInfo::TranslationsPath));

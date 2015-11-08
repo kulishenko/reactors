@@ -55,6 +55,7 @@ SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLev
     p_Motor = new QGraphicsEllipseItem(this);
     int MotorRadius = 40;
     p_Motor->setRect(QRect(Width/2-MotorRadius/2,-80,MotorRadius,MotorRadius));
+    p_Motor->setBrush(Qt::white);
 
     p_MotorLabel = new QGraphicsSimpleTextItem("M",p_Motor);
     p_MotorLabel->setPos(p_Motor->boundingRect().topLeft());
@@ -147,9 +148,10 @@ void SchemaCSTR::setPosY(int Value)
 }
 void SchemaCSTR::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    this->setCursor(QCursor(Qt::DragMoveCursor));
-    _startPos = event->pos();
     clicked();
+    setCursor(QCursor(Qt::DragMoveCursor));
+    _startPos = event->pos();
+    setOpacity(0.75);
 }
 void SchemaCSTR::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -159,7 +161,8 @@ void SchemaCSTR::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 }
 void SchemaCSTR::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    this->setCursor(QCursor(Qt::ArrowCursor));
+    setCursor(QCursor(Qt::ArrowCursor));
+    setOpacity(1);
 }
 void SchemaCSTR::changeLevel(){
     // For testing purposes only

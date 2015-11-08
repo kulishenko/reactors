@@ -7,5 +7,10 @@
         <file>resources/tau.csv</file>
         <file>resources/reactors-db.ppk</file>
         <file>Reactors_ru_RU.qm</file>
+        <file>resources/darkorange.qss</file>
+        <file>resources/darkgray.qss</file>
+        <file>images/handle.png</file>
+        <file>images/checkbox.png</file>
+        <file>images/down_arrow.png</file>
     </qresource>
 </RCC>

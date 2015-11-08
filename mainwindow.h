@@ -130,6 +130,7 @@ private:
     void initControl();
 
     QColor bgColor;
+    QLinearGradient* p_bgGradient;
 
     QMenu *fileMenu;
     QMenu *editMenu;

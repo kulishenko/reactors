@@ -352,7 +352,7 @@ void MainWindow::createSchemaView()
 
     m_scene = new QGraphicsScene();
 //  m_scene->setBackgroundBrush(QBrush(QColor::fromRgb(0, 150, 140), Qt::SolidPattern));
-//  m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
+    m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
 
     SchemaStream* streamItem1 = new SchemaStream(50,0, 400, 0);
     m_scene->addItem(streamItem1);
@@ -371,7 +371,7 @@ void MainWindow::createSchemaView()
 
 
     SchemaConfig Config;
-    QFile file("c:/config.xml");
+    QFile file("SchemaConfig.xml");
 
     assert(file.open(QIODevice::WriteOnly));
 
