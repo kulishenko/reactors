@@ -36,7 +36,10 @@ SOURCES += main.cpp\
     schemaconfig.cpp \
     modelitem.cpp \
     modelvalve.cpp \
-    modelflowmeter.cpp
+    modelflowmeter.cpp \
+    qwt-mml/qwt_mml_document.cpp \
+    qwt-mml/qwt_mml_entity_table.cpp \
+    formulaview.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -68,7 +71,10 @@ HEADERS  += mainwindow.h \
     schemaconfig.h \
     modelitem.h \
     modelvalve.h \
-    modelflowmeter.h
+    modelflowmeter.h \
+    qwt-mml/qwt_mml_document.h \
+    qwt-mml/qwt_mml_entity_table.h \
+    formulaview.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 
@@ -107,3 +113,18 @@ win32: LIBS += -L$$PWD/gsl-1.15-lib/lib/ -lgslcblas
 
 win32:!win32-g++: PRE_TARGETDEPS += $$PWD/gsl-1.15-lib/lib/gslcblas.lib
 else:win32-g++: PRE_TARGETDEPS += $$PWD/gsl-1.15-lib/lib/libgslcblas.a
+
+INCLUDEPATH += $$PWD/qwt-mml/
+DEPENDPATH += $$PWD/qwt-mml/
+
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/qwt-6.1.2/lib/ -lqwt
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/qwt-6.1.2/lib/ -lqwtd
+
+#INCLUDEPATH += $$PWD/qwt-6.1.2/src/
+#DEPENDPATH += $$PWD/qwt-6.1.2/src/
+
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/qwt-6.1.2/lib/ -lqwtmathml
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/qwt-6.1.2/lib/ -lqwtmathmld
+
+#INCLUDEPATH += $$PWD/qwt-6.1.2/textengines/mathml/
+#DEPENDPATH += $$PWD/qwt-6.1.2/textengines/mathml/
