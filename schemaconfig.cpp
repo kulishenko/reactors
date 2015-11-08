@@ -31,9 +31,8 @@ int SchemaConfig::getIntType(SchemaConfig::SchemaItemType t)
         case SchemaPFR:
             return 1;
             break;
-
     }
-
+    return 0;
 }
 void SchemaConfig::ParseXMLConfig(){
     QFile* file = new QFile("config.xml");

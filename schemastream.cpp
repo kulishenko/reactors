@@ -12,7 +12,7 @@ SchemaStream::SchemaStream(qreal Size, qreal PosX, qreal PosY, qreal Angle) : Sc
     OutletPort = new SchemaPort(Size*0.75,Size/2, this);
 
 
-    InletPort = new SchemaPort(-Size/2,0, this);
+    InletPort = new SchemaPort(0,Size/2, this);
     setRotation(Angle);
     setPos(PosX,PosY);
 

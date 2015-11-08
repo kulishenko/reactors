@@ -15,7 +15,7 @@ SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLev
     m_isWorking = false;
     m_isReady = false;
     m_isFeeding = false;
-    InletPort = new SchemaPort(Width/9,0.1*Height, this);
+    InletPort = new SchemaPort(Width/9,0.1*Height, this, 180);
     OutletPort = new SchemaPort(Width,Height/3, this);
 
 //  What color is the best?

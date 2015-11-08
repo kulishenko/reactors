@@ -51,7 +51,7 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     }
 
 
-    InletPort = new SchemaPort(Width/2, Height, this);
+    InletPort = new SchemaPort(Width/2, Height, this, 180);
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
 

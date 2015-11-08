@@ -10,8 +10,7 @@
 #include <QDockWidget>
 #include <QVideoSurfaceFormat>
 #include <QGraphicsVideoItem>
-#include <qwt-mml/qwt_mml_document.h>
-#include <formulaview.h>
+
 
 extern "C" {
 #include <stdio.h>
@@ -357,7 +356,7 @@ void MainWindow::createSchemaView()
     SchemaStream* streamItem1 = new SchemaStream(50,0, 400, 0);
     m_scene->addItem(streamItem1);
 
-    SchemaStream* streamItem2 = new SchemaStream(50,1200, 650, 90);
+    SchemaStream* streamItem2 = new SchemaStream(50,1300, 650, 90);
     m_scene->addItem(streamItem2);
 
     // Temp
@@ -414,9 +413,13 @@ void MainWindow::createSchemaView()
         pipelineItems.push_back(new SchemaPipeline(reactorItems.at(i),reactorItems.at(i+1)));
 
 
-    pipelineItems.push_back(new SchemaPipeline(reactorItems.last(),streamItem2));
+    pipelineItems.push_back(new SchemaPipeline(reactorItems.last(),MeasurementCell));
+    pipelineItems.push_back(new SchemaPipeline(MeasurementCell,streamItem2));
+
     m_scene->addItem(Line000);
     m_scene->addItem(Line00);
+
+
 
 
     for(int i=0;i<reactorItems.size();i++)
@@ -752,7 +755,7 @@ void MainWindow::paramEstimation(){
                           "Simulation: Exact ODE Solution, Numeric ODE solution"));
 
 
-    QLabel* SimResults = new QLabel(wnd);
+  /*  QLabel* SimResults = new QLabel(wnd);
     SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L<br>"
                            "tau = %4 sec, avg_tau = %5 sec<br>"
                            "N = %6").arg(QString::number(Model->Num),
@@ -760,7 +763,7 @@ void MainWindow::paramEstimation(){
                                          QString::number(Model->Cin),
                                          QString::number(Data->tau),
                                          QString::number(Data->avg_tau),
-                                         QString::number(Data->Nc)));
+                                         QString::number(Data->Nc))); */
 
 
     resPlotWidget->addGraph();
@@ -782,47 +785,46 @@ void MainWindow::paramEstimation(){
 
     resPlotWidget->xAxis->setLabel(tr("Dimensionless Time"));
     resPlotWidget->yAxis->setLabel(tr("Tracer Concentration, mol/L"));
+    bool skipExpDataInScale = false;
+
+    if(skipExpDataInScale) {
+        resPlotWidget->graph(0)->setVisible(false);
+        resPlotWidget->rescaleAxes(true);
+        resPlotWidget->graph(0)->setVisible(true);
+    } else
+        resPlotWidget->rescaleAxes();
 
     resPlotWidget->setMinimumWidth(600);
     resPlotWidget->setMinimumHeight(400);
     resPlotWidget->legend->setVisible(true);
-    resPlotWidget->rescaleAxes();
     resPlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     resPlotWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
-
-
-    FormulaView* formulaView = new FormulaView(this);
-    formulaView->setFormula(QString("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtable columnalign=\"left\">"
-                                    "<mtr><mtd><msub><mi>C</mi><mi>n</mi></msub><mo>=</mo><msub><mi>C</mi>"
-                                    "<mrow><mi>i</mi><mi>n</mi></mrow></msub><mo>&#183;</mo><mfrac><mn>1</mn>"
-                                    "<mrow><mfenced><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow></mfenced><mo>!</mo></mrow>"
-                                    "</mfrac><mo>&#183;</mo><msup><mfenced><mfrac><mrow><mi>t</mi><mo>&#183;</mo><mi>N</mi>"
-                                    "</mrow><mi>&#964;</mi></mfrac></mfenced><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow></msup>"
-                                    "<mi>e</mi><mi>x</mi><mi>p</mi><mfenced><mfrac><mrow><mo>-</mo><mi>t</mi><mo>&#183;</mo><mi>N</mi></mrow>"
-                                    "<mi>&#964;</mi></mfrac></mfenced></mtd></mtr><mtr><mtd><mi>&#964;</mi><mo>=</mo><mfrac>"
-                                    "<mrow><msubsup><mo>&#8747;</mo><mn>0</mn><mo>&#8734;</mo></msubsup><mi>t</mi><mo>&#183;</mo>"
-                                    "<msub><mi>C</mi><mi>n</mi></msub><mfenced><mi>t</mi></mfenced><mo>d</mo><mi>t</mi></mrow>"
-                                    "<mrow><msubsup><mo>&#8747;</mo><mn>0</mn><mo>&#8734;</mo></msubsup><msub><mi>C</mi><mi>n</mi></msub>"
-                                    "<mfenced><mi>t</mi></mfenced><mo>d</mo><mi>t</mi></mrow></mfrac><mo>=</mo><mn>%1</mn></mtd></mtr>"
-                                    "<mtr><mtd><mi>N</mi><mo>=</mo><mn>%2</mn><mo>&#8776;</mo><mn>%3</mn></mtd></mtr><mtr><mtd><msub><mi>C</mi>"
-                                    "<mrow><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mn>%4</mn><mo>&#160;</mo><mfrac bevelled=\"true\">"
-                                    "<mrow><mi>m</mi><mi>o</mi><mi>l</mi></mrow><mi>L</mi></mfrac></mtd></mtr></mtable></math>").arg(QString::number(Data->avg_tau,'f', 3),
-                                                                                            QString::number(Model->Num,'f', 3),
-                                                                                            QString::number(Model->iNum),
-                                                                                            QString::number(Model->Cin,'f', 3)));
-
-    formulaView->setMinimumSize(200,200);
-    formulaView->setFontSize(14);
-    formulaView->setColors(false);
-
 
     wnd->setLayout(layout);
     layout->addWidget(resPlotWidget);
     layout->addWidget(SimParams);
-    layout->addWidget(SimResults);
-    layout->addWidget(formulaView);
+    //    layout->addWidget(SimResults);
 
+    FormulaView* formulaView = new FormulaView(wnd);
+    QFile FormulaFile(":/resources/cellmodel.mml");
+    if (FormulaFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&FormulaFile);
+        QString FormulaString = in.readAll();
+        formulaView->setFormula(FormulaString.arg(tr("Exact solution:"),
+                                                  tr("Average residence time:"),
+                                                  QString::number(Data->avg_tau,'f', 3),
+                                                  tr("Estimated number of cells:"),
+                                                  QString::number(Model->Num,'f', 3),
+                                                  QString::number(Model->iNum),
+                                                  tr("Initial tracer concentration:"),
+                                                  QString::number(Model->Cin,'f', 3)));
+        formulaView->setMinimumSize(200,300);
+        formulaView->setFontSize(12);
+        formulaView->setColors(false);
+
+        layout->addWidget(formulaView);
+        FormulaFile.close();
+    }
 
     wnd->setWindowTitle(tr("Cell Model (method 2) simulation results"));
     wnd->show();

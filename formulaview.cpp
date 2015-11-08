@@ -66,7 +66,7 @@ void FormulaView::paintEvent( QPaintEvent *event )
     QPainter painter( this );
     painter.setClipRegion( event->region() );
 
-    painter.fillRect( event->rect(), Qt::white );
+//    painter.fillRect( event->rect(), Qt::white );
 
     renderFormula( &painter );
 }
@@ -77,20 +77,21 @@ void FormulaView::renderFormula( QPainter *painter ) const
     doc.setContent( d_formula );
     if ( d_colors )
     {
-        doc.setBackgroundColor( Qt::darkCyan );
-        doc.setForegroundColor( Qt::yellow );
-    }
-    else
-    {
         doc.setBackgroundColor( Qt::white );
         doc.setForegroundColor( Qt::black );
     }
+    else
+    {
+        doc.setBackgroundColor( this->palette().color(QPalette::Background) );
+        doc.setForegroundColor( Qt::black );
+    }
     doc.setBaseFontPointSize( d_fontSize );
-#ifdef MML_TEST
-    doc.setDrawFrames( d_drawFrames );
-#endif
+//#ifdef MML_TEST
+//    doc.setDrawFrames( d_drawFrames );
+//#endif
 
     QRectF docRect;
+
     docRect.setSize( doc.size() );
     docRect.moveCenter( rect().center() );
 

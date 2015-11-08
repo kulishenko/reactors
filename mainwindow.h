@@ -44,6 +44,8 @@
 #include "modelcstr.h"
 #include "modelflowmeter.h"
 #include "schemaconfig.h"
+#include <qwt-mml/qwt_mml_document.h>
+#include <formulaview.h>
 
 extern "C" {
 #include <libxls/xls.h>

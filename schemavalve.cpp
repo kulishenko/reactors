@@ -14,10 +14,10 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     setBrush( Qt::gray );
     setCursor(Qt::PointingHandCursor);
 
-    OutletPort = new SchemaPort(Width/2, -Length,this);
+    OutletPort = new SchemaPort(Length, Width/2, this);
 
 
-    InletPort = new SchemaPort(Width/2, 0, this);
+    InletPort = new SchemaPort(0, Width/2, this);
 
     setRotation(Angle);
     setPos(PosX,PosY);

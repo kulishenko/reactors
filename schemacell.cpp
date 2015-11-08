@@ -1,7 +1,8 @@
 #include "schemacell.h"
 #include <QPen>
 
-SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Angle)
+SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Angle) :
+    SchemaItem(), QGraphicsPolygonItem()
 {
     setPolygon(QPolygonF( QVector<QPointF>()
                           << QPointF( 0, 0 )
@@ -20,10 +21,13 @@ SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qrea
 
                           ));
     setPen( QPen(Qt::black) );
-   // setBrush( Qt::gray );
+    setBrush( Qt::white );
+    OutletPort = new SchemaPort(0,Height*0.5,this, -90);
+    InletPort = new SchemaPort(Width,Height*0.5,this, -90);
 
     setRotation(Angle);
     setPos(PosX,PosY);
+
 }
 
 SchemaCell::~SchemaCell()

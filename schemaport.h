@@ -4,11 +4,11 @@
 #include <QPointF>
 #include <QGraphicsItem>
 #include <math.h>
-
+#include <QPen>
 class SchemaPort : public  QGraphicsLineItem //QPointF
 {
 public:
-    SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem);
+    SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem, qreal Angle = 90);
     ~SchemaPort();
 //    void setRotation(qreal Angle);
 //    void setPos(qreal dx, qreal dy);
