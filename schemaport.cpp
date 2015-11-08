@@ -4,6 +4,7 @@ SchemaPort::SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem) :
     QGraphicsLineItem(PosX,PosY,PosX,PosY, parentItem) //QPointF(PosX, PosY)
 {
 //    parent = parentItem;
+    setVisible(false);
 }
 
 SchemaPort::~SchemaPort()

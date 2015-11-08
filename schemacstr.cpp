@@ -2,10 +2,10 @@
 #include <QLinearGradient>
 #include <QFont>
 #include <QTimeLine>
-
+#include <QGraphicsSceneMouseEvent>
 
 SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLevel, int Index) :
-    SchemaItem(), QGraphicsPathItem(), m_numInCascade(Index), m_Size(Width, Height), m_PosX(xPos), m_PosY(yPos)
+    SchemaItem(), QGraphicsPathItem(), m_Size(Width, Height),  m_PosX(xPos), m_PosY(yPos), m_numInCascade(Index)
 {
 
     if(StartLevel!=0.0)
@@ -145,16 +145,22 @@ void SchemaCSTR::setPosY(int Value)
     m_PosY = Value;
     setPos(m_PosX, m_PosY);
 }
-
 void SchemaCSTR::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    Q_UNUSED(event)
-    qDebug() << "Custom item clicked.";
-    // setLevel(0.5);
-
+    this->setCursor(QCursor(Qt::DragMoveCursor));
+    _startPos = event->pos();
     clicked();
 }
-
+void SchemaCSTR::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QPointF dP =  event->pos() - _startPos;
+    moveBy(dP.x(),dP.y());
+    emit moved();
+}
+void SchemaCSTR::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    this->setCursor(QCursor(Qt::ArrowCursor));
+}
 void SchemaCSTR::changeLevel(){
     // For testing purposes only
         setLevel(0.5, 0);

@@ -287,6 +287,8 @@ void MainWindow::createDockWindows()
 
 
     QDockWidget *dock = new QDockWidget(tr("Video"), this);
+    dock->setProperty("objectName", QString("Video"));
+
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     videoWidget = new QVideoWidget(dock);
     MediaPlayer = new QMediaPlayer(this);
@@ -302,8 +304,10 @@ void MainWindow::createDockWindows()
     addDockWidget(Qt::RightDockWidgetArea, dock);
 
     dock = new QDockWidget(tr("Plot"), this);
+    dock->setProperty("objectName", QString("Plot"));
 
     plotWidget = new QCustomPlot(dock);
+
 
     plotWidget->addGraph();
     plotWidget->xAxis->setLabel(tr("Time, s"));
@@ -315,6 +319,8 @@ void MainWindow::createDockWindows()
     addDockWidget(Qt::RightDockWidgetArea, dock);
 
     dock = new QDockWidget(tr("Table"), this);
+    dock->setProperty("objectName", QString("Table"));
+
     tableWidget = new QTableWidget(1,2,dock);
 
     QPalette* palette = new QPalette();
@@ -328,6 +334,7 @@ void MainWindow::createDockWindows()
     addDockWidget(Qt::RightDockWidgetArea,dock);
 
     dock = new QDockWidget(tr("Event Log"), this);
+    dock->setProperty("objectName", QString("EventLog"));
     eventsWidget = new QListWidget(dock);
     dock->setWidget(eventsWidget);
     dock->setMaximumHeight(100);
@@ -474,9 +481,11 @@ void MainWindow::createToolBars()
     fileToolBar->addAction(newAct);
     fileToolBar->addAction(saveAct);
     fileToolBar->addAction(printAct);
+    fileToolBar->setProperty("objectName", QString("fileToolBar"));
 
     editToolBar = addToolBar(tr("Edit"));
     editToolBar->addAction(undoAct);
+    editToolBar->setProperty("objectName", QString("editToolBar"));
 }
 void MainWindow::newFile()
 {
@@ -849,6 +858,7 @@ void MainWindow::loadSettings()
 {
     QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
+    /*
     bool maximized = false;
     if(settings.contains("maximized")){
         maximized = settings.value("maximized").toBool();
@@ -862,7 +872,11 @@ void MainWindow::loadSettings()
     if(settings.contains("pos")){
         QPoint pos = settings.value("pos").toPoint();
         move(pos);
-    }
+    }*/
+    if(settings.contains("geometry"))
+        restoreGeometry(settings.value("geometry", QByteArray()).toByteArray());
+    if(settings.contains("state"))
+        restoreState(settings.value("state", QByteArray()).toByteArray());
     if(settings.contains("view_scale_X") && settings.contains("view_scale_Y")){
         qreal sx = settings.value("view_scale_X").toDouble();
         qreal sy = settings.value("view_scale_Y").toDouble();
@@ -877,9 +891,12 @@ void MainWindow::saveSettings()
 {
     QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
+    /*
     settings.setValue("maximized", isMaximized());
     settings.setValue("size", size());
-    settings.setValue("pos", pos());
+    settings.setValue("pos", pos());*/
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("state", saveState());
     settings.setValue("view_scale_X", graphicsView->transform().m11());
     settings.setValue("view_scale_Y", graphicsView->transform().m22());
     settings.endGroup();    

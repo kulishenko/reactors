@@ -4,6 +4,7 @@
 #include <schemaport.h>
 #include <QObject>
 #include <pfdcontrol.h>
+#include <QGraphicsSceneMouseEvent>
 
 class PFDControl;
 class SchemaItem  : public QObject
@@ -16,7 +17,10 @@ public:
     PFDControl* PFD;
     qreal Flowrate;
     ~SchemaItem();
-
+    QPointF _startPos;
+signals:
+    void moved();
+    void clicked();
 };
 
 #endif // SCHEMAITEM_H

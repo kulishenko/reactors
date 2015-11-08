@@ -41,7 +41,9 @@ private:
     bool m_isReady;
     qreal m_MixerAngle;
     int m_numInCascade;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 signals:
     void test();
     void clicked();

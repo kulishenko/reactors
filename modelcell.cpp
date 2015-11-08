@@ -222,7 +222,7 @@ void ModelCell::Sim()
 void ModelCell::SimODE()
 {
 
-    qreal params[3] = {iNum, p_Data->tau/iNum, Cin};
+    qreal params[3] = {static_cast<qreal>(iNum), p_Data->tau/iNum, Cin};
     gsl_odeiv2_system sys = {func_C, jac_C, iNum, &params};
 
     gsl_odeiv2_driver * d =

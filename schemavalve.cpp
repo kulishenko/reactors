@@ -11,9 +11,9 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     setPolygon(QPolygonF( QVector<QPointF>() << QPointF( 0, 0 )  << QPointF( 0, Width ) << QPointF( 0.75* Width, 0.5* Width ) << QPointF(Length,30)  << QPointF(Length,0) << QPointF( 0.75* Width,  0.5* Width )));
     setPen( QPen(Qt::black) );
     setBrush( Qt::gray );
+    setCursor(Qt::PointingHandCursor);
 
-
-    OutletPort = new SchemaPort(Width/2, Length,this);
+    OutletPort = new SchemaPort(Width/2, -Length,this);
 
 
     InletPort = new SchemaPort(Width/2, 0, this);
