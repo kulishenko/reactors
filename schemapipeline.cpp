@@ -37,6 +37,6 @@ void SchemaPipeline::drawLine()
     LinePath->lineTo(ToPos);
     setPath(*LinePath);
 
-    if(LinePath != NULL) delete OldPath;
+    if(LinePath != nullptr) delete OldPath;
 }
 

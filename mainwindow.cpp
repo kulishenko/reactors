@@ -18,7 +18,7 @@ extern "C" {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), thread(nullptr)
 {
     ui->setupUi(this);
 
@@ -444,6 +444,8 @@ void MainWindow::initControl()
 
     Control->addItem(flowmeterItem);
     Control->calcTau();
+
+    if(thread != nullptr) delete thread;
 
     thread = new QThread(this);
     timer = new QTimer();

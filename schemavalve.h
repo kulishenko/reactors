@@ -5,6 +5,7 @@
 #include <schemaitem.h>
 #include <schemaflowmeter.h>
 #include <QObject>
+#include <QConicalGradient>
 
 class SchemaValve : public SchemaItem, public QGraphicsPolygonItem
 {
@@ -17,6 +18,7 @@ public:
     qreal MaxFlow;
 private:
     const qreal m_Width, m_Length;
+    QConicalGradient* p_Brush;
 signals:
     void FlowIncreased();
     void FlowDecreased();
