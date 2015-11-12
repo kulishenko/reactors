@@ -31,6 +31,7 @@
 #include <QWindow>
 #include <QLabel>
 #include <QTextStream>
+#include <QDesktopWidget>
 #include "schemacstr.h"
 #include "schemapipeline.h"
 #include "schemaflowmeter.h"

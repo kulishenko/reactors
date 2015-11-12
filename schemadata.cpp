@@ -1,7 +1,7 @@
 #include "schemadata.h"
 
 
-SchemaData::SchemaData(PFDControl* Ctrl)
+SchemaData::SchemaData(PFDControl* Ctrl): M0(nullptr)
 {
     p_ExpDataTime = &Ctrl->Time;
     p_ExpDataConductivity = &Ctrl->Conductivity;
@@ -15,16 +15,31 @@ SchemaData::~SchemaData()
 
 }
 
+void SchemaData::calcM0()
+{
+
+    delete M0;
+    M0 = new qreal(0);
+    for(int i = i_t0; i < p_ExpDataTime->size(); i += m_DataRes)
+        *M0 += SConc.at(i - i_t0) * dt(i - i_t0);
+
+}
+
+qreal SchemaData::getM0()
+{
+    if(M0 == nullptr) calcM0();
+    return (*M0);
+}
+
 void SchemaData::calcAvgTau()
 {
-    qreal Sum_C = 0, Sum_tC = 0;
+
+    qreal Sum_tC = 0;
 
     for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes) {
-        Sum_tC += SConc.at(i - i_t0) * (p_ExpDataTime->at(i)- t0) * dt(i);
-        Sum_C += SConc.at(i - i_t0) * dt(i);
-
+        Sum_tC += SConc.at(i - i_t0) * (p_ExpDataTime->at(i)- t0) * dt(i - i_t0);
     }
-    avg_tau = Sum_tC / Sum_C;
+    avg_tau = Sum_tC / getM0();
 }
 
 void SchemaData::calcConc()
@@ -51,10 +66,10 @@ void SchemaData::calcDimConc()
     qreal Sum_C = 0;
 
     for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes) {
-        Sum_C += SConc.at(i - i_t0) * dt(i);
+        Sum_C += SConc.at(i - i_t0) * dt(i - i_t0);
     }
     for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes)
-        DimConc.push_back(SConc.at(i - i_t0) / Sum_C);
+        DimConc.push_back(SConc.at(i - i_t0) * avg_tau / Sum_C);
 }
 
 void SchemaData::calcDimTime()
@@ -65,28 +80,16 @@ void SchemaData::calcDimTime()
 
 }
 
-void SchemaData::calcM2t()
+void SchemaData::calcM2theta()
 {
-    M2t = 0;
-    /*for(int i = 0; i<DimTime.size();i+=m_DataRes) {
-        M2t += DimTime.at(i) * DimTime.at(i) * DimConc.at(i) * dim_dt(i);
-    }*/
-    for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes) {
-        M2t += p_ExpDataTime->at(i) * p_ExpDataTime->at(i) * SConc.at(i - i_t0) * dt(i);
+    M2theta = 0;
+    for(int i = 0; i < DimTime.size(); i += m_DataRes) {
+        M2theta +=  DimTime.at(i) *  DimTime.at(i) * DimConc.at(i) * dim_dt(i);
     }
-    qreal sigma_theta_2 = M2t / avg_tau - 1;
-    Nc = 1 / sigma_theta_2;
 
-    // Temp
-    qreal sigma_theta_22 = 0, t2_C = 0, C = 0;
-    for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes) {
-        t2_C += p_ExpDataTime->at(i) * p_ExpDataTime->at(i) * SConc.at(i - i_t0) * dt(i);
-        C += Conc.at(i - i_t0) * dt(i);
-    }
-    sigma_theta_22 = t2_C / (C * avg_tau * avg_tau) - 1;
-    qDebug() << sigma_theta_22;
-    qDebug() << QString("N = %1").arg(1/sigma_theta_22);
-//    Nc = 1/sigma_theta_22;
+    M2theta *= avg_tau * avg_tau;
+    sigma2theta = M2theta / avg_tau / avg_tau - 1;
+    Nc = 1 / sigma2theta;
 
 }
 

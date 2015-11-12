@@ -370,7 +370,8 @@ void MainWindow::createSchemaView()
 
 
     SchemaConfig Config;
-    QFile file("SchemaConfig.xml");
+
+    QFile file(qApp->applicationDirPath() + "SchemaConfig.xml");
 
     assert(file.open(QIODevice::WriteOnly));
 
@@ -736,7 +737,7 @@ void MainWindow::paramEstimation(){
     Data->calcDimTime();
 
     Data->calcDimConc();
-    Data->calcM2t();
+    Data->calcM2theta();
 
     ModelCell *Model = new ModelCell(Data);
 
@@ -747,7 +748,7 @@ void MainWindow::paramEstimation(){
     Model->SimODE();
 
     EventLog << tr("Cell model parameters have been estimated, see the results...");
-    QWidget *wnd = new QWidget();
+    QWidget *wnd = new QWidget(this, Qt::Dialog);
     QVBoxLayout* layout = new QVBoxLayout;
     QCustomPlot *resPlotWidget = new QCustomPlot(wnd);
     QLabel* SimParams = new QLabel(wnd);
@@ -757,7 +758,7 @@ void MainWindow::paramEstimation(){
                           "Simulation: Exact ODE Solution, Numeric ODE solution"));
 
 
-  /*  QLabel* SimResults = new QLabel(wnd);
+    QLabel* SimResults = new QLabel(wnd);
     SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L<br>"
                            "tau = %4 sec, avg_tau = %5 sec<br>"
                            "N = %6").arg(QString::number(Model->Num),
@@ -765,7 +766,7 @@ void MainWindow::paramEstimation(){
                                          QString::number(Model->Cin),
                                          QString::number(Data->tau),
                                          QString::number(Data->avg_tau),
-                                         QString::number(Data->Nc))); */
+                                         QString::number(Data->Nc)));
 
 
     resPlotWidget->addGraph();
@@ -805,7 +806,7 @@ void MainWindow::paramEstimation(){
     wnd->setLayout(layout);
     layout->addWidget(resPlotWidget);
     layout->addWidget(SimParams);
-    //    layout->addWidget(SimResults);
+        layout->addWidget(SimResults);
 
     FormulaView* formulaView = new FormulaView(wnd);
     QFile FormulaFile(":/resources/cellmodel.mml");
@@ -829,8 +830,11 @@ void MainWindow::paramEstimation(){
     }
 
     wnd->setWindowTitle(tr("Cell Model (method 2) simulation results"));
-    wnd->show();
 
+    QDesktopWidget *desktop = QApplication::desktop();
+
+    wnd->show();
+    wnd->move((desktop->width() - wnd->width())/2,(desktop->height() - wnd->height())/2);
 }
 
 void MainWindow::importFromServerDlg()
@@ -900,21 +904,7 @@ void MainWindow::loadSettings()
 {
     QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
-    /*
-    bool maximized = false;
-    if(settings.contains("maximized")){
-        maximized = settings.value("maximized").toBool();
-        if(maximized)
-            setWindowState(Qt::WindowMaximized);
-    }
-    if(settings.contains("size") && !maximized){
-        QSize size = settings.value("size").toSize();
-        resize(size);
-    }
-    if(settings.contains("pos")){
-        QPoint pos = settings.value("pos").toPoint();
-        move(pos);
-    }*/
+
     if(settings.contains("geometry"))
         restoreGeometry(settings.value("geometry", QByteArray()).toByteArray());
     if(settings.contains("state"))
@@ -933,10 +923,6 @@ void MainWindow::saveSettings()
 {
     QSettings settings("SPbSIT", "ReactosLab");
     settings.beginGroup("MainWindow");
-    /*
-    settings.setValue("maximized", isMaximized());
-    settings.setValue("size", size());
-    settings.setValue("pos", pos());*/
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", saveState());
     settings.setValue("view_scale_X", graphicsView->transform().m11());
