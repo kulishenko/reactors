@@ -18,9 +18,9 @@ void PFDControl::tick(){
     }
 }
 void PFDControl::flowrate_increase(){
-    qDebug() << tr("Flowrate Increased: V = %1 (waiting for %2)").arg(QString::number(Flowrate),QString::number(PlaybackFlowrate));
+    qDebug() << tr("Flowrate Increased: V = %1 (waiting for %2)").arg(QString::number(Flowrate), QString::number(PlaybackFlowrate));
 
-    if(!isFlowrateSet && fabs(PlaybackFlowrate-Flowrate)<0.001) {
+    if(!isFlowrateSet && fabs(PlaybackFlowrate - Flowrate) < 0.001) {
         isFlowrateSet = true;
         emit setLevel();
   //      emit startSim(); Moved to SchemaCSTR::animFinished()
@@ -33,7 +33,8 @@ void PFDControl::flowrate_decrease(){
 
 void PFDControl::Start()
 {
-    isStarted=true;
+    isStarted = true;
+    emit started();
 }
 void PFDControl::calcTau(){
 
@@ -75,5 +76,16 @@ void PFDControl::setNumCascade(int Value)
 }
 void PFDControl::addItem(SchemaItem *item)
 {
-    item->PFD=this;
+    item->PFD = this;
+}
+
+qreal PFDControl::getCurrentTime()
+{
+    return TimeNow;
+}
+
+
+qreal PFDControl::getTauAt(const size_t i) const
+{
+    return Tau.at(i);
 }

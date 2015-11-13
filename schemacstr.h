@@ -1,20 +1,21 @@
-#ifndef SCHEMAVESSEL_H
-#define SCHEMAVESSEL_H
+#ifndef SCHEMACSTR_H
+#define SCHEMACSTR_H
 
 #include <QGraphicsPathItem>
 #include <QLinearGradient>
 #include <schemaitem.h>
 #include <QDebug>
 #include <QColor>
+#include <modelcstr.h>
 
 class SchemaCSTR : public SchemaItem, public QGraphicsPathItem {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
-//    Q_PROPERTY(QSize Size MEMBER m_Size WRITE setSize)
     Q_PROPERTY(int PosX MEMBER m_PosX WRITE setPosX)
     Q_PROPERTY(int PosY MEMBER m_PosY WRITE setPosY)
     Q_PROPERTY(qreal LiquidLevel MEMBER m_LiquidLevel)
-    Q_PROPERTY(qreal numInCascade MEMBER m_numInCascade) // To be removed
+    Q_PROPERTY(qreal numInCascade MEMBER m_numInCascade) // To be removed (see ModelCSTR)
+    friend class ModelCSTR;
 public:
     SchemaCSTR(int Width = 90, int Height = 120, int xPos = 0, int yPos = 0, qreal StartLevel = 0.1, int Index = 0);
     ~SchemaCSTR();
@@ -62,4 +63,4 @@ private slots:
 };
 
 
-#endif // SCHEMAVESSEL_H
+#endif // SCHEMACSTR_H

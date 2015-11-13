@@ -29,7 +29,7 @@ SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qrea
     p_Electrode->setBrush(Qt::black);
 
     setRotation(Angle);
-    setPos(PosX,PosY);
+    setPos(PosX, PosY);
 
 }
 

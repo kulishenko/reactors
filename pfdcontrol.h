@@ -26,18 +26,22 @@ public:
     QVector<SchemaCSTR*> *reactorItems;
     QVector<qreal> Time;
     QVector<qreal> Conductivity;
-    QVector<qreal> Tau;
     QString PlaybackFileName;
-    qreal TimeNow;
-    bool isStarted;
-    bool isFlowrateSet;
     void addItem(SchemaItem *item);
     void calcTau();
     void setNumCascade(int Value);
+    qreal getCurrentTime();
+    qreal getTauAt(const size_t i) const; // TODO: Replace with ModelCSTR
+private:
+    bool isStarted;
+    bool isFlowrateSet;
+    qreal TimeNow;
+    QVector<qreal> Tau; // Transient times for CSTRs (temp) -> to be moved to ModelCSTR
 signals:
     void setLevel();
     void doSim();
     void startSim();
+    void started();
 public slots:
     void tick();
     void flowrate_increase();

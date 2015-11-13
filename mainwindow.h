@@ -115,7 +115,7 @@ private:
 
     SchemaView* graphicsView;
 
-    SchemaData *Data;
+    SchemaData *p_Data;
 
     SchemaFlowmeter* flowmeterItem;
     SchemaValve* valveItem1;

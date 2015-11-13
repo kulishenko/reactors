@@ -34,13 +34,16 @@ public:
     void EstimateNumCells();
     void Sim();
     void SimODE();
-    qreal Cin;
-    qreal Num;
-    unsigned int iNum;
     static int jac_C(double t, const double y[], double *dfdy, double dfdt[], void *params);
     static int func_C(double t, const double y[], double f[], void *params);
+    qreal getCin() const;
+    qreal getNum() const;
+    unsigned int getiNum() const;
 private:
     SchemaData* p_Data;
+    qreal Cin; // Estimated initial tracer concentration, mol/l
+    qreal Num; // Estimated number of cells
+    unsigned int iNum; // Rounded number of cells
     qreal Conc(const qreal theta) const;
 };
 

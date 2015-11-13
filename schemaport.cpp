@@ -38,7 +38,7 @@ QPointF SchemaPort::scenePos() const
 qreal SchemaPort::getAngle() const
 {
     qreal x = line().angle() + parentItem()->rotation();
-    x = fmod(x,360);
+    x = fmod(x, 360);
     if (x < 0)
         x += 360;
     return x;

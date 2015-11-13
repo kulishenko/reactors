@@ -17,7 +17,7 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     isEnabled = true;
     m_Height = Height;
     m_Width = Width;
-    this->MaxFlow = MaxFlow;
+    m_MaxFlow = MaxFlow;
     Floater = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 2, 0 )
                                                    << QPointF( Width-2, 0 )
                                                    << QPointF( Width/2,0.75*Width )
@@ -69,7 +69,7 @@ SchemaFlowmeter::~SchemaFlowmeter()
 void SchemaFlowmeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     if(fabs(Flowrate - m_FlowrateSet) > 0.001){
         Flowrate += (Flowrate < m_FlowrateSet) ? 0.00005 : -0.00005;
-        Floater->setPos(boundingRect().bottomLeft()+QPointF(0,-0.75*m_Width - Flowrate*m_Height*0.9));
+        Floater->setPos(boundingRect().bottomLeft()+QPointF(0, -0.75*m_Width - Flowrate*m_Height*0.9));
     }
     QGraphicsRectItem::paint(painter,option,widget);
 
@@ -91,7 +91,7 @@ void SchemaFlowmeter::setFlowrate(qreal Value) {
 
     m_FlowrateSet = Value;
     if(PFD != NULL)
-        PFD->setFlowrate(Value * MaxFlow);
+        PFD->setFlowrate(Value * m_MaxFlow);
 
 /*    QTimeLine *anim = new QTimeLine(1000, this);
     anim->setUpdateInterval(30);

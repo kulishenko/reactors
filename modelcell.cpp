@@ -102,6 +102,21 @@ int ModelCell::func_C (double t, const double y[], double f[],
     }
     return GSL_SUCCESS;
 }
+
+qreal ModelCell::getCin() const
+{
+    return Cin;
+}
+
+qreal ModelCell::getNum() const
+{
+    return Num;
+}
+
+unsigned int ModelCell::getiNum() const
+{
+    return iNum;
+}
 int ModelCell::jac_C (double t, const double y[], double *dfdy,
      double dfdt[], void *params)
 {

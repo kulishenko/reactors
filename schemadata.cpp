@@ -35,6 +35,16 @@ qreal SchemaData::getAvgTau()
     return (*avg_tau);
 }
 
+qreal SchemaData::getTau() const
+{
+    return m_tau;
+}
+
+qreal SchemaData::getNc() const
+{
+    return Nc;
+}
+
 void SchemaData::calcAvgTau()
 {
 
@@ -52,7 +62,7 @@ void SchemaData::calcConc()
     i_t0 = t_0() - p_ExpDataTime->begin();
     qreal C1 = Calibrate(p_ExpDataConductivity->at(i_t0));
     tend = *t_last();
-    qreal C2 = Calibrate(p_ExpDataConductivity->at(t_last()-p_ExpDataTime->begin()));
+    qreal C2 = Calibrate(p_ExpDataConductivity->at(t_last() - p_ExpDataTime->begin()));
 
     qDebug() << QObject::tr("C1 = %1, C2 = %2").arg(QString::number(C1),QString::number(C2));
     qreal R = (C1 - C2) / (tend - t0);
@@ -77,7 +87,7 @@ void SchemaData::calcDimTime()
     m_tau = 0.84 * (*p_NumCascade) / (*p_Flowrate) * 3600; // ToDo: remove?
     qreal tau = getAvgTau();
     for(int i = i_t0; i < p_ExpDataTime->size(); i+= m_DataRes)
-        DimTime.push_back((p_ExpDataTime->at(i)- t0)/tau + 1e-6);
+        DimTime.push_back((p_ExpDataTime->at(i) - t0) / tau + 1e-6);
 
 }
 
@@ -124,21 +134,22 @@ QVector<qreal>::const_iterator SchemaData::t_last() const
     return p_ExpDataTime->end() - 1;
 }
 
-qreal SchemaData::dt(const int i) const
+qreal SchemaData::dt(const size_t i) const
 {
     if(i == 0)
-        return p_ExpDataTime->at(m_DataRes) - p_ExpDataTime->at(0);
+        return p_ExpDataTime->at(m_DataRes) - p_ExpDataTime->first();
     else
         return p_ExpDataTime->at(i) - p_ExpDataTime->at(i - m_DataRes);
 }
-qreal SchemaData::dim_dt(const int i) const
+qreal SchemaData::dim_dt(const size_t i) const
 {
     if(i == 0)
-        return DimTime.at(m_DataRes) - DimTime.at(0);
+        return DimTime.at(m_DataRes) - DimTime.first();
     else
         return DimTime.at(i) - DimTime.at(i - m_DataRes);
 }
-qreal SchemaData::Calibrate(qreal x) const{
+qreal SchemaData::Calibrate(qreal x) const
+{
     x *= 1000; // Conversion to mkS/cm
     return 2.3480623E-18 * pow(x, 5) - 1.3123250E-14 * pow(x, 4) + 2.7014011E-11 * pow(x, 3)
             - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-18;
@@ -167,4 +178,20 @@ void SchemaData::SmoothData()
     }
 
 
+}
+
+qreal SchemaData::getConcAt(const size_t i) const
+{
+    return Conc.at(i);
+}
+
+qreal SchemaData::getSConcAt(const size_t i) const
+{
+    return SConc.at(i);
+}
+
+
+qreal SchemaData::getDimTimeAt(const size_t i) const
+{
+    return DimTime.at(i);
 }

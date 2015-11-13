@@ -17,7 +17,7 @@ private:
    QGraphicsLineItem* OutletPipe, *InletPipe;
    qreal m_Height, m_Width, m_FlowrateSet;
    bool isEnabled;
-   int MaxFlow; // Max flowrate in l/hr
+   int m_MaxFlow; // Max flowrate in l/hr
    int _numScheduledChanges;
    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 public slots:

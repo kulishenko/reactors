@@ -152,7 +152,7 @@ void SchemaCSTR::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void SchemaCSTR::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF dP =  event->pos() - _startPos;
-    moveBy(dP.x(),dP.y());
+    moveBy(dP.x(), dP.y());
     emit moved();
 }
 void SchemaCSTR::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -166,7 +166,7 @@ void SchemaCSTR::changeLevel(){
 }
 void SchemaCSTR::fill(){
 
-    qreal transTime = (PFD->Tau.at(m_numInCascade)-(m_numInCascade==0 ? 0 : PFD->Tau.at(m_numInCascade-1) ) ) *3600*1000;
+    qreal transTime = (PFD->getTauAt(m_numInCascade)-(m_numInCascade==0 ? 0 : PFD->getTauAt(m_numInCascade-1) ) ) *3600*1000;
     qDebug() << "Flowrate is "+ QString::number(PFD->Flowrate);
     qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(m_numInCascade),QString::number(transTime));
     setLevel(0.8, static_cast<int>(transTime));

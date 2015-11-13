@@ -681,19 +681,20 @@ void MainWindow::aboutQt()
 
 void MainWindow::updateWidgets()
 {
-    if(Control->TimeNow==0.0f) return;
+    qreal TimeNow = Control->getCurrentTime();
+    if(TimeNow == 0.0f) return;
 
-//  TODO: Fix repeated addition of the same point
+//  TODO: Fix repeated addition of the same point (fixed?)
     int i = 0;
 
-    while ((fabs(Control->TimeNow - Control->Time.at(i)) > 0.5 ) && i < Control->Time.size()-1)
+    while ((fabs(TimeNow - Control->Time.at(i)) > 0.5 ) && i < Control->Time.size()-1)
     i++;
 
     if(i==Control->Time.size()-1) return;
 
     plotWidget->graph(0)->addData(Control->Time.at(i), Control->Conductivity.at(i));
     plotWidget->replot();
-    qDebug() << "TimeNow:" <<QString::number(Control->TimeNow)<< "Added point t = " << QString::number(Control->Time.at(i));
+    qDebug() << "TimeNow:" << QString::number(TimeNow)<< "Added point t = " << QString::number(Control->Time.at(i));
 
 
     tableWidget->setRowCount(i+1);
@@ -730,7 +731,7 @@ void MainWindow::fitInView()
     graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
 }
 void MainWindow::paramEstimation(){
-    Data = new SchemaData(Control);
+    SchemaData *Data = new SchemaData(Control);
     Data->calcConc();   
     Data->SmoothData();
 
@@ -761,22 +762,24 @@ void MainWindow::paramEstimation(){
     QLabel* SimResults = new QLabel(wnd);
     SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L<br>"
                            "tau = %4 sec, avg_tau = %5 sec<br>"
-                           "Method 1: N = %6").arg(QString::number(Model->Num),
-                                         QString::number(Model->iNum),
-                                         QString::number(Model->Cin),
-                                         QString::number(Data->m_tau),
+                           "Method 1: N = %6").arg(QString::number(Model->getNum()),
+                                         QString::number(Model->getiNum()),
+                                         QString::number(Model->getCin()),
+                                         QString::number(Data->getTau()),
                                          QString::number(Data->getAvgTau()),
-                                         QString::number(Data->Nc)));
+                                         QString::number(Data->getNc())));
 
 
     resPlotWidget->addGraph();
-    resPlotWidget->graph(0)->setData(Data->DimTime,  Data->Conc);
-    resPlotWidget->graph(0)->setName("Experiment");
+    for(int i = 0; i < Data->DimTime.size(); i++) {
+        resPlotWidget->graph(0)->addData(Data->getDimTimeAt(i),  Data->getConcAt(i));
+        resPlotWidget->graph(0)->setName(tr("Experiment"));
+    }
 
     resPlotWidget->addGraph();
     resPlotWidget->graph(1)->setData(Data->DimTime,  Data->SConc);
     resPlotWidget->graph(1)->setPen(QPen(Qt::red));
-    resPlotWidget->graph(1)->setName("Experiment (smoothed)");
+    resPlotWidget->graph(1)->setName(tr("Experiment (smoothed)"));
     Qt::GlobalColor Colors[2] = {Qt::green, Qt::magenta };
 
     for(int i = 0; i < Data->SimConc.size(); i++) {
@@ -817,10 +820,10 @@ void MainWindow::paramEstimation(){
                                                   tr("Average residence time:"),
                                                   QString::number(Data->getAvgTau(),'f', 3),
                                                   tr("Estimated number of cells:"),
-                                                  QString::number(Model->Num,'f', 3),
-                                                  QString::number(Model->iNum),
+                                                  QString::number(Model->getNum(),'f', 3),
+                                                  QString::number(Model->getiNum()),
                                                   tr("Initial tracer concentration:"),
-                                                  QString::number(Model->Cin,'f', 3)));
+                                                  QString::number(Model->getCin(),'f', 3)));
         formulaView->setMinimumSize(200,300);
         formulaView->setFontSize(12);
         formulaView->setColors(false);
