@@ -11,22 +11,22 @@ ModelValve::~ModelValve()
 
 }
 
-qreal ModelValve::getPosition()
+qreal ModelValve::getPosition() const
 {
     return m_Position;
 }
 
-void ModelValve::setPosition(qreal Value)
+void ModelValve::setPosition(const qreal Value)
 {
     m_Position = Value;
 }
 
-qreal ModelValve::getMaxFlowrate()
+qreal ModelValve::getMaxFlowrate() const
 {
     return m_MaxFlowrate;
 }
 
-void ModelValve::setMaxFlowrate(qreal Value)
+void ModelValve::setMaxFlowrate(const qreal Value)
 {
     m_MaxFlowrate = Value;
 }

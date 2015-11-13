@@ -53,13 +53,12 @@ public slots:
     void activateMotor();
     void startFeed();
 private slots:
-    void setLevel(qreal Level, int TransTime);
-    void animLevel(qreal Value);
-    void animMotor(qreal Value);
+    void setLevel(const qreal Level, const int TransTime);
+    void animLevel(const qreal Value);
+    void animMotor(const qreal Value);
     void animFinished();
-    void setSize(QSize Value);
-    void setPosX(int Value);
-    void setPosY(int Value);
+    void setPosX(const int Value);
+    void setPosY(const int Value);
 };
 
 

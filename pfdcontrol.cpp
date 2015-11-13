@@ -2,7 +2,7 @@
 
 PFDControl::PFDControl(QObject *parent) : QObject(parent)
 {
-    TimeNow=0;
+    TimeNow = 0;
     isStarted = false;
     isFlowrateSet = false;
 }

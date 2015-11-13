@@ -353,18 +353,18 @@ void MainWindow::createSchemaView()
 //  m_scene->setBackgroundBrush(QBrush(QColor::fromRgb(0, 150, 140), Qt::SolidPattern));
     m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
 
-    SchemaStream* streamItem1 = new SchemaStream(50,0, 400, 0);
+    SchemaStream* streamItem1 = new SchemaStream(50, 0, 400, 0);
     m_scene->addItem(streamItem1);
 
-    SchemaStream* streamItem2 = new SchemaStream(50,1300, 650, 90);
+    SchemaStream* streamItem2 = new SchemaStream(50, 1300, 650, 90);
     m_scene->addItem(streamItem2);
 
     // Temp
-    SchemaCell* MeasurementCell = new SchemaCell(100,40,1255, 550);
+    SchemaCell* MeasurementCell = new SchemaCell(100, 40, 1255, 550);
 
     m_scene->addItem(MeasurementCell);
 
-    valveItem1 = new SchemaValve(30,45,122.5,350,-90);
+    valveItem1 = new SchemaValve(30, 45, 122.5, 350, -90);
     m_scene->addItem(valveItem1);
 
 
@@ -373,31 +373,30 @@ void MainWindow::createSchemaView()
 
     QFile file(qApp->applicationDirPath() + "SchemaConfig.xml");
 
-    assert(file.open(QIODevice::WriteOnly));
+  //  assert(file.open(QIODevice::WriteOnly));
 
     ModelCSTR* CSTRModel;
     // Creating CSTR Items
 
-    for(int i=1; i<=5; i++){
+    for(int i = 1; i <= 5; i++){
         reactorItems.push_back(new SchemaCSTR(90, 120, i*200, i*70, 0.1, i-1));
         CSTRModel = new ModelCSTR();
         CSTRModel->setProperty("Level", 0.1);
-        Config.serializeObject(reactorItems.at(i-1), &file);
+    //    Config.serializeObject(reactorItems.at(i-1), &file);
     }
 
     ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
 
 
-    Config.serializeObject(reactorItems.last(), &file);
-    file.close();
+ //   file.close();
 
-    assert(file.open(QIODevice::ReadOnly));
+ //   assert(file.open(QIODevice::ReadOnly));
 
  //   SchemaCSTR* ReactorItem = Config.deserialize<SchemaCSTR>(&file);
 
     file.close();
 
-    flowmeterItem = new SchemaFlowmeter(25,200,125,50,0);
+    flowmeterItem = new SchemaFlowmeter(25, 200, 125, 50, 0);
 
     m_scene->addItem(flowmeterItem);
 
@@ -410,7 +409,7 @@ void MainWindow::createSchemaView()
     // Connecting CSTRs
 
     pipelineItems.push_back(new SchemaPipeline(flowmeterItem,reactorItems.at(0)));
-    for(int i=0;i<reactorItems.size()-1;i++)
+    for(int i = 0; i < reactorItems.size() - 1; i++)
         pipelineItems.push_back(new SchemaPipeline(reactorItems.at(i),reactorItems.at(i+1)));
 
 
@@ -423,10 +422,10 @@ void MainWindow::createSchemaView()
 
 
 
-    for(int i=0;i<reactorItems.size();i++)
+    for(int i = 0; i < reactorItems.size(); i++)
         m_scene->addItem(reactorItems.at(i));
 
-    for(int i=0;i<pipelineItems.size();i++)
+    for(int i = 0; i < pipelineItems.size(); i++)
         m_scene->addItem(pipelineItems.at(i));
 
     graphicsView->setScene(m_scene);
@@ -440,13 +439,13 @@ void MainWindow::initControl()
 
     Control->reactorItems = &reactorItems;
 
-    for(int i=0; i<reactorItems.size();i++)
+    for(int i=0; i < reactorItems.size(); i++)
         Control->addItem(reactorItems.at(i));
 
     Control->addItem(flowmeterItem);
     Control->calcTau();
 
-    if(thread != nullptr) delete thread;
+    delete thread;
 
     thread = new QThread(this);
     timer = new QTimer();
@@ -459,14 +458,14 @@ void MainWindow::initControl()
 
     connect(this, SIGNAL(destroyed()), thread, SLOT(quit()));
 
-    connect(valveItem1, SIGNAL(FlowIncreased()),Control,SLOT(flowrate_increase()));
-    connect(valveItem1, SIGNAL(FlowDecreased()),Control,SLOT(flowrate_decrease()));
+    connect(valveItem1, SIGNAL(FlowIncreased()), Control, SLOT(flowrate_increase()));
+    connect(valveItem1, SIGNAL(FlowDecreased()), Control, SLOT(flowrate_decrease()));
 
 
-    connect(Control, SIGNAL(setLevel()),reactorItems.at(0),SLOT(fill()));
+    connect(Control, SIGNAL(setLevel()), reactorItems.at(0), SLOT(fill()));
 
-    connect(Control, SIGNAL(doSim()),this,SLOT(updateWidgets()));
-    connect(Control, SIGNAL(startSim()),this,SLOT(Run()));
+    connect(Control, SIGNAL(doSim()), this, SLOT(updateWidgets()));
+    connect(Control, SIGNAL(startSim()), this, SLOT(Run()));
 
     EventLog << tr("Schema controls are initialized");
 
@@ -686,8 +685,9 @@ void MainWindow::updateWidgets()
 
 //  TODO: Fix repeated addition of the same point
     int i = 0;
-    do i++;
-    while ((fabs(Control->TimeNow - Control->Time.at(i)) > 0.5 ) && i < Control->Time.size()-1);
+
+    while ((fabs(Control->TimeNow - Control->Time.at(i)) > 0.5 ) && i < Control->Time.size()-1)
+    i++;
 
     if(i==Control->Time.size()-1) return;
 
@@ -733,7 +733,7 @@ void MainWindow::paramEstimation(){
     Data = new SchemaData(Control);
     Data->calcConc();   
     Data->SmoothData();
-    Data->calcAvgTau();
+
     Data->calcDimTime();
 
     Data->calcDimConc();
@@ -761,11 +761,11 @@ void MainWindow::paramEstimation(){
     QLabel* SimResults = new QLabel(wnd);
     SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L<br>"
                            "tau = %4 sec, avg_tau = %5 sec<br>"
-                           "N = %6").arg(QString::number(Model->Num),
+                           "Method 1: N = %6").arg(QString::number(Model->Num),
                                          QString::number(Model->iNum),
                                          QString::number(Model->Cin),
-                                         QString::number(Data->tau),
-                                         QString::number(Data->avg_tau),
+                                         QString::number(Data->m_tau),
+                                         QString::number(Data->getAvgTau()),
                                          QString::number(Data->Nc)));
 
 
@@ -815,7 +815,7 @@ void MainWindow::paramEstimation(){
         QString FormulaString = in.readAll();
         formulaView->setFormula(FormulaString.arg(tr("Exact solution:"),
                                                   tr("Average residence time:"),
-                                                  QString::number(Data->avg_tau,'f', 3),
+                                                  QString::number(Data->getAvgTau(),'f', 3),
                                                   tr("Estimated number of cells:"),
                                                   QString::number(Model->Num,'f', 3),
                                                   QString::number(Model->iNum),
@@ -909,10 +909,9 @@ void MainWindow::loadSettings()
         restoreGeometry(settings.value("geometry", QByteArray()).toByteArray());
     if(settings.contains("state"))
         restoreState(settings.value("state", QByteArray()).toByteArray());
-    if(settings.contains("view_scale_X") && settings.contains("view_scale_Y")){
-        qreal sx = settings.value("view_scale_X").toDouble();
-        qreal sy = settings.value("view_scale_Y").toDouble();
-        graphicsView->scale(sx,sy);
+    if(settings.contains("view_scale")){
+        QPointF view_scale = settings.value("view_scale").toPointF();
+        graphicsView->scale(view_scale.x(),view_scale.y());
     }
     else
         graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
@@ -925,8 +924,7 @@ void MainWindow::saveSettings()
     settings.beginGroup("MainWindow");
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", saveState());
-    settings.setValue("view_scale_X", graphicsView->transform().m11());
-    settings.setValue("view_scale_Y", graphicsView->transform().m22());
+    settings.setValue("view_scale", QPointF(graphicsView->transform().m11(),graphicsView->transform().m22()));
     settings.endGroup();    
     settings.sync();
 }

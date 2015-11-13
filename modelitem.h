@@ -21,10 +21,10 @@ signals:
 
 public slots:
 private slots:
-    void setInletFlowrate(qreal Value);
-    qreal getInletFlowrate();
-    void setMaxFlowrate(qreal Value);
-    qreal getMaxFlowrate();
-    int getElementId();
+    void setInletFlowrate(const qreal Value);
+    qreal getInletFlowrate() const;
+    void setMaxFlowrate(const qreal Value);
+    qreal getMaxFlowrate() const;
+    int getElementId() const;
 };
 #endif // MODELITEM_H

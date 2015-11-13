@@ -221,8 +221,8 @@ void ModelCell::Sim()
 
 void ModelCell::SimODE()
 {
-
-    qreal params[3] = {static_cast<qreal>(iNum), p_Data->tau/iNum, Cin};
+    qreal avg_tau = p_Data->getAvgTau();
+    qreal params[3] = {static_cast<qreal>(iNum), avg_tau/iNum, Cin};
     gsl_odeiv2_system sys = {func_C, jac_C, iNum, &params};
 
     gsl_odeiv2_driver * d =
@@ -238,7 +238,7 @@ void ModelCell::SimODE()
     unsigned int nP = p_Data->DimTime.size()-1;
     for (i = 1; i <= nP; i++)
     {
-      qreal ti = p_Data->DimTime.at(i) * p_Data->tau;
+      qreal ti = p_Data->DimTime.at(i) * avg_tau;
       int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
 
       if (status != GSL_SUCCESS)
@@ -255,7 +255,7 @@ void ModelCell::SimODE()
     gsl_odeiv2_driver_free (d);
 }
 
-qreal ModelCell::Conc(qreal theta)
+qreal ModelCell::Conc(const qreal theta) const
 {
     return Cin / gsl_sf_gamma(Num) * pow(theta*Num,Num-1)* exp(-theta*Num);
 }

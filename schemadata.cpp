@@ -1,7 +1,7 @@
 #include "schemadata.h"
 
 
-SchemaData::SchemaData(PFDControl* Ctrl): M0(nullptr)
+SchemaData::SchemaData(PFDControl* Ctrl): avg_tau(nullptr), M0(nullptr)
 {
     p_ExpDataTime = &Ctrl->Time;
     p_ExpDataConductivity = &Ctrl->Conductivity;
@@ -17,12 +17,10 @@ SchemaData::~SchemaData()
 
 void SchemaData::calcM0()
 {
-
     delete M0;
     M0 = new qreal(0);
     for(int i = i_t0; i < p_ExpDataTime->size(); i += m_DataRes)
         *M0 += SConc.at(i - i_t0) * dt(i - i_t0);
-
 }
 
 qreal SchemaData::getM0()
@@ -31,15 +29,21 @@ qreal SchemaData::getM0()
     return (*M0);
 }
 
+qreal SchemaData::getAvgTau()
+{
+    if(avg_tau == nullptr) calcAvgTau();
+    return (*avg_tau);
+}
+
 void SchemaData::calcAvgTau()
 {
 
     qreal Sum_tC = 0;
-
-    for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes) {
+    for(int i = i_t0; i < p_ExpDataTime->size(); i += m_DataRes) {
         Sum_tC += SConc.at(i - i_t0) * (p_ExpDataTime->at(i)- t0) * dt(i - i_t0);
-    }
-    avg_tau = Sum_tC / getM0();
+    }    
+    delete avg_tau;
+    avg_tau = new qreal(Sum_tC / getM0());
 }
 
 void SchemaData::calcConc()
@@ -53,7 +57,7 @@ void SchemaData::calcConc()
     qDebug() << QObject::tr("C1 = %1, C2 = %2").arg(QString::number(C1),QString::number(C2));
     qreal R = (C1 - C2) / (tend - t0);
 
-    for(int i= i_t0; i<p_ExpDataTime->size();i+=m_DataRes){
+    for(int i = i_t0; i < p_ExpDataTime->size(); i += m_DataRes){
         qreal C = Calibrate(p_ExpDataConductivity->at(i)) - C1 - (p_ExpDataTime->at(i) - t0)* R;
         // Added for robustness (check approximation formulas?)
         Conc.push_back((C > 0) ? C : 0);
@@ -63,32 +67,30 @@ void SchemaData::calcConc()
 
 void SchemaData::calcDimConc()
 {
-    qreal Sum_C = 0;
-
-    for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes) {
-        Sum_C += SConc.at(i - i_t0) * dt(i - i_t0);
-    }
-    for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes)
-        DimConc.push_back(SConc.at(i - i_t0) * avg_tau / Sum_C);
+    qreal tau = getAvgTau();
+    for(int i = 0; i < SConc.size(); i += m_DataRes)
+        DimConc.push_back(SConc.at(i) * tau / getM0());
 }
 
 void SchemaData::calcDimTime()
 {
-    tau = 0.84 * (*p_NumCascade) / (*p_Flowrate) * 3600;
-    for(int i = i_t0; i<p_ExpDataTime->size();i+=m_DataRes)
-        DimTime.push_back((p_ExpDataTime->at(i)- t0)/avg_tau + 1e-6);
+    m_tau = 0.84 * (*p_NumCascade) / (*p_Flowrate) * 3600; // ToDo: remove?
+    qreal tau = getAvgTau();
+    for(int i = i_t0; i < p_ExpDataTime->size(); i+= m_DataRes)
+        DimTime.push_back((p_ExpDataTime->at(i)- t0)/tau + 1e-6);
 
 }
 
 void SchemaData::calcM2theta()
 {
     M2theta = 0;
+    qreal tau = getAvgTau();
     for(int i = 0; i < DimTime.size(); i += m_DataRes) {
         M2theta +=  DimTime.at(i) *  DimTime.at(i) * DimConc.at(i) * dim_dt(i);
     }
 
-    M2theta *= avg_tau * avg_tau;
-    sigma2theta = M2theta / avg_tau / avg_tau - 1;
+    M2theta *= tau * tau;
+    sigma2theta = M2theta / tau / tau - 1;
     Nc = 1 / sigma2theta;
 
 }
@@ -122,21 +124,21 @@ QVector<qreal>::const_iterator SchemaData::t_last() const
     return p_ExpDataTime->end() - 1;
 }
 
-qreal SchemaData::dt(int i)
+qreal SchemaData::dt(const int i) const
 {
     if(i == 0)
         return p_ExpDataTime->at(m_DataRes) - p_ExpDataTime->at(0);
     else
-        return p_ExpDataTime->at(i) - p_ExpDataTime->at(i-m_DataRes);
+        return p_ExpDataTime->at(i) - p_ExpDataTime->at(i - m_DataRes);
 }
-qreal SchemaData::dim_dt(int i)
+qreal SchemaData::dim_dt(const int i) const
 {
     if(i == 0)
         return DimTime.at(m_DataRes) - DimTime.at(0);
     else
-        return DimTime.at(i) - DimTime.at(i-m_DataRes);
+        return DimTime.at(i) - DimTime.at(i - m_DataRes);
 }
-qreal SchemaData::Calibrate(qreal x){
+qreal SchemaData::Calibrate(qreal x) const{
     x *= 1000; // Conversion to mkS/cm
     return 2.3480623E-18 * pow(x, 5) - 1.3123250E-14 * pow(x, 4) + 2.7014011E-11 * pow(x, 3)
             - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-18;
@@ -160,8 +162,8 @@ void SchemaData::SmoothData()
     }
     // Simple low-pass filter
     qreal A = 0.3;
-    for(int i = 1; i<SConc.size();i++){
-        SConc.replace(i, SConc.at(i-1) + A*(SConc.at(i)-SConc.at(i-1)));
+    for(int i = 1; i < SConc.size(); i++){
+        SConc.replace(i, SConc.at(i-1) + A * (SConc.at(i) - SConc.at(i-1)));
     }
 
 

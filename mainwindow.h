@@ -122,6 +122,8 @@ private:
 
     QVector<SchemaCSTR*> reactorItems;
     QVector<SchemaPipeline*> pipelineItems;
+    QList<SchemaItem*> schemaItems;
+
     void loadSettings();
     void saveSettings();
 

@@ -15,15 +15,16 @@ int main(int argc, char *argv[])
       QCoreApplication::setLibraryPaths(paths);
 
     QApplication a(argc, argv);
-
+//#define STYLE
 #ifdef STYLE
-    QFile file(":/resources/darkorange.qss");
+    QFile file(":/resources/dark.qss");
     file.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(file.readAll());
-    a.setStyle("plastique");
+   // a.setStyle("plastique");
     a.setStyleSheet(styleSheet);
     file.close();
 #endif
+a.setStyle("fusion");
     QTranslator qtTranslator;
        qtTranslator.load("qt_" + QLocale::system().name(),
                QLibraryInfo::location(QLibraryInfo::TranslationsPath));

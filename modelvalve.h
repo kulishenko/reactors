@@ -14,10 +14,10 @@ private:
     qreal m_Position; // Relative Volume Flowrate
     qreal m_MaxFlowrate; // Maximum Flowrate, L/min
 private slots:
-    qreal getPosition();
-    void setPosition(qreal Value);
-    qreal getMaxFlowrate();
-    void setMaxFlowrate(qreal Value);
+    qreal getPosition() const;
+    void setPosition(const qreal Value);
+    qreal getMaxFlowrate() const;
+    void setMaxFlowrate(const qreal Value);
 };
 
 #endif // MODELVALVE_H

@@ -21,14 +21,12 @@ public:
     QVector<QVector<qreal>* > SimConc;
     qreal t0; // Zero time, s
     qreal tend; // End time, s
-    qreal tau; // Residence time, s
-    qreal avg_tau; // Average residence time, s
-    qreal M2t, M2theta; // 2-nd order moments
+    qreal m_tau; // Residence time, s
     qreal sigma2theta;
     qreal Nc;
-    qreal *M0; // Initial moment
     void calcM0();
     qreal getM0();
+    qreal getAvgTau();
     void calcAvgTau();
     void calcConc();
     void calcDimConc();
@@ -39,9 +37,12 @@ public:
 private:
     unsigned int m_DataRes; // Data resolution
     int i_t0;
-    qreal Calibrate(qreal x);
-    qreal dt(int i);
-    qreal dim_dt(int i);
+    qreal *avg_tau; // Average residence time, s
+    qreal *M0; // Initial moment
+    qreal M2t, M2theta; // 2-nd order moments
+    qreal Calibrate(qreal x) const;
+    qreal dt(const int i) const;
+    qreal dim_dt(const int i) const;
     QVector<qreal>::const_iterator t_0() const;
     QVector<qreal>::const_iterator t_last() const;
 };

@@ -17,8 +17,8 @@ public:
     ~SchemaConfig();
     typedef QMap<QString, QVariant> ElementType;
     QList<ElementType*> Config;
-    enum SchemaItemType {SchemaCSTR, SchemaPFR};
-    int getIntType(SchemaItemType t);
+    enum class SchemaItemType {SchemaCSTR, SchemaPFR};
+    int getIntType(const SchemaItemType t);
     QMap<QString, SchemaItemType> ElementItemTypes;
     bool serializeObject(QObject *object, QIODevice *output);
     template<class T>

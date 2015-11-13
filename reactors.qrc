@@ -13,5 +13,6 @@
         <file>images/checkbox.png</file>
         <file>images/down_arrow.png</file>
         <file>resources/cellmodel.mml</file>
+        <file>resources/dark.qss</file>
     </qresource>
 </RCC>

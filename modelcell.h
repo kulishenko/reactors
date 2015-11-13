@@ -41,7 +41,7 @@ public:
     static int func_C(double t, const double y[], double f[], void *params);
 private:
     SchemaData* p_Data;
-    qreal Conc(qreal theta);
+    qreal Conc(const qreal theta) const;
 };
 
 #endif // MODELCELL_H

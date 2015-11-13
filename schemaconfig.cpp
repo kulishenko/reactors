@@ -22,13 +22,13 @@ SchemaConfig::~SchemaConfig()
 
 }
 
-int SchemaConfig::getIntType(SchemaConfig::SchemaItemType t)
+int SchemaConfig::getIntType(const SchemaConfig::SchemaItemType t)
 {
     switch(t){
-        case SchemaCSTR:
+        case SchemaItemType::SchemaCSTR:
             return 0;
             break;
-        case SchemaPFR:
+        case SchemaItemType::SchemaPFR:
             return 1;
             break;
     }
@@ -36,12 +36,12 @@ int SchemaConfig::getIntType(SchemaConfig::SchemaItemType t)
 }
 void SchemaConfig::ParseXMLConfig(){
     QFile* file = new QFile("config.xml");
-       if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
-       {
-           qDebug()<< QObject::tr("Unable to open XML-config");
-           return;
-       }
-       QXmlStreamReader xml(file);
+    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+       qDebug()<< QObject::tr("Unable to open XML-config");
+       return;
+    }
+    QXmlStreamReader xml(file);
 }
 bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
     QDomDocument doc;

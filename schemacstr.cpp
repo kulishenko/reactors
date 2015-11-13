@@ -82,7 +82,7 @@ SchemaCSTR::~SchemaCSTR()
 }
 
 
-void SchemaCSTR::setLevel(qreal Level, int TransTime) {
+void SchemaCSTR::setLevel(const qreal Level, const int TransTime) {
 
     m_LiquidLevelSet = Level;
 //    if(TransTime==0) TransTime = 5000;// Transient time
@@ -95,7 +95,7 @@ void SchemaCSTR::setLevel(qreal Level, int TransTime) {
 
 }
 
-void SchemaCSTR::animLevel(qreal Value){
+void SchemaCSTR::animLevel(const qreal Value){
 
     qreal CurrentFrameLevel = m_LiquidLevel + (m_LiquidLevelSet - m_LiquidLevel) * Value;
 
@@ -116,7 +116,7 @@ void SchemaCSTR::animLevel(qreal Value){
 
 }
 
-void SchemaCSTR::animMotor(qreal Value)
+void SchemaCSTR::animMotor(const qreal Value)
 {
     // KOCTbI/\b
     p_Mixer->setTransform(QTransform().translate(15,0).rotate(m_MixerAngle+Value*180,Qt::YAxis).translate(-15,0));
@@ -130,18 +130,14 @@ void SchemaCSTR::animFinished()
     sender()->~QObject();
 }
 
-void SchemaCSTR::setSize(QSize Value)
-{
 
-}
-
-void SchemaCSTR::setPosX(int Value)
+void SchemaCSTR::setPosX(const int Value)
 {
     m_PosX = Value;
     setPos(m_PosX, m_PosY);
 }
 
-void SchemaCSTR::setPosY(int Value)
+void SchemaCSTR::setPosY(const int Value)
 {
     m_PosY = Value;
     setPos(m_PosX, m_PosY);

@@ -10,27 +10,27 @@ ModelItem::~ModelItem()
 {
 
 }
-void ModelItem::setInletFlowrate(qreal Value)
+void ModelItem::setInletFlowrate(const qreal Value)
 {
     m_InletFlowrate = Value;
 }
 
-qreal ModelItem::getInletFlowrate()
+qreal ModelItem::getInletFlowrate() const
 {
     return m_InletFlowrate;
 }
 
-void ModelItem::setMaxFlowrate(qreal Value)
+void ModelItem::setMaxFlowrate(const qreal Value)
 {
     m_MaxFlowrate = Value;
 }
 
-qreal ModelItem::getMaxFlowrate()
+qreal ModelItem::getMaxFlowrate() const
 {
     return m_MaxFlowrate;
 }
 
-int ModelItem::getElementId()
+int ModelItem::getElementId() const
 {
     return m_ElementId;
 }
