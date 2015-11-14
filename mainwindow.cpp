@@ -445,7 +445,7 @@ void MainWindow::initControl()
     Control->addItem(flowmeterItem);
     Control->calcTau();
 
-    delete thread;
+    if(thread) delete thread;
 
     thread = new QThread(this);
     timer = new QTimer();
@@ -690,14 +690,14 @@ void MainWindow::updateWidgets()
     while ((fabs(TimeNow - Control->Time.at(i)) > 0.5 ) && i < Control->Time.size()-1)
     i++;
 
-    if(i==Control->Time.size()-1) return;
+    if(i == Control->Time.size() - 1) return;
 
     plotWidget->graph(0)->addData(Control->Time.at(i), Control->Conductivity.at(i));
     plotWidget->replot();
     qDebug() << "TimeNow:" << QString::number(TimeNow)<< "Added point t = " << QString::number(Control->Time.at(i));
 
 
-    tableWidget->setRowCount(i+1);
+    tableWidget->setRowCount(i + 1);
 
     QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg(Control->Time.at(i)));
     tableWidget->setItem(i, 0, newItem);
@@ -769,22 +769,25 @@ void MainWindow::paramEstimation(){
                                          QString::number(Data->getAvgTau()),
                                          QString::number(Data->getNc())));
 
+    const QVector<qreal> &SConc = Data->getSConc();
+    const QVector<qreal> &DimTime = Data->getDimTime();
 
     resPlotWidget->addGraph();
-    for(int i = 0; i < Data->DimTime.size(); i++) {
+    for(int i = 0; i < DimTime.size(); i++) {
         resPlotWidget->graph(0)->addData(Data->getDimTimeAt(i),  Data->getConcAt(i));
         resPlotWidget->graph(0)->setName(tr("Experiment"));
     }
 
     resPlotWidget->addGraph();
-    resPlotWidget->graph(1)->setData(Data->DimTime,  Data->SConc);
+    resPlotWidget->graph(1)->setData(DimTime,  SConc);
     resPlotWidget->graph(1)->setPen(QPen(Qt::red));
     resPlotWidget->graph(1)->setName(tr("Experiment (smoothed)"));
     Qt::GlobalColor Colors[2] = {Qt::green, Qt::magenta };
 
-    for(int i = 0; i < Data->SimConc.size(); i++) {
+    for(size_t i = 0; i < Data->getSimConcCount(); i++) {
+       const QVector<qreal> &SimConc = Data->getSimConc(i);
        resPlotWidget->addGraph();
-       resPlotWidget->graph(i+2)->setData(Data->DimTime,  *Data->SimConc.at(i));
+       resPlotWidget->graph(i+2)->setData(DimTime, SimConc);
        resPlotWidget->graph(i+2)->setPen(QPen(Colors[i]));
        resPlotWidget->graph(i+2)->setName(tr("Simulated by method %1").arg(i+1));
     }

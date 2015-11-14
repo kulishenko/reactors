@@ -6,11 +6,11 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 {
     setRect(0, 0, Width, Height);
 
-    QLinearGradient* Gradient=new QLinearGradient(0, 0, Width, 0);
+    QLinearGradient* Gradient = new QLinearGradient(0, 0, Width, 0);
 
-    Gradient->setColorAt(1,QColor::fromRgb(245, 252, 255));
-    Gradient->setColorAt(0.5,Qt::white);
-    Gradient->setColorAt(0,QColor::fromRgb(209, 244, 255));
+    Gradient->setColorAt(1, QColor::fromRgb(245, 252, 255));
+    Gradient->setColorAt(0.5, Qt::white);
+    Gradient->setColorAt(0, QColor::fromRgb(209, 244, 255));
 
     setBrush(*Gradient);
     setPos(PosX,PosY);
@@ -19,14 +19,14 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     m_Width = Width;
     m_MaxFlow = MaxFlow;
     Floater = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 2, 0 )
-                                                   << QPointF( Width-2, 0 )
-                                                   << QPointF( Width/2,0.75*Width )
+                                                   << QPointF( Width - 2, 0 )
+                                                   << QPointF( Width / 2, 0.75 * Width )
                                                    << QPointF( 2, 0 ) ), this);
 
-    Gradient=new QLinearGradient(Floater->boundingRect().topLeft(),Floater->boundingRect().topRight());
+    Gradient=new QLinearGradient(Floater->boundingRect().topLeft(), Floater->boundingRect().topRight());
 
-    Gradient->setColorAt(1,Qt::lightGray);
-    Gradient->setColorAt(0,Qt::black);
+    Gradient->setColorAt(1, Qt::lightGray);
+    Gradient->setColorAt(0 ,Qt::black);
 
 
     Floater->setBrush(*Gradient);
@@ -34,7 +34,7 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 
  //   Floater->setBrush( Qt::gray);
     Floater->setPos(boundingRect().bottomLeft());
-    Floater->moveBy(0,-0.75*Width + Pos*Height);
+    Floater->moveBy(0, -0.75 * Width + Pos * Height);
 
     OutletPort = new SchemaPort(Width/2, -40, this);
     OutletPipe = new QGraphicsLineItem(Width/2,  -40, Width/2, 0, this);
@@ -44,8 +44,8 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     gray.setColor(Qt::gray);
 
 
-    for(int i=1; i<=10; i++){
-        Rulers.push_back(new QGraphicsLineItem(0,0.09*Height*i,Width,0.09*Height*i, this));
+    for(int i = 1; i <= 10; i++){
+        Rulers.push_back(new QGraphicsLineItem(0, 0.09*Height*i, Width, 0.09*Height*i, this));
         Rulers.at(i-1)->setPen(gray);
 
     }
@@ -55,8 +55,8 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
 
-    Flowrate=0.0f;
-    m_FlowrateSet=0.0f;
+    Flowrate = 0.0f;
+    m_FlowrateSet = 0.0f;
   //  OutletPipe->setPen(Qt::black);
  //   InletPort = boundingRect().bottomLeft();
 }
@@ -90,8 +90,7 @@ void SchemaFlowmeter::animFloater(qreal Value)
 void SchemaFlowmeter::setFlowrate(qreal Value) {
 
     m_FlowrateSet = Value;
-    if(PFD != NULL)
-        PFD->setFlowrate(Value * m_MaxFlow);
+    if(PFD) PFD->setFlowrate(Value * m_MaxFlow);
 
 /*    QTimeLine *anim = new QTimeLine(1000, this);
     anim->setUpdateInterval(30);

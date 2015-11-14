@@ -13,7 +13,7 @@ SchemaView::~SchemaView()
 }
 void SchemaView::mousePressEvent(QMouseEvent *event)
 {
-    if(itemAt(event->pos())==NULL)
+    if(!itemAt(event->pos()))
         setDragMode(QGraphicsView::ScrollHandDrag);
     QGraphicsView::mousePressEvent(event);
 }

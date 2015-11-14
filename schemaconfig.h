@@ -26,7 +26,7 @@ public:
         T* object = new T();
         if(_deserializeObject(input, object))
             return object;
-        delete object;
+        object->deleteLater();
         return NULL;
     }
 private:

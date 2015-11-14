@@ -37,11 +37,11 @@ private:
     QColor m_LiquidBottomColor;
     QColor m_LiquidTopColor;
     QColor m_GasColor;
+    int m_numInCascade;
     bool m_isWorking;
     bool m_isFeeding;
     bool m_isReady;
     qreal m_MixerAngle;
-    int m_numInCascade;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

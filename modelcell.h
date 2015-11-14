@@ -23,8 +23,8 @@ public:
     ~ModelCell();
     struct data {
         size_t n;
-        double * y;
-        double * x;
+        const double * y;
+        const double * x;
         double * sigma;
     };
     static int N_f(const gsl_vector *x, void *data, gsl_vector *f);

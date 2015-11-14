@@ -13,9 +13,9 @@ ModelCell::~ModelCell()
 int ModelCell::N_f(const gsl_vector *x, void *data, gsl_vector *f)
 {
     size_t n = (static_cast<struct data *> (data))->n;
-    double *y = (static_cast<struct data *> (data))->y;
-    double *sigma = (static_cast<struct data *> (data))->sigma;
-    double *arg = (static_cast<struct data *> (data))->x;
+    const double *y = (static_cast<struct data *> (data))->y;
+    const double *sigma = (static_cast<struct data *> (data))->sigma;
+    const double *arg = (static_cast<struct data *> (data))->x;
 
     double Num = gsl_vector_get (x, 0);
     double Cin = gsl_vector_get (x, 1);
@@ -27,7 +27,7 @@ int ModelCell::N_f(const gsl_vector *x, void *data, gsl_vector *f)
 
         // Attempt to use Gamma-function instead of factorial
 
-        double Yi = Cin / gsl_sf_gamma(Num) * pow(t*Num,Num-1)* exp(-t*Num);
+        double Yi = Cin / gsl_sf_gamma(Num) * pow(t * Num, Num - 1)* exp(-t * Num);
         gsl_vector_set (f, i, (Yi - y[i])/sigma[i]);
       }
 
@@ -38,8 +38,8 @@ int ModelCell::N_df (const gsl_vector * x, void *data,
          gsl_matrix * J)
 {
     size_t n = (static_cast<struct data *> (data))->n;
-    double *sigma = (static_cast<struct data *> (data))->sigma;
-    double *arg = (static_cast<struct data *> (data))->x;
+    const double *sigma = (static_cast<struct data *> (data))->sigma;
+    const double *arg = (static_cast<struct data *> (data))->x;
 
     double Num = gsl_vector_get (x, 0);
     double Cin = gsl_vector_get (x, 1);
@@ -52,10 +52,10 @@ int ModelCell::N_df (const gsl_vector * x, void *data,
       /* and the xj are the parameters (Num,Cin) */
       double t = arg[i];
       double s = sigma[i];
-      double dCdn = -Cin * exp(-Num*t) * pow(Num*t,Num)
-              * (Num*gsl_sf_psi(Num) - Num*log(Num*t) - Num + Num * t + 1)
+      double dCdn = -Cin * exp(-Num * t) * pow(Num * t, Num)
+              * (Num*gsl_sf_psi(Num) - Num * log(Num * t) - Num + Num * t + 1)
               / (Num*Num * t * gsl_sf_gamma(Num));
-      double dCdCin = exp(-Num * t)*pow(Num*t,Num-1)/gsl_sf_gamma(Num);
+      double dCdCin = exp(-Num * t) * pow(Num * t, Num - 1)/gsl_sf_gamma(Num);
 
     gsl_matrix_set (J, i, 0, dCdn/s);
     gsl_matrix_set (J, i, 1, dCdCin/s);
@@ -96,9 +96,9 @@ int ModelCell::func_C (double t, const double y[], double f[],
     int nCells = arg[0];
     qreal tau = arg[1];
     qreal C_in = 0;
-    f[0] = 1/tau * (C_in - y[0]);
+    f[0] = 1 / tau * (C_in - y[0]);
     for(int i = 1; i < nCells; i++){
-        f[i] = 1/tau*(y[i-1] - y[i]);
+        f[i] = 1 / tau * (y[i-1] - y[i]);
     }
     return GSL_SUCCESS;
 }
@@ -155,13 +155,17 @@ void ModelCell::EstimateNumCells()
     gsl_multifit_fdfsolver *s;
     int status;
     unsigned int iter = 0;
-    const size_t n = p_Data->SConc.size();
+
+    const QVector<qreal> &SConc = p_Data->getSConc();
+    const QVector<qreal> &DimTime = p_Data->getDimTime();
+
+    const size_t n = SConc.size();
     const size_t p = 2;
 
     gsl_matrix *covar = gsl_matrix_alloc (p, p);
     QVector<qreal> sigma;
     sigma.fill(1e-6, n);
-    struct data d = { n, p_Data->SConc.data(), p_Data->DimTime.data(), sigma.data()};
+    struct data d = { n, SConc.data(), DimTime.data(), sigma.data()};
     gsl_multifit_function_fdf f;
     double x_init[2] = { 1, 1e-4};
     gsl_vector_view x = gsl_vector_view_array (x_init, p);
@@ -228,10 +232,13 @@ void ModelCell::EstimateNumCells()
 void ModelCell::Sim()
 {
     QVector<qreal> *CalcConc = new QVector<qreal>();
-    for(int i = 0; i < p_Data->DimTime.size();i++)
-        CalcConc->push_back(Conc(p_Data->DimTime.at(i)));
+    const QVector<qreal> &DimTime = p_Data->getDimTime();
 
-    p_Data->SimConc.push_back(CalcConc);
+    auto end = DimTime.constEnd();
+    for(auto iter = DimTime.constBegin(); iter != end; ++iter)
+        CalcConc->push_back(Conc(*iter));
+
+    p_Data->SimConc.push_back(*CalcConc);
 }
 
 void ModelCell::SimODE()
@@ -250,10 +257,13 @@ void ModelCell::SimODE()
     y[0] = Cin;
     for (i = 1; i < iNum; i++)
       y[i] = 0.0f;
-    unsigned int nP = p_Data->DimTime.size()-1;
+
+    const QVector<qreal> &DimTime = p_Data->getDimTime();
+
+    unsigned int nP = DimTime.size() - 1;
     for (i = 1; i <= nP; i++)
     {
-      qreal ti = p_Data->DimTime.at(i) * avg_tau;
+      qreal ti = DimTime.at(i) * avg_tau;
       int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
 
       if (status != GSL_SUCCESS)
@@ -266,12 +276,12 @@ void ModelCell::SimODE()
 
     //  printf ("%.5e %.5e\n", t, y[iNum-1]);
     }
-    p_Data->SimConc.push_back(CalcConc);
+    p_Data->SimConc.push_back(*CalcConc);
     gsl_odeiv2_driver_free (d);
 }
 
 qreal ModelCell::Conc(const qreal theta) const
 {
-    return Cin / gsl_sf_gamma(Num) * pow(theta*Num,Num-1)* exp(-theta*Num);
+    return Cin / gsl_sf_gamma(Num) * pow(theta * Num, Num - 1) * exp(-theta * Num);
 }
 
