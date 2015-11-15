@@ -18,7 +18,7 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     p_Brush->setColorAt(0.99, Qt::lightGray);
 
     setBrush( *p_Brush );
-    setCursor(Qt::PointingHandCursor);
+    QGraphicsPolygonItem::setCursor(Qt::PointingHandCursor);
 
     OutletPort = new SchemaPort(Length, Width/2, this);
 

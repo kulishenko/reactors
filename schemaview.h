@@ -7,16 +7,17 @@
 class SchemaView : public QGraphicsView
 {
     Q_OBJECT
-    int _numScheduledScalings;
-    void wheelEvent (QWheelEvent * event);
 public:
     SchemaView();
     ~SchemaView();
+private:
+    int _numScheduledScalings;
     qreal scale_factor;
     QPoint lastPos;
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void wheelEvent (QWheelEvent * event);
 public slots:
     void animFinished();
     void scalingTime(qreal x);
