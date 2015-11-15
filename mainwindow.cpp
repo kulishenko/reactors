@@ -18,7 +18,7 @@ extern "C" {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), thread(nullptr)
+    ui(new Ui::MainWindow), thread(nullptr), Control(nullptr)
 {
     ui->setupUi(this);
 
@@ -445,7 +445,7 @@ void MainWindow::initControl()
     Control->addItem(flowmeterItem);
     Control->calcTau();
 
-    if(thread) delete thread;
+    if(thread) thread->deleteLater();
 
     thread = new QThread(this);
     timer = new QTimer();
@@ -469,7 +469,11 @@ void MainWindow::initControl()
 
     EventLog << tr("Schema controls are initialized");
 
-    plotWidget->graph(0)->setData(Control->Time, Control->Conductivity);
+    // ToDO: REMOVE THIS
+    const QVector<qreal> &Time = Control->getTime();
+    const QVector<qreal> &Conductivity = Control->getParameter();
+
+    plotWidget->graph(0)->setData(Time, Conductivity);
     plotWidget->rescaleAxes();
     plotWidget->replot();
     plotWidget->graph(0)->clearData();
@@ -547,6 +551,7 @@ void MainWindow::open()
         if(iDataWorkSheet != NULL) {
             xlsWorkSheet* pWS = xls_getWorkSheet(pWB,*iDataWorkSheet);
             xls_parseWorkSheet(pWS);
+            if(Control) Control->deleteLater();
             Control = new PFDControl();
 
             // Reading the playback xls file
@@ -555,8 +560,8 @@ void MainWindow::open()
                 row=&pWS->rows.row[t];
 
                 // Put the data into Control
-                Control->Time.push_back(row->cells.cell[1].d);
-                Control->Conductivity.push_back(row->cells.cell[2].d);
+                if(row->cells.cell[1].d != 0.0)
+                    Control->addPoint(row->cells.cell[1].d, row->cells.cell[2].d);
 
                 t++;
             }
@@ -567,7 +572,7 @@ void MainWindow::open()
 
             Control->setPlaybackFlowrate(static_cast<qreal> (pbFlowrate));
             Control->setNumCascade(pbNumCascade);
-            Control->PlaybackFileName = fileInfo.fileName();
+            Control->setPlaybackFileName(fileInfo.fileName());
             initControl();
 
             EventLog << tr("Opened the playback file: %1").arg(QfileName)
@@ -687,22 +692,22 @@ void MainWindow::updateWidgets()
 //  TODO: Fix repeated addition of the same point (fixed?)
     int i = 0;
 
-    while ((fabs(TimeNow - Control->Time.at(i)) > 0.5 ) && i < Control->Time.size()-1)
+    while ((fabs(TimeNow - Control->getTimeAt(i)) > 0.5 ) && i < Control->getCount())
     i++;
 
-    if(i == Control->Time.size() - 1) return;
+    if(i == Control->getCount()) return;
 
-    plotWidget->graph(0)->addData(Control->Time.at(i), Control->Conductivity.at(i));
+    plotWidget->graph(0)->addData(Control->getTimeAt(i), Control->getParameterAt(i));
     plotWidget->replot();
-    qDebug() << "TimeNow:" << QString::number(TimeNow)<< "Added point t = " << QString::number(Control->Time.at(i));
+    qDebug() << "TimeNow:" << QString::number(TimeNow)<< "Added point t = " << QString::number(Control->getTimeAt(i));
 
 
     tableWidget->setRowCount(i + 1);
 
-    QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg(Control->Time.at(i)));
+    QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg(Control->getTimeAt(i)));
     tableWidget->setItem(i, 0, newItem);
 
-    newItem = new QTableWidgetItem(tr("%1").arg(Control->Conductivity.at(i)));
+    newItem = new QTableWidgetItem(tr("%1").arg(Control->getParameterAt(i)));
     tableWidget->setItem(i, 1, newItem);
     tableWidget->scrollToBottom();
     tableWidget->selectRow(i);
@@ -855,7 +860,8 @@ void MainWindow::importFromServerDlg()
         QTableView *view = new QTableView;
 
         database->setData(Control);
-        view->setModel(database->LabsModel);
+
+        view->setModel(database->getLabsModel());
         view->hideColumn(0);
         view->hideColumn(1);
         view->setEditTriggers(QTableView::NoEditTriggers);
@@ -864,12 +870,12 @@ void MainWindow::importFromServerDlg()
         layout->addWidget(view);
 
         wnd->setWindowTitle(tr("Select the case study"));
-        wnd->resize(view->width(),view->height());
+        wnd->resize(view->width(), view->height());
         wnd->show();
 
-        connect(view,SIGNAL(doubleClicked(QModelIndex)),database,SLOT(getLabID(QModelIndex)));
-        connect(database,SIGNAL(getLabDataFinishedResult(bool)),this,SLOT(importFromServer(bool)));
-        connect(database,SIGNAL(getLabDataFinished()),wnd,SLOT(close()));
+        connect(view, SIGNAL(doubleClicked(QModelIndex)), database, SLOT(getLabID(QModelIndex)));
+        connect(database, SIGNAL(getLabDataFinishedResult(bool)), this, SLOT(importFromServer(bool)));
+        connect(database, SIGNAL(getLabDataFinished()), wnd, SLOT(close()));
     }
 
 }
@@ -878,12 +884,12 @@ void MainWindow::importFromServer(bool result)
 {
     if(result) {
         Control = database->getData();
-        delete database;
+        database->deleteLater();
         initControl();
 
         EventLog << tr("Imported the playback data from server")
                  << tr("Please, set the volume flowrate %1 L/hr in order to begin "
-                       "the simulation playback").arg(Control->PlaybackFlowrate);
+                       "the simulation playback").arg(Control->getPlaybackFlowrate());
 
         thread->start();
     } else
@@ -930,7 +936,7 @@ void MainWindow::saveSettings()
     settings.beginGroup("MainWindow");
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", saveState());
-    settings.setValue("view_scale", QPointF(graphicsView->transform().m11(),graphicsView->transform().m22()));
+    settings.setValue("view_scale", QPointF(graphicsView->transform().m11(), graphicsView->transform().m22()));
     settings.endGroup();    
     settings.sync();
 }

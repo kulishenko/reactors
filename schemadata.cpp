@@ -1,12 +1,13 @@
 #include "schemadata.h"
 
 
-SchemaData::SchemaData(PFDControl* Ctrl): avg_tau(nullptr), M0(nullptr)
+SchemaData::SchemaData(PFDControl* Ctrl):
+    p_ExpDataTime(Ctrl->getTime()),
+    p_ExpDataConductivity(Ctrl->getParameter()),
+    avg_tau(nullptr), M0(nullptr)
 {
-    p_ExpDataTime = &Ctrl->Time;
-    p_ExpDataConductivity = &Ctrl->Conductivity;
-    p_Flowrate = &Ctrl->PlaybackFlowrate;
-    p_NumCascade = &Ctrl->NumCascade;
+    m_Flowrate = Ctrl->getPlaybackFlowrate();
+    m_NumCascade = Ctrl->getNumCascade();
     m_DataRes = 1;
 }
 
@@ -19,7 +20,7 @@ void SchemaData::calcM0()
 {
     if(M0) delete M0;
     M0 = new qreal(0);
-    for(int i = i_t0; i < p_ExpDataTime->size(); i += m_DataRes)
+    for(int i = i_t0; i < p_ExpDataTime.size(); i += m_DataRes)
         *M0 += SConc.at(i - i_t0) * dt(i - i_t0);
 }
 
@@ -49,8 +50,8 @@ void SchemaData::calcAvgTau()
 {
 
     qreal Sum_tC = 0;
-    for(int i = i_t0; i < p_ExpDataTime->size(); i += m_DataRes) {
-        Sum_tC += SConc.at(i - i_t0) * (p_ExpDataTime->at(i)- t0) * dt(i - i_t0);
+    for(int i = i_t0; i < p_ExpDataTime.size(); i += m_DataRes) {
+        Sum_tC += SConc.at(i - i_t0) * (p_ExpDataTime.at(i)- t0) * dt(i - i_t0);
     }    
     if(avg_tau) delete avg_tau;
     avg_tau = new qreal(Sum_tC / getM0());
@@ -59,16 +60,16 @@ void SchemaData::calcAvgTau()
 void SchemaData::calcConc()
 {
     t0 = *t_0();
-    i_t0 = t_0() - p_ExpDataTime->constBegin();
-    qreal C1 = Calibrate(p_ExpDataConductivity->at(i_t0));
+    i_t0 = t_0() - p_ExpDataTime.constBegin();
+    qreal C1 = Calibrate(p_ExpDataConductivity.at(i_t0));
     tend = *t_last();
-    qreal C2 = Calibrate(p_ExpDataConductivity->at(t_last() - p_ExpDataTime->constBegin()));
+    qreal C2 = Calibrate(p_ExpDataConductivity.at(t_last() - p_ExpDataTime.constBegin()));
 
     qDebug() << QObject::tr("C1 = %1, C2 = %2").arg(QString::number(C1),QString::number(C2));
     qreal R = (C1 - C2) / (tend - t0);
 
-    for(int i = i_t0; i < p_ExpDataTime->size(); i += m_DataRes){
-        qreal C = Calibrate(p_ExpDataConductivity->at(i)) - C1 - (p_ExpDataTime->at(i) - t0)* R;
+    for(int i = i_t0; i < p_ExpDataTime.size(); i += m_DataRes){
+        qreal C = Calibrate(p_ExpDataConductivity.at(i)) - C1 - (p_ExpDataTime.at(i) - t0)* R;
         // Added for robustness (check approximation formulas?)
         Conc.push_back((C > 0) ? C : 0);
     }
@@ -84,10 +85,10 @@ void SchemaData::calcDimConc()
 
 void SchemaData::calcDimTime()
 {
-    m_tau = 0.84 * (*p_NumCascade) / (*p_Flowrate) * 3600; // ToDo: remove?
+    m_tau = 0.84 * m_NumCascade / m_Flowrate * 3600; // ToDo: remove?
     qreal tau = getAvgTau();
-    for(int i = i_t0; i < p_ExpDataTime->size(); i+= m_DataRes)
-        DimTime.push_back((p_ExpDataTime->at(i) - t0) / tau + 1e-6);
+    for(int i = i_t0; i < p_ExpDataTime.size(); i+= m_DataRes)
+        DimTime.push_back((p_ExpDataTime.at(i) - t0) / tau + 1e-6);
 
 }
 
@@ -109,37 +110,37 @@ QVector<qreal>::const_iterator SchemaData::t_0() const
 {
     // Simple method to detect the bypass resistor disconnection time
     int i = 0, j;
-    QVector<qreal>::const_iterator iter = p_ExpDataTime->constBegin();
-    while(i+5 < p_ExpDataTime->size()) {
+    QVector<qreal>::const_iterator iter = p_ExpDataTime.constBegin();
+    while(i+5 < p_ExpDataTime.size()) {
         i++; ++iter;
-        if((p_ExpDataConductivity->first() - p_ExpDataConductivity->at(i)) > p_ExpDataConductivity->first() * 0.1
-                && fabs(p_ExpDataConductivity->at(i) - p_ExpDataConductivity->at(i+5)) < p_ExpDataConductivity->at(i) * 0.03)
+        if((p_ExpDataConductivity.first() - p_ExpDataConductivity.at(i)) > p_ExpDataConductivity.first() * 0.1
+                && fabs(p_ExpDataConductivity.at(i) - p_ExpDataConductivity.at(i+5)) < p_ExpDataConductivity.at(i) * 0.03)
         {
             j = i;
-            qDebug() << "t0_begin = " + QString::number(p_ExpDataTime->at(j));
-            while(fabs(p_ExpDataConductivity->first() - p_ExpDataConductivity->at(j)) > p_ExpDataConductivity->first() * 0.1
-                    && j < p_ExpDataTime->size()){
+            qDebug() << "t0_begin = " + QString::number(p_ExpDataTime.at(j));
+            while(fabs(p_ExpDataConductivity.first() - p_ExpDataConductivity.at(j)) > p_ExpDataConductivity.first() * 0.1
+                    && j < p_ExpDataTime.size()){
                     j++; ++iter;}
-            qDebug() << "t0_end = " + QString::number(p_ExpDataTime->at(j));
+            qDebug() << "t0_end = " + QString::number(p_ExpDataTime.at(j));
             return iter;
         }
     }
     qDebug() << "Couldn't detect t0, using t0 = 0 instead";
-    return p_ExpDataTime->constBegin();
+    return p_ExpDataTime.constBegin();
 }
 
 QVector<qreal>::const_iterator SchemaData::t_last() const
 {
-    p_ExpDataTime->pop_back();
-    return p_ExpDataTime->end() - 1;
+ //   p_ExpDataTime.pop_back();
+    return p_ExpDataTime.constEnd() - 1;
 }
 
 qreal SchemaData::dt(const size_t i) const
 {
     if(i == 0)
-        return p_ExpDataTime->at(m_DataRes) - p_ExpDataTime->first();
+        return p_ExpDataTime.at(m_DataRes) - p_ExpDataTime.first();
     else
-        return p_ExpDataTime->at(i) - p_ExpDataTime->at(i - m_DataRes);
+        return p_ExpDataTime.at(i) - p_ExpDataTime.at(i - m_DataRes);
 }
 qreal SchemaData::dim_dt(const size_t i) const
 {

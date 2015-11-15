@@ -19,12 +19,13 @@ public:
     ~SchemaDB();
     void setData(PFDControl *data);
     bool getLabsTable();
-    QSqlRelationalTableModel* LabsModel;
     PFDControl *getData();
+    QSqlRelationalTableModel *getLabsModel() const;
 private:
     static QSqlDatabase m_db;
+    QSqlRelationalTableModel* p_LabsModel;
     static bool isConnected;
-    PFDControl* Control;
+    PFDControl* p_Control;
     int LabID;
     qreal LabFlowrate;
     int LabNumCascade;

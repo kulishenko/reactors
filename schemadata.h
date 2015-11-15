@@ -32,10 +32,10 @@ public:
     const QVector<qreal> &getSimConc(const size_t i) const;
     size_t getSimConcCount() const;
 private:
-    QVector<qreal> *p_ExpDataConductivity;
-    QVector<qreal> *p_ExpDataTime;
-    int* p_NumCascade;
-    qreal* p_Flowrate; // Volume flowrate, L/hr
+    const QVector<qreal> &p_ExpDataTime;
+    const QVector<qreal> &p_ExpDataConductivity;
+    int m_NumCascade;
+    qreal m_Flowrate; // Volume flowrate, L/hr
     size_t m_DataRes; // Data resolution
     int i_t0;
     qreal t0; // Zero time, s

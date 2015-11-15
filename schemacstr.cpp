@@ -168,7 +168,7 @@ void SchemaCSTR::changeLevel(){
 void SchemaCSTR::fill(){
 
     qreal transTime = (PFD->getTauAt(m_numInCascade) - (m_numInCascade == 0 ? 0 : PFD->getTauAt(m_numInCascade - 1) ) ) * 3600 * 1000;
-    qDebug() << "Flowrate is "+ QString::number(PFD->Flowrate);
+    qDebug() << "Flowrate is "+ QString::number(PFD->getFlowrate());
     qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(m_numInCascade),QString::number(transTime));
     setLevel(0.8, static_cast<int>(transTime));
     if(!m_isWorking) activateMotor();

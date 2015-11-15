@@ -20,19 +20,30 @@ class PFDControl : public QObject
 public:
     explicit PFDControl(QObject *parent = 0);
     ~PFDControl();
-    qreal Flowrate;
-    qreal PlaybackFlowrate;
-    int NumCascade;
     QVector<SchemaCSTR*> *reactorItems;
-    QVector<qreal> Time;
-    QVector<qreal> Conductivity;
-    QString PlaybackFileName;
     void addItem(SchemaItem *item);
     void calcTau();
     void setNumCascade(int Value);
     qreal getCurrentTime();
+    void addPoint(qreal Time, qreal Value);
+    const QVector<qreal> &getTime() const;
+    const QVector<qreal> &getParameter() const;
+    qreal getTimeAt(const size_t i) const;
+    qreal getParameterAt(const size_t i) const;
     qreal getTauAt(const size_t i) const; // TODO: Replace with ModelCSTR
+    int getCount() const;
+    qreal getFlowrate() const;
+    qreal getPlaybackFlowrate() const;
+    void setPlaybackFileName(const QString &str);
+    const QString &getPlaybackFileName() const;
+    int getNumCascade() const;
 private:
+    qreal m_Flowrate;
+    qreal m_PlaybackFlowrate;
+    QString m_PlaybackFileName;
+    int m_NumCascade;
+    QVector<qreal> m_Time;
+    QVector<qreal> m_Parameter;
     bool isStarted;
     bool isFlowrateSet;
     qreal TimeNow;
