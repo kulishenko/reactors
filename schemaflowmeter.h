@@ -22,6 +22,10 @@ private:
    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 public slots:
    qreal getFlowrateSet();
+protected:
+   void mousePressEvent(QGraphicsSceneMouseEvent *event);
+   void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 private slots:
    void animFloater(qreal Value);
    void animFinished();

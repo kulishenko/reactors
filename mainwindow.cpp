@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), thread(nullptr), Control(nullptr)
 {
+    qRegisterMetaType<RunMode>("RunMode");
+
     ui->setupUi(this);
 
     createActions();
@@ -174,18 +176,25 @@ void MainWindow::createActions()
     playbackAct = new QAction(tr("&Offline"),this);
     playbackAct->setCheckable(true);
     playbackAct->setStatusTip(tr("Enable the playback mode"));
- //   connect(playbackAct, SIGNAL(triggered()), this, SLOT(about()));
+    connect(playbackAct, SIGNAL(triggered()), this, SLOT(offlineMode()));
 
     onlineAct = new QAction(tr("&Online"),this);
     onlineAct->setCheckable(true);
     onlineAct->setStatusTip(tr("Enable the online mode and connect to remote Lab server"));
- //   connect(playbackAct, SIGNAL(triggered()), this, SLOT(about()));
+    connect(onlineAct, SIGNAL(triggered()), this, SLOT(onlineMode()));
+
+    editModeAct = new QAction(tr("&Editor"),this);
+    editModeAct->setCheckable(true);
+    editModeAct->setStatusTip(tr("Enable the edit mode"));
+    connect(editModeAct, SIGNAL(triggered()), this, SLOT(editMode()));
 
     modeGroup = new QActionGroup(this);
     modeGroup->addAction(playbackAct);
     modeGroup->addAction(onlineAct);
+    modeGroup->addAction(editModeAct);
     playbackAct->setChecked(true);
     onlineAct->setDisabled(true);
+    m_RunMode = RunMode::Offline;
 
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
@@ -256,6 +265,7 @@ void MainWindow::createMenus()
     modeMenu = menuBar()->addMenu(tr("&Mode"));
     modeMenu->addAction(playbackAct);
     modeMenu->addAction(onlineAct);
+    modeMenu->addAction(editModeAct);
 
     dataMenu = menuBar()->addMenu(tr("&Data"));
     dataMenu->addAction(importFromServerAct);
@@ -345,7 +355,7 @@ void MainWindow::createDockWindows()
 
 void MainWindow::createSchemaView()
 {
-    graphicsView = new SchemaView();
+    graphicsView = new SchemaView(this);
 
     bgColor = QColor::fromRgb(240, 240, 240);
 
@@ -692,10 +702,11 @@ void MainWindow::updateWidgets()
 //  TODO: Fix repeated addition of the same point (fixed?)
     int i = 0;
 
-    while ((fabs(TimeNow - Control->getTimeAt(i)) > 0.5 ) && i < Control->getCount())
+    while ((fabs(TimeNow - Control->getTimeAt(i)) > 0.5 ) && i < Control->getCount() - 1)
     i++;
+    qDebug() << i;
 
-    if(i == Control->getCount()) return;
+    if(i == Control->getCount() - 1) return;
 
     plotWidget->graph(0)->addData(Control->getTimeAt(i), Control->getParameterAt(i));
     plotWidget->replot();
@@ -950,4 +961,19 @@ void MainWindow::exportFinished(bool result) {
     else
         QMessageBox::warning(this, tr("Couldn't export the data"), tr("Couldn't export the data"));
     exportToServerAct->setEnabled(true);
+}
+
+void MainWindow::onlineMode()
+{
+    m_RunMode = RunMode::Online;
+}
+
+void MainWindow::offlineMode()
+{
+    m_RunMode = RunMode::Offline;
+}
+
+void MainWindow::editMode()
+{
+    m_RunMode = RunMode::Edit;
 }

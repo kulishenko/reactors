@@ -107,3 +107,22 @@ void SchemaFlowmeter::animFinished()
         _numScheduledChanges++;
     sender()->~QObject();
 }
+void SchemaFlowmeter::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    clicked();
+    setCursor(QCursor(Qt::DragMoveCursor));
+    _startPos = event->pos();
+    setOpacity(0.75);
+}
+void SchemaFlowmeter::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QPointF dP =  event->pos() - _startPos;
+    moveBy(dP.x(), dP.y());
+    emit moved();
+}
+void SchemaFlowmeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    Q_UNUSED(event)
+    setCursor(QCursor(Qt::ArrowCursor));
+    setOpacity(1);
+}

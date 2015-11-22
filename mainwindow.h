@@ -65,7 +65,7 @@ class QListWidget;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
+    Q_PROPERTY(RunMode runMode MEMBER m_RunMode)
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -74,6 +74,9 @@ public:
     //    bool eventFilter(QObject *, QEvent *);
 public slots:
     void exportFinished(bool result);
+    void onlineMode();
+    void offlineMode();
+    void editMode();
 protected:
     void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 private slots:
@@ -124,6 +127,8 @@ private:
     QVector<SchemaPipeline*> pipelineItems;
     QList<SchemaItem*> schemaItems;
 
+    enum class RunMode {Online, Offline, Edit};
+
     void loadSettings();
     void saveSettings();
 
@@ -133,6 +138,7 @@ private:
     void createDockWindows();
     void createSchemaView();
     void initControl();
+
 
     QColor bgColor;
     QLinearGradient* p_bgGradient;
@@ -179,6 +185,8 @@ private:
 
     QAction *playbackAct;
     QAction *onlineAct;
+    QAction *editModeAct;
+
     QAction *aboutAct;
     QAction *aboutQtAct;
     QLabel *infoLabel;
@@ -197,7 +205,7 @@ private:
 
     bool isSimRun;
     bool isDBConnected;
-
+    RunMode m_RunMode;
 };
 
 #endif // MAINWINDOW_H

@@ -1,7 +1,7 @@
 #include "schemaview.h"
 #include <QDebug>
 
-SchemaView::SchemaView() : QGraphicsView()
+SchemaView::SchemaView(QWidget *parent) : QGraphicsView(parent)
 {
     _numScheduledScalings = 0;
     scale_factor = 1.0;
@@ -13,6 +13,10 @@ SchemaView::~SchemaView()
 }
 void SchemaView::mousePressEvent(QMouseEvent *event)
 {
+    int Mode = parent()->property("runMode").toInt();
+    qDebug() << Mode;
+    if(Mode == 1) return;
+
     if(!itemAt(event->pos()))
         setDragMode(QGraphicsView::ScrollHandDrag);
     QGraphicsView::mousePressEvent(event);

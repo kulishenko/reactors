@@ -8,7 +8,7 @@ class SchemaView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    SchemaView();
+    SchemaView(QWidget* parent = 0);
     ~SchemaView();
 private:
     int _numScheduledScalings;
