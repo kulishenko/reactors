@@ -1,7 +1,9 @@
 #include "schemapipeline.h"
 
 SchemaPipeline::SchemaPipeline(SchemaItem* From, SchemaItem* To) :
-    QGraphicsPathItem(), m_From(From), m_To(To), LinePath(nullptr)
+    QGraphicsPathItem(), m_From(From), m_To(To), LinePath(nullptr),
+    m_FromElementId(From->property("ElementId").toInt()),
+    m_ToElementId(To->property("ElementId").toInt())
 {
     drawLine();
     // Pointer to the next item in schema

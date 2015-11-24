@@ -355,6 +355,11 @@ void MainWindow::createDockWindows()
 
 void MainWindow::createSchemaView()
 {
+    SchemaConfig Config;
+    QFile file(qApp->applicationDirPath() + "/SchemaConfig.xml");
+    file.remove();
+
+
     graphicsView = new SchemaView(this);
 
     bgColor = QColor::fromRgb(240, 240, 240);
@@ -364,26 +369,17 @@ void MainWindow::createSchemaView()
     m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
 
     SchemaStream* streamItem1 = new SchemaStream(50, 0, 400, 0);
-    m_scene->addItem(streamItem1);
+    schemaItems.append(streamItem1);
 
     SchemaStream* streamItem2 = new SchemaStream(50, 1300, 650, 90);
-    m_scene->addItem(streamItem2);
+    schemaItems.append(streamItem2);
 
     // Temp
     SchemaCell* MeasurementCell = new SchemaCell(100, 40, 1255, 550);
-
-    m_scene->addItem(MeasurementCell);
+    schemaItems.append(MeasurementCell);
 
     valveItem1 = new SchemaValve(30, 45, 122.5, 350, -90);
-    m_scene->addItem(valveItem1);
-
-
-
-    SchemaConfig Config;
-
-    QFile file(qApp->applicationDirPath() + "SchemaConfig.xml");
-
-  //  assert(file.open(QIODevice::WriteOnly));
+    schemaItems.append(valveItem1);
 
     ModelCSTR* CSTRModel;
     // Creating CSTR Items
@@ -392,55 +388,47 @@ void MainWindow::createSchemaView()
         reactorItems.push_back(new SchemaCSTR(90, 120, i*200, i*70, 0.1, i-1));
         CSTRModel = new ModelCSTR();
         CSTRModel->setProperty("Level", 0.1);
-    //    Config.serializeObject(reactorItems.at(i-1), &file);
+        schemaItems.append(reactorItems.at(i-1));
     }
 
     ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
-
-
- //   file.close();
 
  //   assert(file.open(QIODevice::ReadOnly));
 
  //   SchemaCSTR* ReactorItem = Config.deserialize<SchemaCSTR>(&file);
 
-    file.close();
+   // file.close();
 
     flowmeterItem = new SchemaFlowmeter(25, 200, 125, 50, 0);
 
-    m_scene->addItem(flowmeterItem);
+    schemaItems.append(flowmeterItem);
 
     // Connecting Items
-    SchemaPipeline* Line000 = new SchemaPipeline(streamItem1,valveItem1);
-    SchemaPipeline* Line00 = new SchemaPipeline(valveItem1,flowmeterItem);
+    pipelineItems.push_back(new SchemaPipeline(streamItem1, valveItem1));
+    pipelineItems.push_back(new SchemaPipeline(valveItem1, flowmeterItem));
 
     valveItem1->Descedant = flowmeterItem;
 
     // Connecting CSTRs
 
-    pipelineItems.push_back(new SchemaPipeline(flowmeterItem,reactorItems.at(0)));
+    pipelineItems.push_back(new SchemaPipeline(flowmeterItem, reactorItems.at(0)));
     for(int i = 0; i < reactorItems.size() - 1; i++)
-        pipelineItems.push_back(new SchemaPipeline(reactorItems.at(i),reactorItems.at(i+1)));
+        pipelineItems.push_back(new SchemaPipeline(reactorItems.at(i), reactorItems.at(i+1)));
 
+    pipelineItems.push_back(new SchemaPipeline(reactorItems.last(), MeasurementCell));
+    pipelineItems.push_back(new SchemaPipeline(MeasurementCell, streamItem2));
 
-    pipelineItems.push_back(new SchemaPipeline(reactorItems.last(),MeasurementCell));
-    pipelineItems.push_back(new SchemaPipeline(MeasurementCell,streamItem2));
+    std::for_each(pipelineItems.cbegin(), pipelineItems.cend(),[&](SchemaPipeline* item){ schemaItems.append(item); });
 
-    m_scene->addItem(Line000);
-    m_scene->addItem(Line00);
-
-
-
-
-    for(int i = 0; i < reactorItems.size(); i++)
-        m_scene->addItem(reactorItems.at(i));
-
-    for(int i = 0; i < pipelineItems.size(); i++)
-        m_scene->addItem(pipelineItems.at(i));
+    foreach(SchemaItem* item, schemaItems) {
+        m_scene->addItem(dynamic_cast<QGraphicsItem*>(item));
+        Config.serializeObject(item, &file);
+    }
 
     graphicsView->setScene(m_scene);
     graphicsView->viewport()->installEventFilter(this);
     graphicsView->setRenderHint(QPainter::Antialiasing);
+
 
 }
 

@@ -9,6 +9,7 @@
 class PFDControl;
 class SchemaItem  : public QObject {//, public QGraphicsItem {
     Q_OBJECT
+    Q_PROPERTY(int ElementId MEMBER m_ElementId)
 public:
     SchemaItem();
 
@@ -24,7 +25,10 @@ public:
     qreal Flowrate;
     virtual ~SchemaItem();
     enum class RunMode {Online, Offline, Edit};
+    static int s_ElementId;
     static RunMode SchemaMode;
+private:
+    int m_ElementId;
 protected:
     QPointF _startPos;
 signals:

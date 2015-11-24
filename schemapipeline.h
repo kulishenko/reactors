@@ -2,15 +2,18 @@
 #define SCHEMAPIPELINE_H
 #include "schemacstr.h"
 
-class SchemaPipeline : public QObject, public QGraphicsPathItem
+class SchemaPipeline : public SchemaItem, public QGraphicsPathItem
 {
     Q_OBJECT
+    Q_PROPERTY(int FromElementId MEMBER m_FromElementId)
+    Q_PROPERTY(int ToElementId MEMBER m_ToElementId)
 public:
     SchemaPipeline(SchemaItem *From, SchemaItem *To);
     ~SchemaPipeline();
 private:
     SchemaItem *m_From, *m_To;
     QPainterPath* LinePath;
+    int m_FromElementId, m_ToElementId;
 private slots:
     void drawLine();
 };

@@ -45,8 +45,27 @@ void SchemaConfig::ParseXMLConfig(){
 }
 bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
     QDomDocument doc;
-    QDomElement root = doc.createElement(object->metaObject()->className());
-    doc.appendChild(root);
+    QDomElement root;
+    QString infile;
+
+    if(output->open(QIODevice::ReadOnly | QIODevice::Text)){
+        QTextStream stream(output);
+        infile.append(stream.readAll());
+        output->close();
+        doc.setContent(infile);
+    }
+
+    output->open(QIODevice::WriteOnly | QIODevice::Text);
+
+    if(doc.elementsByTagName("SchemaItems").isEmpty()){
+        root = doc.createElement("SchemaItems");
+        doc.appendChild(root);
+    }
+    else
+        root = doc.elementsByTagName("SchemaItems").at(0).toElement();
+
+    QDomElement objectRoot = doc.createElement(object->metaObject()->className());
+    root.appendChild(objectRoot);
 
     for(int i = 0; i < object->metaObject()->propertyCount(); i++)
     {
@@ -60,11 +79,12 @@ bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
         QDomText txt = doc.createTextNode( value.toString() );
         qDebug() << propName + " " + value.toString();
         el.appendChild(txt);
-        root.appendChild(el);
+        objectRoot.appendChild(el);
     }
 
     QTextStream stream(output);
     doc.save(stream, 2);
+    output->close();
     return true;
 }
 

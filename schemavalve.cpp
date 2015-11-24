@@ -17,6 +17,9 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     p_Brush->setColorAt(0.5, Qt::black);
     p_Brush->setColorAt(0.99, Qt::lightGray);
 
+    m_PosX = PosX;
+    m_PosY = PosY;
+
     setBrush( *p_Brush );
     setCursor(Qt::PointingHandCursor);
 
@@ -39,6 +42,18 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
 SchemaValve::~SchemaValve()
 {
 
+}
+
+void SchemaValve::setPosX(qreal Value)
+{
+    m_PosX = Value;
+    setPos(m_PosX, m_PosY);
+}
+
+void SchemaValve::setPosY(qreal Value)
+{
+    m_PosY = Value;
+    setPos(m_PosX, m_PosY);
 }
 
 void SchemaValve::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

@@ -2,7 +2,7 @@
 #include <QLinearGradient>
 #include <QTimeLine>
 
-SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos = 0.0, int MaxFlow)
+SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow)
 {
     setRect(0, 0, Width, Height);
 
@@ -17,6 +17,9 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     isEnabled = true;
     m_Height = Height;
     m_Width = Width;
+    m_PosX = PosX;
+    m_PosY = PosY;
+    m_Pos = Pos;
     m_MaxFlow = MaxFlow;
     Floater = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 2, 0 )
                                                    << QPointF( Width - 2, 0 )
@@ -50,13 +53,9 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 
     }
 
-
     InletPort = new SchemaPort(Width/2, Height, this, 0);
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
-
-    qDebug() << "Flowmeter Inlet: " + QString::number(InletPort->getAngle());
-    qDebug() << "Flowmeter Outlet: " + QString::number(OutletPort->getAngle());
 
     Flowrate = 0.0f;
     m_FlowrateSet = 0.0f;
@@ -132,4 +131,15 @@ void SchemaFlowmeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     Q_UNUSED(event)
     setCursor(QCursor(Qt::ArrowCursor));
     setOpacity(1);
+}
+void SchemaFlowmeter::setPosX(const int Value)
+{
+    m_PosX = Value;
+    setPos(m_PosX, m_PosY);
+}
+
+void SchemaFlowmeter::setPosY(const int Value)
+{
+    m_PosY = Value;
+    setPos(m_PosX, m_PosY);
 }

@@ -2,7 +2,7 @@
 #include <QPen>
 
 SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Angle) :
-    SchemaItem(), QGraphicsPolygonItem()
+    SchemaItem(), QGraphicsPolygonItem(), m_PosX(PosX), m_PosY(PosY)
 {
     setPolygon(QPolygonF( QVector<QPointF>()
                           << QPointF( 0, 0 )
@@ -38,3 +38,14 @@ SchemaCell::~SchemaCell()
 
 }
 
+void SchemaCell::setPosX(const int Value)
+{
+    m_PosX = Value;
+    setPos(m_PosX, m_PosY);
+}
+
+void SchemaCell::setPosY(const int Value)
+{
+    m_PosY = Value;
+    setPos(m_PosX, m_PosY);
+}
