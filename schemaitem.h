@@ -4,19 +4,28 @@
 #include <schemaport.h>
 #include <QObject>
 #include <pfdcontrol.h>
-#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsItem>
 
 class PFDControl;
-class SchemaItem  : public QObject
-{
+class SchemaItem  : public QObject {//, public QGraphicsItem {
     Q_OBJECT
 public:
     SchemaItem();
+
+/*
+    QRectF boundingRect() const;
+    void paint(QPainter * painter,
+               const QStyleOptionGraphicsItem * option,
+               QWidget * widget);
+*/
     SchemaPort* OutletPort, *InletPort;
     SchemaItem* Descedant;
     PFDControl* PFD;
     qreal Flowrate;
-    ~SchemaItem();
+    virtual ~SchemaItem();
+    enum class RunMode {Online, Offline, Edit};
+    static RunMode SchemaMode;
+protected:
     QPointF _startPos;
 signals:
     void moved();

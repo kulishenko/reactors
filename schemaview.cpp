@@ -13,12 +13,10 @@ SchemaView::~SchemaView()
 }
 void SchemaView::mousePressEvent(QMouseEvent *event)
 {
-    int Mode = parent()->property("runMode").toInt();
-    qDebug() << Mode;
-    if(Mode == 1) return;
 
     if(!itemAt(event->pos()))
         setDragMode(QGraphicsView::ScrollHandDrag);
+
     QGraphicsView::mousePressEvent(event);
 }
 

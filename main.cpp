@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
       QCoreApplication::setLibraryPaths(paths);
 
     QApplication a(argc, argv);
+
 //#define STYLE
 #ifdef STYLE
     QFile file(":/resources/dark.qss");

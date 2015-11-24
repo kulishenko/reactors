@@ -1,6 +1,6 @@
 #include "schemaitem.h"
-
-SchemaItem::SchemaItem() : PFD(nullptr)
+SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
+SchemaItem::SchemaItem() : QObject(), PFD(nullptr)
 {
 
 }

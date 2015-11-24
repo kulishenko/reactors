@@ -966,14 +966,19 @@ void MainWindow::exportFinished(bool result) {
 void MainWindow::onlineMode()
 {
     m_RunMode = RunMode::Online;
+    SchemaItem::SchemaMode = SchemaItem::RunMode::Online;
 }
 
 void MainWindow::offlineMode()
 {
     m_RunMode = RunMode::Offline;
+    SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
+   // valveItem1->update();
+
 }
 
 void MainWindow::editMode()
 {
     m_RunMode = RunMode::Edit;
+    SchemaItem::SchemaMode = SchemaItem::RunMode::Edit;
 }

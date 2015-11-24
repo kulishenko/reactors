@@ -20,3 +20,35 @@ SchemaStream::~SchemaStream()
 
 }
 
+void SchemaStream::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    //ToDo: Do it more simple...
+    QPointF Pos =  event->pos() - _startPos;
+    qreal AngleRad = qDegreesToRadians(rotation());
+
+    qreal s = qSin(AngleRad);
+    qreal c = qCos(AngleRad);
+
+    qreal py = Pos.y();
+    qreal px = Pos.x();
+
+    moveBy(c * px - s * py, s * px + c * py);
+    emit moved();
+}
+void SchemaStream::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+
+    if(SchemaMode == RunMode::Edit) {
+        setCursor(Qt::DragMoveCursor);
+        _startPos = event->pos();
+        setOpacity(0.75);
+    } else
+        event->ignore();
+
+}
+
+void SchemaStream::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    Q_UNUSED(event)
+    setCursor(Qt::ArrowCursor);
+    setOpacity(1);
+}

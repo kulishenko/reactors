@@ -3,6 +3,7 @@
 #include <QFont>
 #include <QTimeLine>
 #include <QGraphicsSceneMouseEvent>
+#include <schemaevent.h>
 
 SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLevel, int Index) :
     SchemaItem(), QGraphicsPathItem(), m_Size(Width, Height),  m_PosX(xPos), m_PosY(yPos), m_numInCascade(Index),
@@ -85,7 +86,7 @@ SchemaCSTR::~SchemaCSTR()
 void SchemaCSTR::setLevel(const qreal Level, const int TransTime) {
 
     m_LiquidLevelSet = Level;
-//    if(TransTime==0) TransTime = 5000;// Transient time
+//    if(TransTime == 0) TransTime = 5000;// Transient time
 
     QTimeLine *anim = new QTimeLine(TransTime, this);
     anim->setUpdateInterval(30);
@@ -144,10 +145,13 @@ void SchemaCSTR::setPosY(const int Value)
 }
 void SchemaCSTR::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    clicked();
-    setCursor(QCursor(Qt::DragMoveCursor));
-    _startPos = event->pos();
-    setOpacity(0.75);
+    if(SchemaMode == RunMode::Edit) {
+        clicked();
+        setCursor(QCursor(Qt::DragMoveCursor));
+        _startPos = event->pos();
+        setOpacity(0.75);
+    }
+    else event->ignore();
 }
 void SchemaCSTR::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -163,13 +167,13 @@ void SchemaCSTR::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 void SchemaCSTR::changeLevel(){
     // For testing purposes only
-        setLevel(0.5, 0);
+    setLevel(0.5, 0);
 }
 void SchemaCSTR::fill(){
 
     qreal transTime = (PFD->getTauAt(m_numInCascade) - (m_numInCascade == 0 ? 0 : PFD->getTauAt(m_numInCascade - 1) ) ) * 3600 * 1000;
-    qDebug() << "Flowrate is "+ QString::number(PFD->getFlowrate());
-    qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(m_numInCascade),QString::number(transTime));
+    qDebug() << "Flowrate is " + QString::number(PFD->getFlowrate());
+    qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(m_numInCascade), QString::number(transTime));
     setLevel(0.8, static_cast<int>(transTime));
     if(!m_isWorking) activateMotor();
 
@@ -178,7 +182,7 @@ void SchemaCSTR::fill(){
 void SchemaCSTR::activateMotor()
 {
     m_isWorking = true;
-    QTimeLine *anim = new QTimeLine(500,this);
+    QTimeLine *anim = new QTimeLine(500, this);
     anim->setLoopCount(0);
     anim->setUpdateInterval(30);
     anim->setCurveShape(QTimeLine::LinearCurve);

@@ -84,7 +84,7 @@ bool SchemaConfig::_deserializeObject(QIODevice *input, QObject *object)
         if(nodeList.length() < 1)
             continue;
         QDomNode node = nodeList.at(0);
-        QVariant value = object->property(propName.toLocal8Bit().data());
+ //       QVariant value = object->property(propName.toLocal8Bit().data());
         QString v = node.toElement().text();
         object->setProperty(propName.toLocal8Bit().data(), QVariant(v));
     }

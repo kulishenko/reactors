@@ -3,6 +3,8 @@
 #include <QGraphicsView>
 #include <QTimeLine>
 #include <QWheelEvent>
+#include "schemaevent.h"
+#include "schemaitem.h"
 
 class SchemaView : public QGraphicsView
 {

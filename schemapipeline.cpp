@@ -24,17 +24,23 @@ void SchemaPipeline::drawLine()
     QPointF FromPos = m_From->OutletPort->scenePos();
     QPointF ToPos = m_To->InletPort->scenePos();
 
-    qDebug() << "From: "+QString::number(m_From->OutletPort->getAngle());
-    qDebug() << "To: "+QString::number(m_To->InletPort->getAngle());
+//    qDebug() << "From: "+QString::number(m_From->OutletPort->getAngle());
+//    qDebug() << "To: "+QString::number(m_To->InletPort->getAngle());
+
     LinePath->moveTo(FromPos);
     if((FromPos.x() != ToPos.x()) || (FromPos.y() != ToPos.y()))
     {
         if(fabs(m_From->OutletPort->getAngle() - m_To->InletPort->getAngle()) > 1e-2)
             LinePath->lineTo(ToPos.x(), FromPos.y());
-        else
+        else if(fmod(m_From->OutletPort->getAngle(), 180) < 1e-2)
         {
             LinePath->lineTo((ToPos.x() + FromPos.x())/2,  FromPos.y());
             LinePath->lineTo((ToPos.x() + FromPos.x())/2,  ToPos.y());
+        }
+        else // if()
+        {
+            LinePath->lineTo(FromPos.x(),(ToPos.y() + FromPos.y())/2);
+            LinePath->lineTo(ToPos.x(), (ToPos.y() + FromPos.y())/2);
         }
     }
     LinePath->lineTo(ToPos);

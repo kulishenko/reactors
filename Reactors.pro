@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     modelflowmeter.cpp \
     qwt-mml/qwt_mml_document.cpp \
     qwt-mml/qwt_mml_entity_table.cpp \
-    formulaview.cpp
+    formulaview.cpp \
+    schemaevent.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -74,7 +75,8 @@ HEADERS  += mainwindow.h \
     modelflowmeter.h \
     qwt-mml/qwt_mml_document.h \
     qwt-mml/qwt_mml_entity_table.h \
-    formulaview.h
+    formulaview.h \
+    schemaevent.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 

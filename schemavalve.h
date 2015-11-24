@@ -6,6 +6,8 @@
 #include <schemaflowmeter.h>
 #include <QObject>
 #include <QConicalGradient>
+#include <QtMath>
+#include <QGraphicsScene>
 
 class SchemaValve : public SchemaItem, public QGraphicsPolygonItem
 {
@@ -23,7 +25,10 @@ signals:
     void FlowIncreased();
     void FlowDecreased();
 protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
 };
 
 #endif // SCHEMAVALVE_H

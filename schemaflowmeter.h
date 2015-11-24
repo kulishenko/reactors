@@ -3,6 +3,7 @@
 #include <QGraphicsRectItem>
 #include <schemaitem.h>
 #include <QPen>
+#include <QGraphicsSceneMouseEvent>
 
 class SchemaFlowmeter : public SchemaItem,  public QGraphicsRectItem
 {

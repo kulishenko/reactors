@@ -51,9 +51,12 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     }
 
 
-    InletPort = new SchemaPort(Width/2, Height, this, 180);
+    InletPort = new SchemaPort(Width/2, Height, this, 0);
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
+
+    qDebug() << "Flowmeter Inlet: " + QString::number(InletPort->getAngle());
+    qDebug() << "Flowmeter Outlet: " + QString::number(OutletPort->getAngle());
 
     Flowrate = 0.0f;
     m_FlowrateSet = 0.0f;
@@ -109,10 +112,14 @@ void SchemaFlowmeter::animFinished()
 }
 void SchemaFlowmeter::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    clicked();
-    setCursor(QCursor(Qt::DragMoveCursor));
-    _startPos = event->pos();
-    setOpacity(0.75);
+    if(SchemaMode == RunMode::Edit) {
+        clicked();
+        setCursor(QCursor(Qt::DragMoveCursor));
+        _startPos = event->pos();
+        setOpacity(0.75);
+    } else
+        event->ignore();
+
 }
 void SchemaFlowmeter::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {

@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QColor>
 #include <modelcstr.h>
+#include <schemaevent.h>
 
 class SchemaCSTR : public SchemaItem, public QGraphicsPathItem {
     Q_OBJECT
