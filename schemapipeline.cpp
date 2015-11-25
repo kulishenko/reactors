@@ -55,6 +55,21 @@ void SchemaPipeline::drawLine()
     if(LinePath) delete OldPath;
 }
 
+void SchemaPipeline::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    event->ignore();
+}
+
+void SchemaPipeline::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    event->ignore();
+}
+
+void SchemaPipeline::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    event->ignore();
+}
+
 QRectF SchemaPipeline::boundingRect() const
 {
     return QGraphicsPathItem::boundingRect();

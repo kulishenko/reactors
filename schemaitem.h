@@ -9,13 +9,17 @@
 #include <QtMath>
 
 class PFDControl;
-class SchemaItem  : public QGraphicsObject {//, public QGraphicsItem {
-    friend class SchemaFlowmeter;
+class SchemaItem  : public QObject, public QGraphicsItem {
+/*  friend class SchemaFlowmeter;
     friend class SchemaCell;
     friend class SchemaValve;
     friend class SchemaStream;
-    friend class SchemaCSTR;
+    friend class SchemaCSTR; */
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+    Q_PROPERTY(qreal x READ x WRITE setX)
+    Q_PROPERTY(qreal y READ y WRITE setY)
+    Q_PROPERTY(qreal rotation READ rotation WRITE setRotation)
     Q_PROPERTY(int ElementId MEMBER m_ElementId)
 public:
     SchemaItem();
@@ -29,7 +33,7 @@ public:
     static RunMode SchemaMode;
 private:
     int m_ElementId;
-    qreal m_PosX, m_PosY; // Scene coordinates
+//    qreal m_PosX, m_PosY; // Scene coordinates
 protected:
     QPointF _startPos;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

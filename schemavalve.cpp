@@ -17,9 +17,6 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     p_Brush->setColorAt(0.5, Qt::black);
     p_Brush->setColorAt(0.99, Qt::lightGray);
 
-    m_PosX = PosX;
-    m_PosY = PosY;
-
     setBrush( *p_Brush );
     SchemaItem::setCursor(Qt::PointingHandCursor);
 

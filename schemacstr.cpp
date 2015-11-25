@@ -9,8 +9,7 @@ SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLev
     SchemaItem(), QGraphicsPathItem(), m_Size(Width, Height), m_numInCascade(Index),
   m_isWorking(false), m_isFeeding(false), m_isReady(false)
 {
-    m_PosX = xPos;
-    m_PosY = yPos;
+
     if(StartLevel != 0.0)
         m_LiquidLevel = m_LiquidLevelSet = StartLevel;
 

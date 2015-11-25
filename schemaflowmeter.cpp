@@ -17,8 +17,6 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     isEnabled = true;
     m_Height = Height;
     m_Width = Width;
-    m_PosX = PosX;
-    m_PosY = PosY;
     m_Pos = Pos;
     m_MaxFlow = MaxFlow;
     SchemaItem* p_this = static_cast<SchemaItem*> (this);

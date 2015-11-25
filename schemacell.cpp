@@ -4,8 +4,7 @@
 SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Angle) :
     SchemaItem(), QGraphicsPolygonItem()
 {
-    m_PosX = PosX;
-    m_PosY = PosY;
+
     setPolygon(QPolygonF( QVector<QPointF>()
                           << QPointF( 0, 0 )
                           << QPointF( Width, 0 )

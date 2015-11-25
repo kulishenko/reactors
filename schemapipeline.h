@@ -19,6 +19,10 @@ private:
     int m_FromElementId, m_ToElementId;
 private slots:
     void drawLine();
+protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // SCHEMAPIPELINE_H
