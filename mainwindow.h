@@ -47,6 +47,7 @@
 #include "schemaconfig.h"
 #include <qwt-mml/qwt_mml_document.h>
 #include <formulaview.h>
+//#include <QGLWidget>
 
 extern "C" {
 #include <libxls/xls.h>

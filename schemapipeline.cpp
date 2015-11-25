@@ -1,7 +1,7 @@
 #include "schemapipeline.h"
 
 SchemaPipeline::SchemaPipeline(SchemaItem* From, SchemaItem* To) :
-    SchemaItem(), QGraphicsPathItem(), m_From(From), m_To(To), LinePath(nullptr),
+    SchemaItem(), m_From(From), m_To(To), LinePath(nullptr),
     m_FromElementId(From->property("ElementId").toInt()),
     m_ToElementId(To->property("ElementId").toInt())
 {
@@ -49,9 +49,6 @@ void SchemaPipeline::drawLine()
     LinePath->lineTo(ToPos);
     setPath(*LinePath);
 
-    // K0CTbI/\b
-    QGraphicsScene *scn = SchemaItem::scene();
-    if(scn) scn->update(scn->sceneRect());
     if(LinePath) delete OldPath;
 }
 
@@ -68,14 +65,4 @@ void SchemaPipeline::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void SchemaPipeline::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     event->ignore();
-}
-
-QRectF SchemaPipeline::boundingRect() const
-{
-    return QGraphicsPathItem::boundingRect();
-}
-
-void SchemaPipeline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    QGraphicsPathItem::paint(painter, option, widget);
 }

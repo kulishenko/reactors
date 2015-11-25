@@ -30,6 +30,7 @@
 
 typedef unsigned char		BYTE;//  __attribute__ ((aligned (1)));	// 1 bytes
 typedef uint16_t			WORD;// __attribute__ ((aligned (1)));	// 2 bytes
+#ifndef _MINWINDEF_
 typedef uint32_t			DWORD;//  __attribute__ ((aligned (1)));	// 4 bytes
-
+#endif
 #endif

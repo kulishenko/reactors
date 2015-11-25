@@ -6,7 +6,7 @@
 
 QT       += core gui multimediawidgets xml
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport sql
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport sql opengl
 
 TARGET = Reactors
 TEMPLATE = app

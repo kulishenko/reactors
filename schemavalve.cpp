@@ -7,10 +7,20 @@
 
 //TODO : Remove Length or Width !
 SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qreal Angle) :
-    SchemaItem(), QGraphicsPolygonItem(), m_Width(Width), m_Length(Length)
+    SchemaItem(), m_Width(Width), m_Length(Length)
 {
-    setPolygon(QPolygonF( QVector<QPointF>() << QPointF( 0, 0 )  << QPointF( 0, Width ) << QPointF( 0.75* Width, 0.5* Width ) << QPointF(Length,30)  << QPointF(Length,0) << QPointF( 0.75* Width,  0.5* Width )));
-    setPen( QPen(Qt::black) );
+    QPolygonF polygon( QVector<QPointF>() << QPointF( 0, 0 )
+                       << QPointF( 0, Width )
+                       << QPointF( 0.75* Width, 0.5* Width )
+                       << QPointF( Length, 30 )
+                       << QPointF( Length, 0)
+                       << QPointF( 0.75* Width,  0.5* Width )
+                       << QPointF( 0, 0 )
+                       );
+    //setPen( QPen(Qt::black) );
+    QPainterPath path;
+    path.addPolygon(polygon);
+    setPath(path);
 
     p_Brush = new QConicalGradient(0.75* Width, 0.5* Width, 90);
     p_Brush->setColorAt(0.0, Qt::lightGray);
@@ -18,21 +28,16 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     p_Brush->setColorAt(0.99, Qt::lightGray);
 
     setBrush( *p_Brush );
-    SchemaItem::setCursor(Qt::PointingHandCursor);
+    setCursor(Qt::PointingHandCursor);
 
-    SchemaItem* p_this = static_cast<SchemaItem*> (this);
-
-    OutletPort = new SchemaPort(Length, Width/2, p_this);
+    OutletPort = new SchemaPort(Length, Width/2, this);
 
 
-    InletPort = new SchemaPort(0, Width/2, p_this);
+    InletPort = new SchemaPort(0, Width/2, this);
 
-    SchemaItem::setRotation(Angle);
-    SchemaItem::setPos(PosX, PosY);
-    SchemaItem::setAcceptHoverEvents(true);
-
-    qDebug() << "Valve Inlet: " + QString::number(InletPort->getAngle());
-    qDebug() << "Valve Outlet: " + QString::number(OutletPort->getAngle());
+    setRotation(Angle);
+    setPos(PosX, PosY);
+    setAcceptHoverEvents(true);
 
     MaxFlow = 1.0;
     m_Position = 0.0;
@@ -46,9 +51,9 @@ void SchemaValve::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
 
     if(SchemaMode == RunMode::Edit) {
-        QGraphicsPolygonItem::setCursor(Qt::DragMoveCursor);
+        setCursor(Qt::DragMoveCursor);
         _startPos = event->pos();
-        QGraphicsPolygonItem::setOpacity(0.75);
+        setOpacity(0.75);
     } else {
         qDebug() << "Valve clicked:" << QString::number(event->pos().x());
         if(event->pos().x() >= m_Length * 0.5 && m_Position <= 0.9){
@@ -73,17 +78,8 @@ void SchemaValve::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED(event)
     if(SchemaMode == RunMode::Edit) {
-        SchemaItem::setCursor(Qt::ArrowCursor);
+        setCursor(Qt::ArrowCursor);
     } else
-        SchemaItem::setCursor(Qt::PointingHandCursor);
+        setCursor(Qt::PointingHandCursor);
 
-}
-QRectF SchemaValve::boundingRect() const
-{
-    return QGraphicsPolygonItem::boundingRect();
-}
-
-void SchemaValve::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    QGraphicsPolygonItem::paint(painter, option, widget);
 }

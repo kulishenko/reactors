@@ -6,7 +6,7 @@
 #include <schemaevent.h>
 
 SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLevel, int Index) :
-    SchemaItem(), QGraphicsPathItem(), m_Size(Width, Height), m_numInCascade(Index),
+    SchemaItem(), m_Size(Width, Height), m_numInCascade(Index),
   m_isWorking(false), m_isFeeding(false), m_isReady(false)
 {
 
@@ -14,11 +14,10 @@ SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLev
         m_LiquidLevel = m_LiquidLevelSet = StartLevel;
 
     // Initial Mixer Angle - adding some randomnicity
-    m_MixerAngle=rand();
+    m_MixerAngle = rand();
 
-    SchemaItem* p_this = static_cast<SchemaItem*> (this);
-    InletPort = new SchemaPort(Width/9, 0.1*Height, p_this, 180);
-    OutletPort = new SchemaPort(Width, Height/3, p_this);
+    InletPort = new SchemaPort(Width/9, 0.1*Height, this, 180);
+    OutletPort = new SchemaPort(Width, Height/3, this);
 
 //  What color is the best?
     m_LiquidBottomColor.setRgb(102, 204, 255);
@@ -43,16 +42,17 @@ SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLev
     //       p_path.setFillRule(Qt::WindingFill);
     setPath(*p_path);
     setBrush(*p_Gradient);
-    SchemaItem::setPos(xPos, yPos);
+
+    setPos(xPos, yPos);
 
     // Drawing Rings
-    p_Ring1 = new QGraphicsRectItem(p_this);
+    p_Ring1 = new QGraphicsRectItem(this);
     p_Ring1->setRect(-5, 20, Width+10, 5);
-    p_Ring2 = new QGraphicsRectItem(p_this);
+    p_Ring2 = new QGraphicsRectItem(this);
     p_Ring2->setRect(-5, 25, Width+10, 5);
 
     // Drawing Motor Block
-    p_Motor = new QGraphicsEllipseItem(p_this);
+    p_Motor = new QGraphicsEllipseItem(this);
     int MotorRadius = 40;
     p_Motor->setRect(QRect(Width/2-MotorRadius/2, -80, MotorRadius, MotorRadius));
     p_Motor->setBrush(Qt::white);
@@ -71,7 +71,7 @@ SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLev
 
     p_Mixer = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 0, 0 ) << QPointF( 0, 20 )
                                                    << QPointF( 15, 10 ) << QPointF( 30, 20 )
-                                                   << QPointF( 30, 0 ) << QPointF( 15, 10 ) ), p_this);
+                                                   << QPointF( 30, 0 ) << QPointF( 15, 10 ) ), this);
     p_Mixer->setBrush( Qt::gray );
     p_Mixer->setPos(Width/2-15, 100-10);
     p_Mixer->setTransform(QTransform().translate(15, 0).rotate(m_MixerAngle,Qt::YAxis).translate(-15, 0));
@@ -96,9 +96,8 @@ void SchemaCSTR::setLevel(const qreal Level, const int TransTime) {
     anim->start();
 
 }
-
+#include <QGraphicsScene>
 void SchemaCSTR::animLevel(const qreal Value){
-
     qreal CurrentFrameLevel = m_LiquidLevel + (m_LiquidLevelSet - m_LiquidLevel) * Value;
 
     setBrush(Qt::white);
@@ -160,14 +159,5 @@ void SchemaCSTR::activateMotor()
 }
 void SchemaCSTR::startFeed() {
 
-}
-QRectF SchemaCSTR::boundingRect() const
-{
-    return QGraphicsPathItem::boundingRect();
-}
-
-void SchemaCSTR::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    QGraphicsPathItem::paint(painter, option, widget);
 }
 

@@ -5,7 +5,7 @@
 #include <QPen>
 #include <QGraphicsSceneMouseEvent>
 
-class SchemaFlowmeter : public SchemaItem,  public QGraphicsRectItem
+class SchemaFlowmeter : public SchemaItem
 {
    Q_OBJECT
    Q_PROPERTY(qreal Pos MEMBER m_Pos)
@@ -14,7 +14,6 @@ public:
     ~SchemaFlowmeter();
    void setFlowrate(qreal Value);
    QGraphicsPolygonItem* Floater; // TODO: Move to private members!
-   QRectF boundingRect() const;
 private:
    QVector<QGraphicsLineItem*> Rulers;
    QGraphicsLineItem* OutletPipe, *InletPipe;

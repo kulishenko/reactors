@@ -421,15 +421,20 @@ void MainWindow::createSchemaView()
 
     std::for_each(pipelineItems.cbegin(), pipelineItems.cend(),[&](SchemaPipeline* item){ schemaItems.append(item); });
 
+  //  m_scene->addItem(valveItem1);
+  //  m_scene->addItem(reactorItems.first());
+#include <QAbstractGraphicsShapeItem>
     foreach(SchemaItem* item, schemaItems) {
-        m_scene->addItem(dynamic_cast<QGraphicsItem*>(item));
+        m_scene->addItem(item);
         Config.serializeObject(item, &file);
     }
 
     graphicsView->setScene(m_scene);
     graphicsView->viewport()->installEventFilter(this);
-    graphicsView->setRenderHint(QPainter::Antialiasing);
 
+    //graphicsView->setViewport(new QGLWidget);
+    graphicsView->setRenderHint(QPainter::Antialiasing);
+    //graphicsView->setRenderHint(QPainter::HighQualityAntialiasing);
 
 }
 

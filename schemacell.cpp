@@ -1,11 +1,10 @@
 #include "schemacell.h"
 #include <QPen>
 
-SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Angle) :
-    SchemaItem(), QGraphicsPolygonItem()
+SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Angle) : SchemaItem()
 {
 
-    setPolygon(QPolygonF( QVector<QPointF>()
+    QPolygonF polygon( QVector<QPointF>()
                           << QPointF( 0, 0 )
                           << QPointF( Width, 0 )
                           << QPointF( Width, Height )
@@ -18,20 +17,24 @@ SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qrea
                           << QPointF( 0.1 * Width, Height * 1.3 )
                           << QPointF( 0.1 * Width, Height )
                           << QPointF( 0, Height )
-                          ));
+                          << QPointF( 0, 0 )
+                          );
+    QPainterPath path;
+    path.addPolygon(polygon);
 
-    setPen( QPen(Qt::black) );
+    setPath(path);
+
+//    setPen( QPen(Qt::black) );
     setBrush( Qt::white );
 
-    SchemaItem* p_this = static_cast<SchemaItem*> (this);
-    OutletPort = new SchemaPort(0, Height * 0.5, p_this, -90);
-    InletPort = new SchemaPort(Width, Height * 0.5, p_this, -90);
+    OutletPort = new SchemaPort(0, Height * 0.5, this, -90);
+    InletPort = new SchemaPort(Width, Height * 0.5, this, -90);
 
-    p_Electrode = new QGraphicsRectItem(Width * 0.775, Height * 0.2, Width * 0.05, Height * 1.3, p_this);
+    p_Electrode = new QGraphicsRectItem(Width * 0.775, Height * 0.2, Width * 0.05, Height * 1.3, this);
     p_Electrode->setBrush(Qt::black);
 
-    SchemaItem::setRotation(Angle);
-    SchemaItem::setPos(PosX, PosY);
+    setRotation(Angle);
+    setPos(PosX, PosY);
 
 }
 
@@ -39,14 +42,3 @@ SchemaCell::~SchemaCell()
 {
 
 }
-
-QRectF SchemaCell::boundingRect() const
-{
-    return QGraphicsPolygonItem::boundingRect();
-}
-
-void SchemaCell::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    QGraphicsPolygonItem::paint(painter, option, widget);
-}
-

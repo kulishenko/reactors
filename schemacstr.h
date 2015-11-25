@@ -9,7 +9,7 @@
 #include <modelcstr.h>
 #include <schemaevent.h>
 
-class SchemaCSTR : public SchemaItem, public QGraphicsPathItem {
+class SchemaCSTR : public SchemaItem {
     Q_OBJECT
     Q_PROPERTY(qreal LiquidLevel MEMBER m_LiquidLevel)
     Q_PROPERTY(qreal numInCascade MEMBER m_numInCascade) // To be removed (see ModelCSTR)
@@ -17,8 +17,6 @@ class SchemaCSTR : public SchemaItem, public QGraphicsPathItem {
 public:
     SchemaCSTR(int Width = 90, int Height = 120, int xPos = 0, int yPos = 0, qreal StartLevel = 0.1, int Index = 0);
     ~SchemaCSTR();
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:
     QSize m_Size;
     QLinearGradient* p_Gradient;

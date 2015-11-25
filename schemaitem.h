@@ -9,12 +9,8 @@
 #include <QtMath>
 
 class PFDControl;
-class SchemaItem  : public QObject, public QGraphicsItem {
-/*  friend class SchemaFlowmeter;
-    friend class SchemaCell;
-    friend class SchemaValve;
-    friend class SchemaStream;
-    friend class SchemaCSTR; */
+class SchemaItem  : public QObject, public QGraphicsPathItem {
+
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
     Q_PROPERTY(qreal x READ x WRITE setX)

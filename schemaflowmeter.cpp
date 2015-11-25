@@ -2,9 +2,14 @@
 #include <QLinearGradient>
 #include <QTimeLine>
 
-SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow) : SchemaItem(), QGraphicsRectItem()
+SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow) : SchemaItem()
 {
-    setRect(0, 0, Width, Height);
+
+    QRect rect(0, 0, Width, Height);
+    QPainterPath path;
+    path.addRect(rect);
+
+    setPath(path);
 
     QLinearGradient* Gradient = new QLinearGradient(0, 0, Width, 0);
 
@@ -13,17 +18,17 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     Gradient->setColorAt(0, QColor::fromRgb(209, 244, 255));
 
     setBrush(*Gradient);
-    SchemaItem::setPos(PosX,PosY);
+    setPos(PosX,PosY);
     isEnabled = true;
     m_Height = Height;
     m_Width = Width;
     m_Pos = Pos;
     m_MaxFlow = MaxFlow;
-    SchemaItem* p_this = static_cast<SchemaItem*> (this);
+
     Floater = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 2, 0 )
                                                    << QPointF( Width - 2, 0 )
                                                    << QPointF( Width / 2, 0.75 * Width )
-                                                   << QPointF( 2, 0 ) ), p_this);
+                                                   << QPointF( 2, 0 ) ), this);
 
     Gradient=new QLinearGradient(Floater->boundingRect().topLeft(), Floater->boundingRect().topRight());
 
@@ -35,11 +40,11 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 
 
  //   Floater->setBrush( Qt::gray);
-    Floater->setPos(QGraphicsRectItem::boundingRect().bottomLeft());
+    Floater->setPos(boundingRect().bottomLeft());
     Floater->moveBy(0, -0.75 * Width + Pos * Height);
 
-    OutletPort = new SchemaPort(Width/2, -40, p_this);
-    OutletPipe = new QGraphicsLineItem(Width/2,  -40, Width/2, 0, p_this);
+    OutletPort = new SchemaPort(Width/2, -40, this);
+    OutletPipe = new QGraphicsLineItem(Width/2,  -40, Width/2, 0, this);
     QPen gray;
     QBrush graybrush;
     graybrush.setColor(Qt::gray);
@@ -47,12 +52,12 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 
 
     for(int i = 1; i <= 10; i++){
-        Rulers.push_back(new QGraphicsLineItem(0, 0.09*Height*i, Width, 0.09*Height*i, p_this));
+        Rulers.push_back(new QGraphicsLineItem(0, 0.09*Height*i, Width, 0.09*Height*i, this));
         Rulers.at(i-1)->setPen(gray);
 
     }
 
-    InletPort = new SchemaPort(Width/2, Height, p_this, 0);
+    InletPort = new SchemaPort(Width/2, Height, this, 0);
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
 
@@ -70,9 +75,9 @@ SchemaFlowmeter::~SchemaFlowmeter()
 void SchemaFlowmeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     if(fabs(Flowrate - m_FlowrateSet) > 0.001){
         Flowrate += (Flowrate < m_FlowrateSet) ? 0.00005 : -0.00005;
-        Floater->setPos(QGraphicsRectItem::boundingRect().bottomLeft()+QPointF(0, -0.75*m_Width - Flowrate*m_Height*0.9));
+        Floater->setPos(boundingRect().bottomLeft()+QPointF(0, -0.75*m_Width - Flowrate*m_Height*0.9));
     }
-    QGraphicsRectItem::paint(painter,option,widget);
+    QGraphicsPathItem::paint(painter,option,widget);
 
 }
 
@@ -85,7 +90,7 @@ void SchemaFlowmeter::animFloater(qreal Value)
 {
     if(fabs(Flowrate - m_FlowrateSet) > 0.001){
         Flowrate += (Flowrate < m_FlowrateSet) ? 0.00005 : -0.00005;
-        Floater->setPos(QGraphicsRectItem::boundingRect().bottomLeft() + QPointF(0, -0.75 * m_Width - Flowrate * m_Height * 0.9));
+        Floater->setPos(boundingRect().bottomLeft() + QPointF(0, -0.75 * m_Width - Flowrate * m_Height * 0.9));
     }
 }
 void SchemaFlowmeter::setFlowrate(qreal Value) {
@@ -108,7 +113,4 @@ void SchemaFlowmeter::animFinished()
         _numScheduledChanges++;
     sender()->~QObject();
 }
-QRectF SchemaFlowmeter::boundingRect() const
-{
-    return QGraphicsRectItem::boundingRect();
-}
+

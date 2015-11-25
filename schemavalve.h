@@ -9,7 +9,7 @@
 #include <QtMath>
 #include <QGraphicsScene>
 
-class SchemaValve : public SchemaItem, public QGraphicsPolygonItem
+class SchemaValve : public SchemaItem
 {
     Q_OBJECT
   //  Q_INTERFACES(QGraphicsItem)
@@ -18,8 +18,6 @@ public:
     ~SchemaValve();
     qreal m_Position;
     qreal MaxFlow;
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:
     const qreal m_Width, m_Length;
     QConicalGradient* p_Brush;
