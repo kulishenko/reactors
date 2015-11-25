@@ -393,6 +393,7 @@ void MainWindow::createSchemaView()
 
     ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
 
+    Q_UNUSED(FlowmeterModel)
  //   assert(file.open(QIODevice::ReadOnly));
 
  //   SchemaCSTR* ReactorItem = Config.deserialize<SchemaCSTR>(&file);
@@ -961,7 +962,6 @@ void MainWindow::offlineMode()
 {
     m_RunMode = RunMode::Offline;
     SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
-   // valveItem1->update();
 
 }
 

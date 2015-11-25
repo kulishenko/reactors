@@ -21,16 +21,18 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     m_PosY = PosY;
 
     setBrush( *p_Brush );
-    setCursor(Qt::PointingHandCursor);
+    SchemaItem::setCursor(Qt::PointingHandCursor);
 
-    OutletPort = new SchemaPort(Length, Width/2, this);
+    SchemaItem* p_this = static_cast<SchemaItem*> (this);
+
+    OutletPort = new SchemaPort(Length, Width/2, p_this);
 
 
-    InletPort = new SchemaPort(0, Width/2, this);
+    InletPort = new SchemaPort(0, Width/2, p_this);
 
-    setRotation(Angle);
-    setPos(PosX, PosY);
-    setAcceptHoverEvents(true);
+    SchemaItem::setRotation(Angle);
+    SchemaItem::setPos(PosX, PosY);
+    SchemaItem::setAcceptHoverEvents(true);
 
     qDebug() << "Valve Inlet: " + QString::number(InletPort->getAngle());
     qDebug() << "Valve Outlet: " + QString::number(OutletPort->getAngle());
@@ -43,41 +45,13 @@ SchemaValve::~SchemaValve()
 {
 
 }
-
-void SchemaValve::setPosX(qreal Value)
-{
-    m_PosX = Value;
-    setPos(m_PosX, m_PosY);
-}
-
-void SchemaValve::setPosY(qreal Value)
-{
-    m_PosY = Value;
-    setPos(m_PosX, m_PosY);
-}
-
-void SchemaValve::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    //ToDo: Do it more simple...
-    QPointF Pos =  event->pos() - _startPos;
-    qreal AngleRad = qDegreesToRadians(rotation());
-
-    qreal s = qSin(AngleRad);
-    qreal c = qCos(AngleRad);
-
-    qreal py = Pos.y();
-    qreal px = Pos.x();
-
-    moveBy(c * px - s * py, s * px + c * py);
-    emit moved();
-}
 void SchemaValve::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
 
     if(SchemaMode == RunMode::Edit) {
-        setCursor(Qt::DragMoveCursor);
+        QGraphicsPolygonItem::setCursor(Qt::DragMoveCursor);
         _startPos = event->pos();
-        setOpacity(0.75);
+        QGraphicsPolygonItem::setOpacity(0.75);
     } else {
         qDebug() << "Valve clicked:" << QString::number(event->pos().x());
         if(event->pos().x() >= m_Length * 0.5 && m_Position <= 0.9){
@@ -98,20 +72,21 @@ void SchemaValve::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         event->ignore();
     }
 }
-
-void SchemaValve::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    Q_UNUSED(event)
-    setCursor(Qt::ArrowCursor);
-    setOpacity(1);
-}
-
 void SchemaValve::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED(event)
     if(SchemaMode == RunMode::Edit) {
-        setCursor(Qt::ArrowCursor);
+        SchemaItem::setCursor(Qt::ArrowCursor);
     } else
-        setCursor(Qt::PointingHandCursor);
+        SchemaItem::setCursor(Qt::PointingHandCursor);
 
+}
+QRectF SchemaValve::boundingRect() const
+{
+    return QGraphicsPolygonItem::boundingRect();
+}
+
+void SchemaValve::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QGraphicsPolygonItem::paint(painter, option, widget);
 }

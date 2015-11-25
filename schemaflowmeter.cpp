@@ -2,7 +2,7 @@
 #include <QLinearGradient>
 #include <QTimeLine>
 
-SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow)
+SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow) : SchemaItem(), QGraphicsRectItem()
 {
     setRect(0, 0, Width, Height);
 
@@ -13,7 +13,7 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     Gradient->setColorAt(0, QColor::fromRgb(209, 244, 255));
 
     setBrush(*Gradient);
-    setPos(PosX,PosY);
+    SchemaItem::setPos(PosX,PosY);
     isEnabled = true;
     m_Height = Height;
     m_Width = Width;
@@ -21,10 +21,11 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     m_PosY = PosY;
     m_Pos = Pos;
     m_MaxFlow = MaxFlow;
+    SchemaItem* p_this = static_cast<SchemaItem*> (this);
     Floater = new QGraphicsPolygonItem( QPolygonF( QVector<QPointF>() << QPointF( 2, 0 )
                                                    << QPointF( Width - 2, 0 )
                                                    << QPointF( Width / 2, 0.75 * Width )
-                                                   << QPointF( 2, 0 ) ), this);
+                                                   << QPointF( 2, 0 ) ), p_this);
 
     Gradient=new QLinearGradient(Floater->boundingRect().topLeft(), Floater->boundingRect().topRight());
 
@@ -36,11 +37,11 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 
 
  //   Floater->setBrush( Qt::gray);
-    Floater->setPos(boundingRect().bottomLeft());
+    Floater->setPos(QGraphicsRectItem::boundingRect().bottomLeft());
     Floater->moveBy(0, -0.75 * Width + Pos * Height);
 
-    OutletPort = new SchemaPort(Width/2, -40, this);
-    OutletPipe = new QGraphicsLineItem(Width/2,  -40, Width/2, 0, this);
+    OutletPort = new SchemaPort(Width/2, -40, p_this);
+    OutletPipe = new QGraphicsLineItem(Width/2,  -40, Width/2, 0, p_this);
     QPen gray;
     QBrush graybrush;
     graybrush.setColor(Qt::gray);
@@ -48,12 +49,12 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 
 
     for(int i = 1; i <= 10; i++){
-        Rulers.push_back(new QGraphicsLineItem(0, 0.09*Height*i, Width, 0.09*Height*i, this));
+        Rulers.push_back(new QGraphicsLineItem(0, 0.09*Height*i, Width, 0.09*Height*i, p_this));
         Rulers.at(i-1)->setPen(gray);
 
     }
 
-    InletPort = new SchemaPort(Width/2, Height, this, 0);
+    InletPort = new SchemaPort(Width/2, Height, p_this, 0);
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
 
@@ -71,7 +72,7 @@ SchemaFlowmeter::~SchemaFlowmeter()
 void SchemaFlowmeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     if(fabs(Flowrate - m_FlowrateSet) > 0.001){
         Flowrate += (Flowrate < m_FlowrateSet) ? 0.00005 : -0.00005;
-        Floater->setPos(boundingRect().bottomLeft()+QPointF(0, -0.75*m_Width - Flowrate*m_Height*0.9));
+        Floater->setPos(QGraphicsRectItem::boundingRect().bottomLeft()+QPointF(0, -0.75*m_Width - Flowrate*m_Height*0.9));
     }
     QGraphicsRectItem::paint(painter,option,widget);
 
@@ -86,7 +87,7 @@ void SchemaFlowmeter::animFloater(qreal Value)
 {
     if(fabs(Flowrate - m_FlowrateSet) > 0.001){
         Flowrate += (Flowrate < m_FlowrateSet) ? 0.00005 : -0.00005;
-        Floater->setPos(boundingRect().bottomLeft() + QPointF(0, -0.75 * m_Width - Flowrate * m_Height * 0.9));
+        Floater->setPos(QGraphicsRectItem::boundingRect().bottomLeft() + QPointF(0, -0.75 * m_Width - Flowrate * m_Height * 0.9));
     }
 }
 void SchemaFlowmeter::setFlowrate(qreal Value) {
@@ -109,37 +110,7 @@ void SchemaFlowmeter::animFinished()
         _numScheduledChanges++;
     sender()->~QObject();
 }
-void SchemaFlowmeter::mousePressEvent(QGraphicsSceneMouseEvent *event)
+QRectF SchemaFlowmeter::boundingRect() const
 {
-    if(SchemaMode == RunMode::Edit) {
-        clicked();
-        setCursor(QCursor(Qt::DragMoveCursor));
-        _startPos = event->pos();
-        setOpacity(0.75);
-    } else
-        event->ignore();
-
-}
-void SchemaFlowmeter::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    QPointF dP =  event->pos() - _startPos;
-    moveBy(dP.x(), dP.y());
-    emit moved();
-}
-void SchemaFlowmeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    Q_UNUSED(event)
-    setCursor(QCursor(Qt::ArrowCursor));
-    setOpacity(1);
-}
-void SchemaFlowmeter::setPosX(const int Value)
-{
-    m_PosX = Value;
-    setPos(m_PosX, m_PosY);
-}
-
-void SchemaFlowmeter::setPosY(const int Value)
-{
-    m_PosY = Value;
-    setPos(m_PosX, m_PosY);
+    return QGraphicsRectItem::boundingRect();
 }

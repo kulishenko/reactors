@@ -1,6 +1,7 @@
 #ifndef SCHEMAPIPELINE_H
 #define SCHEMAPIPELINE_H
 #include "schemacstr.h"
+#include <QGraphicsScene>
 
 class SchemaPipeline : public SchemaItem, public QGraphicsPathItem
 {
@@ -10,6 +11,8 @@ class SchemaPipeline : public SchemaItem, public QGraphicsPathItem
 public:
     SchemaPipeline(SchemaItem *From, SchemaItem *To);
     ~SchemaPipeline();
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:
     SchemaItem *m_From, *m_To;
     QPainterPath* LinePath;

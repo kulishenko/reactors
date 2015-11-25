@@ -1,11 +1,12 @@
 #include "schemapipeline.h"
 
 SchemaPipeline::SchemaPipeline(SchemaItem* From, SchemaItem* To) :
-    QGraphicsPathItem(), m_From(From), m_To(To), LinePath(nullptr),
+    SchemaItem(), QGraphicsPathItem(), m_From(From), m_To(To), LinePath(nullptr),
     m_FromElementId(From->property("ElementId").toInt()),
     m_ToElementId(To->property("ElementId").toInt())
 {
     drawLine();
+
     // Pointer to the next item in schema
     From->Descedant = To;
     connect(From, SIGNAL(moved()), this, SLOT(drawLine()));
@@ -48,6 +49,18 @@ void SchemaPipeline::drawLine()
     LinePath->lineTo(ToPos);
     setPath(*LinePath);
 
+    // K0CTbI/\b
+    QGraphicsScene *scn = SchemaItem::scene();
+    if(scn) scn->update(scn->sceneRect());
     if(LinePath) delete OldPath;
 }
 
+QRectF SchemaPipeline::boundingRect() const
+{
+    return QGraphicsPathItem::boundingRect();
+}
+
+void SchemaPipeline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QGraphicsPathItem::paint(painter, option, widget);
+}

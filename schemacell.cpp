@@ -2,8 +2,10 @@
 #include <QPen>
 
 SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Angle) :
-    SchemaItem(), QGraphicsPolygonItem(), m_PosX(PosX), m_PosY(PosY)
+    SchemaItem(), QGraphicsPolygonItem()
 {
+    m_PosX = PosX;
+    m_PosY = PosY;
     setPolygon(QPolygonF( QVector<QPointF>()
                           << QPointF( 0, 0 )
                           << QPointF( Width, 0 )
@@ -22,14 +24,15 @@ SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qrea
     setPen( QPen(Qt::black) );
     setBrush( Qt::white );
 
-    OutletPort = new SchemaPort(0, Height * 0.5, this, -90);
-    InletPort = new SchemaPort(Width, Height * 0.5, this, -90);
+    SchemaItem* p_this = static_cast<SchemaItem*> (this);
+    OutletPort = new SchemaPort(0, Height * 0.5, p_this, -90);
+    InletPort = new SchemaPort(Width, Height * 0.5, p_this, -90);
 
-    p_Electrode = new QGraphicsRectItem(Width * 0.775, Height * 0.2, Width * 0.05, Height * 1.3, this);
+    p_Electrode = new QGraphicsRectItem(Width * 0.775, Height * 0.2, Width * 0.05, Height * 1.3, p_this);
     p_Electrode->setBrush(Qt::black);
 
-    setRotation(Angle);
-    setPos(PosX, PosY);
+    SchemaItem::setRotation(Angle);
+    SchemaItem::setPos(PosX, PosY);
 
 }
 
@@ -38,14 +41,13 @@ SchemaCell::~SchemaCell()
 
 }
 
-void SchemaCell::setPosX(const int Value)
+QRectF SchemaCell::boundingRect() const
 {
-    m_PosX = Value;
-    setPos(m_PosX, m_PosY);
+    return QGraphicsPolygonItem::boundingRect();
 }
 
-void SchemaCell::setPosY(const int Value)
+void SchemaCell::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    m_PosY = Value;
-    setPos(m_PosX, m_PosY);
+    QGraphicsPolygonItem::paint(painter, option, widget);
 }
+

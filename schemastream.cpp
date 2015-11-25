@@ -1,17 +1,21 @@
 #include "schemastream.h"
 #include <QPen>
 
-SchemaStream::SchemaStream(qreal Size, qreal PosX, qreal PosY, qreal Angle) : SchemaItem(), m_PosX(PosX), m_PosY(PosY)
+SchemaStream::SchemaStream(qreal Size, qreal PosX, qreal PosY, qreal Angle) : SchemaItem(), QGraphicsPolygonItem()
 {
+    m_PosX = PosX;
+    m_PosY = PosY;
     setPolygon(QPolygonF( QVector<QPointF>() << QPointF( 0, 0 )  << QPointF( 0, Size ) << QPointF( 0.75* Size , 0.5* Size  ) << QPointF(0,0)));
     setPen( QPen(Qt::black) );
     setBrush( Qt::black );
 
-    OutletPort = new SchemaPort(Size*0.75,Size/2, this);
+    SchemaItem* p_this = static_cast<SchemaItem*> (this);
 
-    InletPort = new SchemaPort(0,Size/2, this);
-    setRotation(Angle);
-    setPos(PosX, PosY);
+    OutletPort = new SchemaPort(Size*0.75,Size/2, p_this);
+
+    InletPort = new SchemaPort(0,Size/2, p_this);
+    SchemaItem::setRotation(Angle);
+    SchemaItem::setPos(PosX, PosY);
 
 }
 
@@ -20,46 +24,12 @@ SchemaStream::~SchemaStream()
 
 }
 
-void SchemaStream::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+QRectF SchemaStream::boundingRect() const
 {
-    //ToDo: Do it more simple...
-    QPointF Pos =  event->pos() - _startPos;
-    qreal AngleRad = qDegreesToRadians(rotation());
-
-    qreal s = qSin(AngleRad);
-    qreal c = qCos(AngleRad);
-
-    qreal py = Pos.y();
-    qreal px = Pos.x();
-
-    moveBy(c * px - s * py, s * px + c * py);
-    emit moved();
-}
-void SchemaStream::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-
-    if(SchemaMode == RunMode::Edit) {
-        setCursor(Qt::DragMoveCursor);
-        _startPos = event->pos();
-        setOpacity(0.75);
-    } else
-        event->ignore();
-
+    return QGraphicsPolygonItem::boundingRect();
 }
 
-void SchemaStream::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void SchemaStream::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    Q_UNUSED(event)
-    setCursor(Qt::ArrowCursor);
-    setOpacity(1);
-}
-void SchemaStream::setPosX(const int Value)
-{
-    m_PosX = Value;
-    setPos(m_PosX, m_PosY);
-}
-
-void SchemaStream::setPosY(const int Value)
-{
-    m_PosY = Value;
-    setPos(m_PosX, m_PosY);
+    QGraphicsPolygonItem::paint(painter, option, widget);
 }

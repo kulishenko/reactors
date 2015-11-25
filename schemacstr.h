@@ -11,18 +11,16 @@
 
 class SchemaCSTR : public SchemaItem, public QGraphicsPathItem {
     Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
-    Q_PROPERTY(int PosX MEMBER m_PosX WRITE setPosX)
-    Q_PROPERTY(int PosY MEMBER m_PosY WRITE setPosY)
     Q_PROPERTY(qreal LiquidLevel MEMBER m_LiquidLevel)
     Q_PROPERTY(qreal numInCascade MEMBER m_numInCascade) // To be removed (see ModelCSTR)
     friend class ModelCSTR;
 public:
     SchemaCSTR(int Width = 90, int Height = 120, int xPos = 0, int yPos = 0, qreal StartLevel = 0.1, int Index = 0);
     ~SchemaCSTR();
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:
     QSize m_Size;
-    int m_PosX, m_PosY;
     QLinearGradient* p_Gradient;
     QPainterPath* p_path;
     QPainterPath* p_Stirpath;
@@ -43,10 +41,6 @@ private:
     bool m_isFeeding;
     bool m_isReady;
     qreal m_MixerAngle;
-protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 signals:
     void test();
     void clicked();
@@ -60,8 +54,6 @@ private slots:
     void animLevel(const qreal Value);
     void animMotor(const qreal Value);
     void animFinished();
-    void setPosX(const int Value);
-    void setPosY(const int Value);
 };
 
 
