@@ -3,7 +3,6 @@
 #include <QTranslator>
 #include <QLibraryInfo>
 #include <QDebug>
-#include <math.h>
 
 int main(int argc, char *argv[])
 {
@@ -18,14 +17,14 @@ int main(int argc, char *argv[])
 
 //#define STYLE
 #ifdef STYLE
-    QFile file(":/resources/dark.qss");
+    QFile file(":/resources/darkorange.qss");
     file.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(file.readAll());
-   // a.setStyle("plastique");
     a.setStyleSheet(styleSheet);
     file.close();
 #endif
 a.setStyle("fusion");
+
     QTranslator qtTranslator;
        qtTranslator.load("qt_" + QLocale::system().name(),
                QLibraryInfo::location(QLibraryInfo::TranslationsPath));

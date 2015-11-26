@@ -88,19 +88,16 @@ bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
     return true;
 }
 
-bool SchemaConfig::_deserializeObject(QIODevice *input, QObject *object)
+bool SchemaConfig::_deserializeObject(QDomElement *element, QObject *object)
 {
-    QDomDocument doc;
-    if (!doc.setContent(input))
-        return false;
-    QDomElement element = doc.documentElement();
+
     for(int i = 0; i < object->metaObject()->propertyCount(); i++)
     {
         QMetaProperty prop = object->metaObject()->property(i);
         QString propName = prop.name();
         if(propName == "objectName")
             continue;
-        QDomNodeList nodeList = element.elementsByTagName(propName);
+        QDomNodeList nodeList = element->elementsByTagName(propName);
         if(nodeList.length() < 1)
             continue;
         QDomNode node = nodeList.at(0);
@@ -109,5 +106,47 @@ bool SchemaConfig::_deserializeObject(QIODevice *input, QObject *object)
         object->setProperty(propName.toLocal8Bit().data(), QVariant(v));
     }
     return true;
+}
+
+QList<SchemaItem *> SchemaConfig::deserializeSchema(QIODevice *input)
+{
+   QList<SchemaItem *> schemaItems;
+   QDomDocument doc;
+   if (!doc.setContent(input))
+       return schemaItems;
+
+   QDomElement root = doc.elementsByTagName("SchemaItems").at(0).toElement();
+
+   QDomNodeList nodeList = root.elementsByTagName("SchemaStream");
+   for(int i = 0; i < nodeList.count(); i++) {
+       QDomElement node = nodeList.at(i).toElement();
+       schemaItems.append(this->deserialize<SchemaStream>(&node));
+   }
+
+   nodeList = root.elementsByTagName("SchemaCell");
+   for(int i = 0; i < nodeList.count(); i++) {
+       QDomElement node = nodeList.at(i).toElement();
+       schemaItems.append(this->deserialize<SchemaCell>(&node));
+   }
+
+   nodeList = root.elementsByTagName("SchemaValve");
+   for(int i = 0; i < nodeList.count(); i++) {
+       QDomElement node = nodeList.at(i).toElement();
+       schemaItems.append(this->deserialize<SchemaValve>(&node));
+   }
+
+   nodeList = root.elementsByTagName("SchemaCSTR");
+   for(int i = 0; i < nodeList.count(); i++) {
+       QDomElement node = nodeList.at(i).toElement();
+       schemaItems.append(this->deserialize<SchemaCSTR>(&node));
+   }
+
+   nodeList = root.elementsByTagName("SchemaFlowmeter");
+   for(int i = 0; i < nodeList.count(); i++) {
+       QDomElement node = nodeList.at(i).toElement();
+       schemaItems.append(this->deserialize<SchemaFlowmeter>(&node));
+   }
+
+   return schemaItems;
 }
 

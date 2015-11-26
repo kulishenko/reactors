@@ -20,7 +20,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), thread(nullptr), Control(nullptr)
 {
-    qRegisterMetaType<RunMode>("RunMode");
+
+    //bgColor = QColor::fromRgb(240, 240, 240);
+    bgColor = Qt::gray;
+    //qRegisterMetaType<RunMode>("RunMode");
 
     ui->setupUi(this);
 
@@ -194,7 +197,7 @@ void MainWindow::createActions()
     modeGroup->addAction(editModeAct);
     playbackAct->setChecked(true);
     onlineAct->setDisabled(true);
-    m_RunMode = RunMode::Offline;
+    //m_RunMode = RunMode::Offline;
 
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
@@ -362,10 +365,10 @@ void MainWindow::createSchemaView()
 
     graphicsView = new SchemaView(this);
 
-    bgColor = QColor::fromRgb(240, 240, 240);
-
     m_scene = new QGraphicsScene();
 //  m_scene->setBackgroundBrush(QBrush(QColor::fromRgb(0, 150, 140), Qt::SolidPattern));
+
+
     m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
 
     SchemaStream* streamItem1 = new SchemaStream(50, 0, 400, 0);
@@ -394,11 +397,6 @@ void MainWindow::createSchemaView()
     ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
 
     Q_UNUSED(FlowmeterModel)
- //   assert(file.open(QIODevice::ReadOnly));
-
- //   SchemaCSTR* ReactorItem = Config.deserialize<SchemaCSTR>(&file);
-
-   // file.close();
 
     flowmeterItem = new SchemaFlowmeter(25, 200, 125, 50, 0);
 
@@ -421,9 +419,6 @@ void MainWindow::createSchemaView()
 
     std::for_each(pipelineItems.cbegin(), pipelineItems.cend(),[&](SchemaPipeline* item){ schemaItems.append(item); });
 
-  //  m_scene->addItem(valveItem1);
-  //  m_scene->addItem(reactorItems.first());
-#include <QAbstractGraphicsShapeItem>
     foreach(SchemaItem* item, schemaItems) {
         m_scene->addItem(item);
         Config.serializeObject(item, &file);
@@ -431,11 +426,7 @@ void MainWindow::createSchemaView()
 
     graphicsView->setScene(m_scene);
     graphicsView->viewport()->installEventFilter(this);
-
-    //graphicsView->setViewport(new QGLWidget);
     graphicsView->setRenderHint(QPainter::Antialiasing);
-    //graphicsView->setRenderHint(QPainter::HighQualityAntialiasing);
-
 }
 
 void MainWindow::initControl()
@@ -488,6 +479,26 @@ void MainWindow::initControl()
     exportToServerAct->setDisabled(false);
     EventLog << tr("Parameter estimation is now available");
 }
+
+void MainWindow::loadSchemaViewFromFile()
+{
+    QGraphicsScene* scene = new QGraphicsScene();
+
+    SchemaConfig Config;
+    QFile file(qApp->applicationDirPath() + "/SchemaConfig.xml");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    QList<SchemaItem* > schemaItems = Config.deserializeSchema(&file);
+
+    foreach(SchemaItem* item, schemaItems) {
+        scene->addItem(item);
+    }
+    this->graphicsView->setScene(scene);
+
+    m_scene->deleteLater();
+    m_scene = scene;
+    file.close();
+}
 void MainWindow::createToolBars()
 {
     fileToolBar = addToolBar(tr("File"));
@@ -502,15 +513,18 @@ void MainWindow::createToolBars()
 }
 void MainWindow::newFile()
 {
-
-    QGraphicsView* graphicsViewNew = new SchemaView();
+/*
+    SchemaView* graphicsViewNew = new SchemaView();
     QGraphicsScene* m_sceneNew = new QGraphicsScene();
     graphicsViewNew->setScene(m_sceneNew);
     graphicsViewNew->viewport()->installEventFilter(this);
     graphicsViewNew->setRenderHint(QPainter::Antialiasing);
 
     this->setCentralWidget(graphicsViewNew);
+
+    */
     //this->adjustSize();
+    loadSchemaViewFromFile();
 }
 
 void MainWindow::open()
@@ -959,19 +973,19 @@ void MainWindow::exportFinished(bool result) {
 
 void MainWindow::onlineMode()
 {
-    m_RunMode = RunMode::Online;
+    //m_RunMode = RunMode::Online;
     SchemaItem::SchemaMode = SchemaItem::RunMode::Online;
 }
 
 void MainWindow::offlineMode()
 {
-    m_RunMode = RunMode::Offline;
+    //m_RunMode = RunMode::Offline;
     SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
 
 }
 
 void MainWindow::editMode()
 {
-    m_RunMode = RunMode::Edit;
+    //m_RunMode = RunMode::Edit;
     SchemaItem::SchemaMode = SchemaItem::RunMode::Edit;
 }

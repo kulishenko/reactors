@@ -5,6 +5,10 @@
 #include <QList>
 #include <schemaitem.h>
 #include <schemacstr.h>
+#include <schemaflowmeter.h>
+#include <schemastream.h>
+#include <schemacell.h>
+#include <schemavalve.h>
 #include <typeinfo>
 #include <QXmlStreamReader>
 #include <QDomDocument>
@@ -22,16 +26,17 @@ public:
     QMap<QString, SchemaItemType> ElementItemTypes;
     bool serializeObject(QObject *object, QIODevice *output);
     template<class T>
-    T* deserialize(QIODevice *input){
+    T* deserialize(QDomElement *element){
         T* object = new T();
-        if(_deserializeObject(input, object))
+        if(_deserializeObject(element, object))
             return object;
         object->deleteLater();
         return NULL;
     }
+    QList<SchemaItem *> deserializeSchema(QIODevice* input);
 private:
-    bool _deserializeObject(QIODevice* input, QObject* object);
     void ParseXMLConfig();
+    bool _deserializeObject(QDomElement *element, QObject *object);
 };
 
 #endif // SCHEMACONFIG_H

@@ -3,7 +3,7 @@ int SchemaItem::s_ElementId = 0;
 SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
 SchemaItem::SchemaItem() : QObject(), PFD(nullptr), m_ElementId(s_ElementId++)
 {
-    setPen(QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap));
+    setPen(QPen(Qt::black, 1.5f, Qt::SolidLine, Qt::RoundCap));
 }
 
 SchemaItem::~SchemaItem()

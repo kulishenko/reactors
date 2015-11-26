@@ -66,7 +66,7 @@ class QListWidget;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    Q_PROPERTY(RunMode runMode MEMBER m_RunMode)
+//    Q_PROPERTY(RunMode runMode MEMBER m_RunMode)
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -128,7 +128,7 @@ private:
     QVector<SchemaPipeline*> pipelineItems;
     QList<SchemaItem*> schemaItems;
 
-    enum class RunMode {Online, Offline, Edit};
+//    enum class RunMode {Online, Offline, Edit};
 
     void loadSettings();
     void saveSettings();
@@ -140,6 +140,7 @@ private:
     void createSchemaView();
     void initControl();
 
+    void loadSchemaViewFromFile();
 
     QColor bgColor;
     QLinearGradient* p_bgGradient;
@@ -206,7 +207,7 @@ private:
 
     bool isSimRun;
     bool isDBConnected;
-    RunMode m_RunMode;
+//    RunMode m_RunMode;
 };
 
 #endif // MAINWINDOW_H

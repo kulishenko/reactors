@@ -3,7 +3,7 @@
 #define _USE_MATH_DEFINES
 #include <QPointF>
 #include <QGraphicsItem>
-#include <math.h>
+#include <QtMath>
 #include <QPen>
 class SchemaPort : public  QGraphicsLineItem //QPointF
 {

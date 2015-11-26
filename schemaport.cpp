@@ -2,7 +2,7 @@
 #include <QDebug>
 
 SchemaPort::SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem, qreal Angle) :
-    QGraphicsLineItem(PosX,PosY,PosX+5*sin(Angle*M_PI/180),PosY+5*cos(Angle*M_PI/180), parentItem)
+    QGraphicsLineItem(PosX, PosY, PosX+5*qSin(qDegreesToRadians(Angle)),PosY+5*qCos(qDegreesToRadians(Angle)), parentItem)
 {
     setPen(QPen(Qt::red));
 #ifndef SCHEMA_DEBUG
@@ -18,11 +18,11 @@ SchemaPort::~SchemaPort()
 QPointF SchemaPort::scenePos() const
 {
     QPointF parentPos = QGraphicsLineItem::scenePos();
-    qreal Angle = parentItem()->rotation();
+    qreal Angle = qDegreesToRadians(parentItem()->rotation());
     QPointF Pos = line().p1();
 
-    qreal s = sin(Angle*M_PI/180);
-    qreal c = cos(Angle*M_PI/180);
+    qreal s = qSin(Angle);
+    qreal c = qCos(Angle);
 
     qreal py = parentPos.y() + Pos.y();
     qreal px = parentPos.x() + Pos.x();
