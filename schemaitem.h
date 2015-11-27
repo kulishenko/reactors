@@ -2,6 +2,7 @@
 #define SCHEMAITEM_H
 #include <QPoint>
 #include <schemaport.h>
+#include <schemascene.h>
 #include <QObject>
 #include <pfdcontrol.h>
 #include <QGraphicsObject>
@@ -9,6 +10,7 @@
 #include <QtMath>
 
 class PFDControl;
+class SchemaScene;
 class SchemaItem  : public QObject, public QGraphicsPathItem {
 
     Q_OBJECT
@@ -27,10 +29,13 @@ public:
     enum class RunMode {Online, Offline, Edit};
     static int s_ElementId;
     static RunMode SchemaMode;
+    void setParent(SchemaScene* scene);
+    SchemaScene* parent() const;
 private:
     int m_ElementId;
 //    qreal m_PosX, m_PosY; // Scene coordinates
 protected:
+    SchemaScene *p_parent;
     QPointF _startPos;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

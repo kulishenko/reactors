@@ -5,15 +5,18 @@
 
 class SchemaPipeline : public SchemaItem {
     Q_OBJECT
-    Q_PROPERTY(int FromElementId MEMBER m_FromElementId)
-    Q_PROPERTY(int ToElementId MEMBER m_ToElementId)
+    Q_PROPERTY(int FromElementId MEMBER m_FromElementId WRITE setFromElementId)
+    Q_PROPERTY(int ToElementId MEMBER m_ToElementId WRITE setToElementId)
 public:
+    SchemaPipeline();
     SchemaPipeline(SchemaItem *From, SchemaItem *To);
     ~SchemaPipeline();
 private:
     SchemaItem *m_From, *m_To;
     QPainterPath* LinePath;
     int m_FromElementId, m_ToElementId;
+    void setFromElementId(int Value);
+    void setToElementId(int Value);
 private slots:
     void drawLine();
 protected:

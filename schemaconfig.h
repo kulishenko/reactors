@@ -9,10 +9,12 @@
 #include <schemastream.h>
 #include <schemacell.h>
 #include <schemavalve.h>
+#include <schemapipeline.h>
 #include <typeinfo>
 #include <QXmlStreamReader>
 #include <QDomDocument>
 #include <QMetaProperty>
+#include <schemascene.h>
 
 class SchemaConfig
 {
@@ -26,14 +28,15 @@ public:
     QMap<QString, SchemaItemType> ElementItemTypes;
     bool serializeObject(QObject *object, QIODevice *output);
     template<class T>
-    T* deserialize(QDomElement *element){
+    T* deserialize(QDomElement *element, SchemaScene* parent = 0){
         T* object = new T();
+        object->setParent(parent);
         if(_deserializeObject(element, object))
             return object;
         object->deleteLater();
         return NULL;
     }
-    QList<SchemaItem *> deserializeSchema(QIODevice* input);
+    SchemaScene* deserializeScene(QIODevice* input, QObject *parent = 0);
 private:
     void ParseXMLConfig();
     bool _deserializeObject(QDomElement *element, QObject *object);

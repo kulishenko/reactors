@@ -1,5 +1,12 @@
 #include "schemapipeline.h"
 
+SchemaPipeline::SchemaPipeline() : SchemaItem(),
+    m_From(nullptr), m_To(nullptr), LinePath(nullptr),
+    m_FromElementId(0), m_ToElementId(0)
+{
+
+}
+
 SchemaPipeline::SchemaPipeline(SchemaItem* From, SchemaItem* To) :
     SchemaItem(), m_From(From), m_To(To), LinePath(nullptr),
     m_FromElementId(From->property("ElementId").toInt()),
@@ -18,8 +25,34 @@ SchemaPipeline::~SchemaPipeline()
 
 }
 
+void SchemaPipeline::setFromElementId(int Value)
+{
+    m_FromElementId = Value;
+    SchemaItem* From = parent()->getItemByElementId(Value);
+    if(From) {
+        connect(From, SIGNAL(moved()), this, SLOT(drawLine()));
+        m_From = From;
+    }
+
+    if(m_From && m_To) drawLine();
+}
+
+void SchemaPipeline::setToElementId(int Value)
+{
+    m_ToElementId = Value;
+    SchemaItem* To = parent()->getItemByElementId(Value);
+    if(To) {
+        connect(To, SIGNAL(moved()), this, SLOT(drawLine()));
+        m_To = To;
+    }
+
+    if(m_From && m_To) drawLine();
+}
+
 void SchemaPipeline::drawLine()
 {
+    if(!m_From->Descedant) m_From->Descedant = m_To; // Remove (make via SIGNAL-SLOT)
+
     QPainterPath* OldPath;
     OldPath = LinePath;
     LinePath = new QPainterPath();

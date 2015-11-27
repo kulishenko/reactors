@@ -1,7 +1,7 @@
 #include "schemaitem.h"
 int SchemaItem::s_ElementId = 0;
 SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
-SchemaItem::SchemaItem() : QObject(), PFD(nullptr), m_ElementId(s_ElementId++)
+SchemaItem::SchemaItem() : QObject(), PFD(nullptr), m_ElementId(s_ElementId++), p_parent(nullptr)
 {
     setPen(QPen(Qt::black, 1.5f, Qt::SolidLine, Qt::RoundCap));
 }
@@ -41,4 +41,17 @@ void SchemaItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     } else
         event->ignore();
 
+}
+
+
+void SchemaItem::setParent(SchemaScene *scene)
+{
+    p_parent = scene;
+    QObject::setParent(scene);
+}
+
+
+SchemaScene *SchemaItem::parent() const
+{
+    return p_parent;
 }

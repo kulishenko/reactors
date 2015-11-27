@@ -45,6 +45,7 @@
 #include "modelcstr.h"
 #include "modelflowmeter.h"
 #include "schemaconfig.h"
+#include "schemascene.h"
 #include <qwt-mml/qwt_mml_document.h>
 #include <formulaview.h>
 //#include <QGLWidget>
@@ -125,8 +126,7 @@ private:
     SchemaValve* valveItem1;
 
     QVector<SchemaCSTR*> reactorItems;
-    QVector<SchemaPipeline*> pipelineItems;
-    QList<SchemaItem*> schemaItems;
+
 
 //    enum class RunMode {Online, Offline, Edit};
 
@@ -138,9 +138,10 @@ private:
     void createToolBars();
     void createDockWindows();
     void createSchemaView();
+    void createSchemaScene();
     void initControl();
 
-    void loadSchemaViewFromFile();
+    void loadSceneFromFile();
 
     QColor bgColor;
     QLinearGradient* p_bgGradient;

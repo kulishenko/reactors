@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     qwt-mml/qwt_mml_document.cpp \
     qwt-mml/qwt_mml_entity_table.cpp \
     formulaview.cpp \
-    schemaevent.cpp
+    schemaevent.cpp \
+    schemascene.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -76,7 +77,8 @@ HEADERS  += mainwindow.h \
     qwt-mml/qwt_mml_document.h \
     qwt-mml/qwt_mml_entity_table.h \
     formulaview.h \
-    schemaevent.h
+    schemaevent.h \
+    schemascene.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 

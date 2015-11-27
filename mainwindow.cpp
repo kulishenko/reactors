@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     createMenus();
     createToolBars();
     createDockWindows();
+    createSchemaScene();
     createSchemaView();
 
     QString message = tr("A context menu is available by right-clicking");
@@ -358,18 +359,25 @@ void MainWindow::createDockWindows()
 
 void MainWindow::createSchemaView()
 {
+
+    graphicsView = new SchemaView(this);
+
+    graphicsView->setScene(m_scene);
+    graphicsView->viewport()->installEventFilter(this);
+    graphicsView->setRenderHint(QPainter::Antialiasing);
+}
+
+void MainWindow::createSchemaScene()
+{
     SchemaConfig Config;
     QFile file(qApp->applicationDirPath() + "/SchemaConfig.xml");
     file.remove();
 
+    QList<SchemaItem*> schemaItems;
 
-    graphicsView = new SchemaView(this);
+    m_scene = new SchemaScene(this);
 
-    m_scene = new QGraphicsScene();
-//  m_scene->setBackgroundBrush(QBrush(QColor::fromRgb(0, 150, 140), Qt::SolidPattern));
-
-
-    m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
+    //m_scene->setBackgroundBrush(QBrush(bgColor, Qt::SolidPattern));
 
     SchemaStream* streamItem1 = new SchemaStream(50, 0, 400, 0);
     schemaItems.append(streamItem1);
@@ -384,23 +392,26 @@ void MainWindow::createSchemaView()
     valveItem1 = new SchemaValve(30, 45, 122.5, 350, -90);
     schemaItems.append(valveItem1);
 
-    ModelCSTR* CSTRModel;
+   // ModelCSTR* CSTRModel;
     // Creating CSTR Items
 
     for(int i = 1; i <= 5; i++){
         reactorItems.push_back(new SchemaCSTR(90, 120, i*200, i*70, 0.1, i-1));
-        CSTRModel = new ModelCSTR();
-        CSTRModel->setProperty("Level", 0.1);
+   //     CSTRModel = new ModelCSTR();
+    //    CSTRModel->setProperty("Level", 0.1);
         schemaItems.append(reactorItems.at(i-1));
     }
 
-    ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
+  //  ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
 
-    Q_UNUSED(FlowmeterModel)
+  //  Q_UNUSED(FlowmeterModel)
 
     flowmeterItem = new SchemaFlowmeter(25, 200, 125, 50, 0);
 
     schemaItems.append(flowmeterItem);
+
+
+    QVector<SchemaPipeline*> pipelineItems;
 
     // Connecting Items
     pipelineItems.push_back(new SchemaPipeline(streamItem1, valveItem1));
@@ -423,10 +434,6 @@ void MainWindow::createSchemaView()
         m_scene->addItem(item);
         Config.serializeObject(item, &file);
     }
-
-    graphicsView->setScene(m_scene);
-    graphicsView->viewport()->installEventFilter(this);
-    graphicsView->setRenderHint(QPainter::Antialiasing);
 }
 
 void MainWindow::initControl()
@@ -480,24 +487,21 @@ void MainWindow::initControl()
     EventLog << tr("Parameter estimation is now available");
 }
 
-void MainWindow::loadSchemaViewFromFile()
+void MainWindow::loadSceneFromFile()
 {
-    QGraphicsScene* scene = new QGraphicsScene();
 
     SchemaConfig Config;
     QFile file(qApp->applicationDirPath() + "/SchemaConfig.xml");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
 
-    QList<SchemaItem* > schemaItems = Config.deserializeSchema(&file);
+    QGraphicsScene* scene = Config.deserializeScene(&file, this);
 
-    foreach(SchemaItem* item, schemaItems) {
-        scene->addItem(item);
-    }
     this->graphicsView->setScene(scene);
 
-    m_scene->deleteLater();
+    if(m_scene)
+        m_scene->deleteLater();
+
     m_scene = scene;
-    file.close();
+
 }
 void MainWindow::createToolBars()
 {
@@ -524,7 +528,7 @@ void MainWindow::newFile()
 
     */
     //this->adjustSize();
-    loadSchemaViewFromFile();
+    loadSceneFromFile();
 }
 
 void MainWindow::open()

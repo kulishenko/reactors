@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
 //#define STYLE
 #ifdef STYLE
-    QFile file(":/resources/darkorange.qss");
+    QFile file(":/resources/qdarkstyle.qss");
     file.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(file.readAll());
     a.setStyleSheet(styleSheet);
