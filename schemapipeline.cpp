@@ -60,9 +60,6 @@ void SchemaPipeline::drawLine()
     QPointF FromPos = m_From->OutletPort->scenePos();
     QPointF ToPos = m_To->InletPort->scenePos();
 
-//    qDebug() << "From: "+QString::number(m_From->OutletPort->getAngle());
-//    qDebug() << "To: "+QString::number(m_To->InletPort->getAngle());
-
     LinePath->moveTo(FromPos);
     if((FromPos.x() != ToPos.x()) || (FromPos.y() != ToPos.y()))
     {

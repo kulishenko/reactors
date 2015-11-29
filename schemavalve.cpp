@@ -39,8 +39,8 @@ SchemaValve::SchemaValve(qreal Width, qreal Length, qreal PosX, qreal PosY, qrea
     setPos(PosX, PosY);
     setAcceptHoverEvents(true);
 
-    MaxFlow = 1.0;
-    m_Position = 0.0;
+    MaxFlow = 1.0f;
+    m_Position = 0.0f;
 }
 
 SchemaValve::~SchemaValve()
@@ -58,21 +58,21 @@ void SchemaValve::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         qDebug() << "Valve clicked:" << QString::number(event->pos().x());
         if(event->pos().x() >= m_Length * 0.5 && m_Position <= 0.9){
             m_Position += 0.1 ;
-            emit FlowIncreased();
+            emit FlowIncrease();
         }
         else if(event->pos().x() < m_Length * 0.5 && m_Position >= 0.1){
             m_Position -= 0.1 ;
-            emit FlowDecreased();
+            emit FlowDecrease();
         }
-        //  K0CTIb/|b
-        SchemaFlowmeter *tmp = static_cast<SchemaFlowmeter*>(Descedant);
-        tmp->setFlowrate(m_Position * MaxFlow);
-        tmp->Floater->update();
+        //  K0CTIb/|b - MOVE to SIGNAL-SLOT
+        //SchemaFlowmeter *tmp = static_cast<SchemaFlowmeter*>(Descedant);
+        //tmp->setFlowrate(m_Position * MaxFlow);
+        emit FlowrateChanged(m_Position * MaxFlow);
 
         event->accept();
-        qDebug() << "Set Flowrate:" << QString::number(tmp->getFlowrateSet());
-        event->ignore();
-    }
+        //qDebug() << "Set Flowrate:" << QString::number(tmp->getFlowrateSet());
+
+    } event->ignore();
 }
 void SchemaValve::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {

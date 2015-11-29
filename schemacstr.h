@@ -39,14 +39,18 @@ private:
     bool m_isFeeding;
     bool m_isReady;
     qreal m_MixerAngle;
+    ModelCSTR* p_Model;
 signals:
     void test();
     void clicked();
+    void filled();
+    void startedFeed();
 public slots:
     void changeLevel();
     void fill();
     void activateMotor();
     void startFeed();
+    void setFlowrate(const qreal Value);
 private slots:
     void setLevel(const qreal Level, const int TransTime);
     void animLevel(const qreal Value);

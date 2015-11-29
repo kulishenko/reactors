@@ -22,8 +22,9 @@ private:
     const qreal m_Width, m_Length;
     QConicalGradient* p_Brush;
 signals:
-    void FlowIncreased();
-    void FlowDecreased();
+    void FlowIncrease();
+    void FlowDecrease();
+    void FlowrateChanged(qreal Value);
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

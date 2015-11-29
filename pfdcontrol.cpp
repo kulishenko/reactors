@@ -5,6 +5,8 @@ PFDControl::PFDControl(QObject *parent) : QObject(parent)
     TimeNow = 0;
     isStarted = false;
     isFlowrateSet = false;
+    m_Flowrate = 0.0f;
+    m_PlaybackFlowrate = 0.0f;
 }
 
 PFDControl::~PFDControl()
@@ -17,7 +19,7 @@ void PFDControl::tick(){
         emit doSim();
     }
 }
-void PFDControl::flowrate_increase(){
+void PFDControl::flowrate_increased(){
     qDebug() << tr("Flowrate Increased: V = %1 (waiting for %2)").arg(QString::number(m_Flowrate), QString::number(m_PlaybackFlowrate));
 
     if(!isFlowrateSet && fabs(m_PlaybackFlowrate - m_Flowrate) < 0.001) {
@@ -27,8 +29,8 @@ void PFDControl::flowrate_increase(){
     }
 
 }
-void PFDControl::flowrate_decrease(){
-    qDebug() << "Flowrate Decreased";
+void PFDControl::flowrate_decreased(){
+    qDebug() << tr("Flowrate Decreased: V = %1 (waiting for %2)").arg(QString::number(m_Flowrate), QString::number(m_PlaybackFlowrate));
 }
 
 void PFDControl::Start()
@@ -63,7 +65,12 @@ void PFDControl::calcTau(){
 
 }
 void PFDControl::setFlowrate(qreal Value){
+    qDebug() << "PFDControl::setFlowrate: " + QString::number(Value);
+    qreal oldValue = m_Flowrate;
     m_Flowrate = Value;
+    if(oldValue < Value) flowrate_increased();
+    else flowrate_decreased();
+
 }
 
 void PFDControl::setPlaybackFlowrate(qreal Value)
@@ -74,10 +81,10 @@ void PFDControl::setNumCascade(int Value)
 {
     m_NumCascade = Value;
 }
-void PFDControl::addItem(SchemaItem *item)
+/*void PFDControl::addItem(SchemaItem *item)
 {
-    item->PFD = this;
-}
+    //item->PFD = this;
+}*/
 
 qreal PFDControl::getCurrentTime()
 {

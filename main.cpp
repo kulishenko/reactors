@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-//#define STYLE
+#define STYLE
 #ifdef STYLE
     QFile file(":/resources/qdarkstyle.qss");
     file.open(QFile::ReadOnly);

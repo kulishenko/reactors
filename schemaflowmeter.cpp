@@ -1,8 +1,8 @@
 #include "schemaflowmeter.h"
 #include <QLinearGradient>
-#include <QTimeLine>
 
-SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow) : SchemaItem()
+SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow) : SchemaItem(),
+    m_FlowrateSet(0), m_FlowrateStepStart(0), m_FlowrateStepStop(0), _numScheduledChanges(0)
 {
 
     QRect rect(0, 0, Width, Height);
@@ -52,16 +52,19 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
 
 
     for(int i = 1; i <= 10; i++){
-        Rulers.push_back(new QGraphicsLineItem(0, 0.09*Height*i, Width, 0.09*Height*i, this));
+        Rulers.push_back(new QGraphicsLineItem(0, 0.09*Height*i, 0.75*Width, 0.09*Height*i, this));
         Rulers.at(i-1)->setPen(gray);
-
+        Labels.push_back(new QGraphicsTextItem(QString::number((11-i)*10),this));
+        Labels.at(i-1)->setPos(0.1*Width, 0.09*Height*i - 0.115*Height);
+        Labels.at(i-1)->setDefaultTextColor(Qt::white);
+        Labels.at(i-1)->setOpacity(0.75);
     }
 
     InletPort = new SchemaPort(Width/2, Height, this, 0);
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
 
-    Flowrate = 0.0f;
+    m_Flowrate = 0.0f;
     m_FlowrateSet = 0.0f;
   //  OutletPipe->setPen(Qt::black);
  //   InletPort = boundingRect().bottomLeft();
@@ -73,12 +76,25 @@ SchemaFlowmeter::~SchemaFlowmeter()
 }
 
 void SchemaFlowmeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    if(fabs(Flowrate - m_FlowrateSet) > 0.001){
+ /*   if(fabs(Flowrate - m_FlowrateSet) > 0.001){
         Flowrate += (Flowrate < m_FlowrateSet) ? 0.00005 : -0.00005;
         Floater->setPos(boundingRect().bottomLeft()+QPointF(0, -0.75*m_Width - Flowrate*m_Height*0.9));
-    }
+    } */
     QGraphicsPathItem::paint(painter,option,widget);
 
+}
+
+void SchemaFlowmeter::createAnim()
+{
+    m_FlowrateStepStart = m_Flowrate;
+    m_FlowrateStepStop = m_FlowrateSet;
+
+    QTimeLine *anim = new QTimeLine(500, this);
+    anim->setEasingCurve(QEasingCurve::Linear);
+    anim->setUpdateInterval(30);
+    connect(anim, SIGNAL (valueChanged(qreal)), SLOT (animFloater(qreal)));
+    connect(anim, SIGNAL (finished()), SLOT (animFinished()));
+    anim->start();
 }
 
 qreal SchemaFlowmeter::getFlowrateSet()
@@ -88,29 +104,33 @@ qreal SchemaFlowmeter::getFlowrateSet()
 
 void SchemaFlowmeter::animFloater(qreal Value)
 {
-    if(fabs(Flowrate - m_FlowrateSet) > 0.001){
-        Flowrate += (Flowrate < m_FlowrateSet) ? 0.00005 : -0.00005;
-        Floater->setPos(boundingRect().bottomLeft() + QPointF(0, -0.75 * m_Width - Flowrate * m_Height * 0.9));
-    }
+    m_Flowrate = m_FlowrateStepStart + (m_FlowrateStepStop - m_FlowrateStepStart) * Value;
+    Floater->setPos(boundingRect().bottomLeft() + QPointF(0, -0.75 * m_Width - m_Flowrate * m_Height * 0.9));
+
 }
 void SchemaFlowmeter::setFlowrate(qreal Value) {
+    //if(PFD) PFD->setFlowrate(Value * m_MaxFlow);
+
 
     m_FlowrateSet = Value;
-    if(PFD) PFD->setFlowrate(Value * m_MaxFlow);
+    _numScheduledChanges++;
 
-/*    QTimeLine *anim = new QTimeLine(1000, this);
-    anim->setUpdateInterval(30);
-    connect(anim, SIGNAL (valueChanged(qreal)), SLOT (animFloater(qreal)));
-    connect(anim, SIGNAL (finished()), SLOT (animFinished()));
-    anim->start(); */
-
+    if(_numScheduledChanges == 1)
+        createAnim();
 }
+
 void SchemaFlowmeter::animFinished()
 {
-    if (_numScheduledChanges > 0)
-        _numScheduledChanges--;
+    _numScheduledChanges--;
+
+    if(_numScheduledChanges>0)
+        createAnim();
     else
-        _numScheduledChanges++;
+        m_Flowrate = m_FlowrateSet;
+
+    emit establishedFlowrate(m_FlowrateSet * m_MaxFlow);
+    qDebug() << "Established flowrate: " + QString::number(m_FlowrateSet * m_MaxFlow);
+
     sender()->~QObject();
 }
 

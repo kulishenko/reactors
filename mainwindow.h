@@ -113,7 +113,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QGraphicsScene *m_scene;
+    SchemaScene *m_scene;
     QString m_sSettingsFile;
 
     SchemaLogger EventLog;
@@ -122,8 +122,8 @@ private:
 
     SchemaData *p_Data;
 
-    SchemaFlowmeter* flowmeterItem;
-    SchemaValve* valveItem1;
+//    SchemaFlowmeter* flowmeterItem;
+//    SchemaValve* valveItem1;
 
     QVector<SchemaCSTR*> reactorItems;
 
@@ -141,7 +141,9 @@ private:
     void createSchemaScene();
     void initControl();
 
-    void loadSceneFromFile();
+    void loadSceneFromFile(const QString &filename = ":/resources/SchemaCascadeCSTR.xml");
+
+    void loadSimDataFromFile(const QString &filename);
 
     QColor bgColor;
     QLinearGradient* p_bgGradient;
@@ -208,6 +210,7 @@ private:
 
     bool isSimRun;
     bool isDBConnected;
+    bool m_isStarted;
 //    RunMode m_RunMode;
 };
 

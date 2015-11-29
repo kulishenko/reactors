@@ -1,7 +1,12 @@
 #include "schemaitem.h"
+#include <schemacstr.h>
+#include <schemaflowmeter.h>
+#include <schemavalve.h>
+
 int SchemaItem::s_ElementId = 0;
 SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
-SchemaItem::SchemaItem() : QObject(), PFD(nullptr), m_ElementId(s_ElementId++), p_parent(nullptr)
+SchemaItem::SchemaItem() : QObject(), OutletPort(nullptr), InletPort(nullptr),
+    Descedant(nullptr), m_ElementId(s_ElementId++), p_parent(nullptr), m_Flowrate(0)
 {
     setPen(QPen(Qt::black, 1.5f, Qt::SolidLine, Qt::RoundCap));
 }
@@ -54,4 +59,23 @@ void SchemaItem::setParent(SchemaScene *scene)
 SchemaScene *SchemaItem::parent() const
 {
     return p_parent;
+}
+
+
+void SchemaItem::setFlowrate(const qreal Value)
+{
+    m_Flowrate = Value;
+}
+
+
+QString SchemaItem::getItemType()
+{
+    // KOCTbI/|b
+    QString type;
+    if (dynamic_cast<SchemaCSTR*>(this)) type = "SchemaCSTR";
+    else if(dynamic_cast<SchemaValve*>(this)) type = "SchemaValve";
+    else if(dynamic_cast<SchemaFlowmeter*>(this)) type = "SchemaFlowmeter";
+    else type = "SchemaItem";
+
+    return type;
 }

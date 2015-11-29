@@ -7,9 +7,9 @@
 
 SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLevel, int Index) :
     SchemaItem(), m_Size(Width, Height), m_numInCascade(Index),
-  m_isWorking(false), m_isFeeding(false), m_isReady(false)
+  m_isWorking(false), m_isFeeding(false), m_isReady(false), p_Model(nullptr)
 {
-
+    //m_ItemType = this->staticMetaObject.className() ;
     if(StartLevel != 0.0)
         m_LiquidLevel = m_LiquidLevelSet = StartLevel;
 
@@ -76,6 +76,8 @@ SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLev
     p_Mixer->setPos(Width/2-15, 100-10);
     p_Mixer->setTransform(QTransform().translate(15, 0).rotate(m_MixerAngle,Qt::YAxis).translate(-15, 0));
 
+    p_Model = new ModelCSTR(this);
+
 }
 
 SchemaCSTR::~SchemaCSTR()
@@ -96,7 +98,7 @@ void SchemaCSTR::setLevel(const qreal Level, const int TransTime) {
     anim->start();
 
 }
-#include <QGraphicsScene>
+
 void SchemaCSTR::animLevel(const qreal Value){
     qreal CurrentFrameLevel = m_LiquidLevel + (m_LiquidLevelSet - m_LiquidLevel) * Value;
 
@@ -109,9 +111,8 @@ void SchemaCSTR::animLevel(const qreal Value){
     p_Gradient->setColorAt(0, const_cast<QColor &> (m_LiquidBottomColor));
     setBrush(*p_Gradient);
 
-    if(!m_isFeeding &&  Value > 0.8 && this != PFD->reactorItems->last()) {
-        SchemaCSTR* next = static_cast<SchemaCSTR*>(Descedant);
-        emit next->fill();
+    if(!m_isFeeding &&  Value > 0.8) {
+        emit startedFeed();
         m_isFeeding = true;
     }
 
@@ -127,7 +128,7 @@ void SchemaCSTR::animFinished()
 {
     m_LiquidLevel = m_LiquidLevelSet;
     m_isReady = true;
-    if(this == PFD->reactorItems->last()) emit PFD->startSim();
+    emit filled();
     sender()->~QObject();
 }
 
@@ -138,8 +139,9 @@ void SchemaCSTR::changeLevel(){
 }
 void SchemaCSTR::fill(){
 
-    qreal transTime = (PFD->getTauAt(m_numInCascade) - (m_numInCascade == 0 ? 0 : PFD->getTauAt(m_numInCascade - 1) ) ) * 3600 * 1000;
-    qDebug() << "Flowrate is " + QString::number(PFD->getFlowrate());
+    //qreal transTime = (PFD->getTauAt(m_numInCascade) - (m_numInCascade == 0 ? 0 : PFD->getTauAt(m_numInCascade - 1) ) ) * 3600 * 1000;
+    qreal transTime = p_Model->getTau();
+   // qDebug() << "Flowrate is " + QString::number(PFD->getFlowrate());
     qDebug() << tr("CSTR(%1), tau = %2").arg(QString::number(m_numInCascade), QString::number(transTime));
     setLevel(0.8, static_cast<int>(transTime));
     if(!m_isWorking) activateMotor();
@@ -159,5 +161,10 @@ void SchemaCSTR::activateMotor()
 }
 void SchemaCSTR::startFeed() {
 
+}
+
+void SchemaCSTR::setFlowrate(const qreal Value)
+{
+    p_Model->setInletFlowrate(Value);
 }
 

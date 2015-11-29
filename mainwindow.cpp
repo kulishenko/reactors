@@ -18,7 +18,7 @@ extern "C" {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), thread(nullptr), Control(nullptr)
+    ui(new Ui::MainWindow), m_scene(nullptr), thread(nullptr), Control(nullptr), m_isStarted(false)
 {
 
     //bgColor = QColor::fromRgb(240, 240, 240);
@@ -31,8 +31,10 @@ MainWindow::MainWindow(QWidget *parent) :
     createMenus();
     createToolBars();
     createDockWindows();
-    createSchemaScene();
+
+    //createSchemaScene();
     createSchemaView();
+    loadSceneFromFile();
 
     QString message = tr("A context menu is available by right-clicking");
     statusBar()->showMessage(message);
@@ -44,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->adjustSize();
 
     loadSettings();
-
+    m_isStarted = true;
 }
 
 MainWindow::~MainWindow()
@@ -306,8 +308,8 @@ void MainWindow::createDockWindows()
     videoWidget = new QVideoWidget(dock);
     MediaPlayer = new QMediaPlayer(this);
     QMediaPlaylist* playlist = new QMediaPlaylist(this);
-    //playlist->addMedia(QUrl::fromLocalFile("C:/Users/Public/Videos/Sample Videos/Wildlife.wmv"));
-    playlist->addMedia(QUrl::fromLocalFile("C:/Users/Roman/Documents/Reactors/GERMAN_DEUTSCH.m3u"));
+
+//    playlist->addMedia(QUrl::fromLocalFile(qApp->applicationDirPath() + "/intro.mts"));
     playlist->setCurrentIndex(1);
     MediaPlayer->setPlaylist(playlist);
     MediaPlayer->setVideoOutput(videoWidget);
@@ -369,6 +371,7 @@ void MainWindow::createSchemaView()
 
 void MainWindow::createSchemaScene()
 {
+    /* FOR TESTING PURPOSES ONLY
     SchemaConfig Config;
     QFile file(qApp->applicationDirPath() + "/SchemaConfig.xml");
     file.remove();
@@ -389,24 +392,20 @@ void MainWindow::createSchemaScene()
     SchemaCell* MeasurementCell = new SchemaCell(100, 40, 1255, 550);
     schemaItems.append(MeasurementCell);
 
-    valveItem1 = new SchemaValve(30, 45, 122.5, 350, -90);
+    SchemaValve* valveItem1 = new SchemaValve(30, 45, 122.5, 350, -90);
     schemaItems.append(valveItem1);
 
-   // ModelCSTR* CSTRModel;
-    // Creating CSTR Items
 
     for(int i = 1; i <= 5; i++){
         reactorItems.push_back(new SchemaCSTR(90, 120, i*200, i*70, 0.1, i-1));
-   //     CSTRModel = new ModelCSTR();
-    //    CSTRModel->setProperty("Level", 0.1);
+
         schemaItems.append(reactorItems.at(i-1));
+       // m_scene->appendReactorItemElementId(reactorItems.at(i-1)->property("ElementId").toInt());
     }
 
-  //  ModelFlowmeter* FlowmeterModel = new ModelFlowmeter();
 
-  //  Q_UNUSED(FlowmeterModel)
 
-    flowmeterItem = new SchemaFlowmeter(25, 200, 125, 50, 0);
+    SchemaFlowmeter* flowmeterItem = new SchemaFlowmeter(25, 200, 125, 50, 0);
 
     schemaItems.append(flowmeterItem);
 
@@ -434,18 +433,37 @@ void MainWindow::createSchemaScene()
         m_scene->addItem(item);
         Config.serializeObject(item, &file);
     }
+    */
 }
 
 void MainWindow::initControl()
 {
 
-    Control->reactorItems = &reactorItems;
+    QList<int> *reactorItemsElementId = m_scene->getReactorItemsList();
 
-    for(int i=0; i < reactorItems.size(); i++)
-        Control->addItem(reactorItems.at(i));
 
-    Control->addItem(flowmeterItem);
-    Control->calcTau();
+    for(int i = 0; i < reactorItemsElementId->size() - 1; i++)
+    {
+        connect(m_scene->getItemByElementId(reactorItemsElementId->at(i)), SIGNAL(startedFeed()),
+                m_scene->getItemByElementId(reactorItemsElementId->at(i+1)), SLOT(fill()));
+    }
+
+    connect(m_scene->getItemByElementId(reactorItemsElementId->last()), SIGNAL(filled()),
+            this, SLOT(Run()));
+
+    //Control->addItem(flowmeterItem);
+    SchemaItem* flowmeterItem = m_scene->getItemByElementId(m_scene->getFlowmeterItemElementId());
+
+    connect(flowmeterItem, SIGNAL(establishedFlowrate(qreal)),
+            Control, SLOT(setFlowrate(qreal)));
+    //Control->calcTau();
+
+
+    foreach(SchemaItem *item, m_scene->schemaItems()) {
+        if(item != flowmeterItem)
+            connect(flowmeterItem, SIGNAL(establishedFlowrate(qreal)),
+                    item, SLOT(setFlowrate(qreal)));
+    }
 
     if(thread) thread->deleteLater();
 
@@ -460,14 +478,18 @@ void MainWindow::initControl()
 
     connect(this, SIGNAL(destroyed()), thread, SLOT(quit()));
 
-    connect(valveItem1, SIGNAL(FlowIncreased()), Control, SLOT(flowrate_increase()));
-    connect(valveItem1, SIGNAL(FlowDecreased()), Control, SLOT(flowrate_decrease()));
+    SchemaItem* valveItem = m_scene->getItemByElementId(m_scene->getValveItemElementId());
+
+   // connect(valveItem, SIGNAL(FlowIncrease()), Control, SLOT(flowrate_increased()));
+   // connect(valveItem, SIGNAL(FlowDecrease()), Control, SLOT(flowrate_decreased()));
+
+    connect(valveItem, SIGNAL(FlowrateChanged(qreal)), flowmeterItem, SLOT(setFlowrate(qreal)));
 
 
-    connect(Control, SIGNAL(setLevel()), reactorItems.at(0), SLOT(fill()));
+    connect(Control, SIGNAL(setLevel()), m_scene->getItemByElementId(reactorItemsElementId->first()), SLOT(fill()));
 
     connect(Control, SIGNAL(doSim()), this, SLOT(updateWidgets()));
-    connect(Control, SIGNAL(startSim()), this, SLOT(Run()));
+  //  connect(Control, SIGNAL(startSim()), this, SLOT(Run())); // Connect the last CSTR
 
     EventLog << tr("Schema controls are initialized");
 
@@ -487,13 +509,14 @@ void MainWindow::initControl()
     EventLog << tr("Parameter estimation is now available");
 }
 
-void MainWindow::loadSceneFromFile()
+void MainWindow::loadSceneFromFile(const QString &filename)
 {
 
     SchemaConfig Config;
-    QFile file(qApp->applicationDirPath() + "/SchemaConfig.xml");
+    //QFile file(qApp->applicationDirPath() + "/SchemaConfig.xml");
+    QFile file(filename);
 
-    QGraphicsScene* scene = Config.deserializeScene(&file, this);
+    SchemaScene* scene = Config.deserializeScene(&file, this);
 
     this->graphicsView->setScene(scene);
 
@@ -502,43 +525,20 @@ void MainWindow::loadSceneFromFile()
 
     m_scene = scene;
 
-}
-void MainWindow::createToolBars()
-{
-    fileToolBar = addToolBar(tr("File"));
-    fileToolBar->addAction(newAct);
-    fileToolBar->addAction(saveAct);
-    fileToolBar->addAction(printAct);
-    fileToolBar->setProperty("objectName", QString("fileToolBar"));
+    if(m_isStarted)
+        EventLog << tr("Loaded the Schema file: %1").arg(filename);
+    else
+        EventLog << tr("Loaded the default Schema");
 
-    editToolBar = addToolBar(tr("Edit"));
-    editToolBar->addAction(undoAct);
-    editToolBar->setProperty("objectName", QString("editToolBar"));
-}
-void MainWindow::newFile()
-{
-/*
-    SchemaView* graphicsViewNew = new SchemaView();
-    QGraphicsScene* m_sceneNew = new QGraphicsScene();
-    graphicsViewNew->setScene(m_sceneNew);
-    graphicsViewNew->viewport()->installEventFilter(this);
-    graphicsViewNew->setRenderHint(QPainter::Antialiasing);
-
-    this->setCentralWidget(graphicsViewNew);
-
-    */
-    //this->adjustSize();
-    loadSceneFromFile();
+    if(thread){
+        thread->exit();
+        EventLog << tr("Active playback was terminated, please, load the playback data again");
+    }
 }
 
-void MainWindow::open()
+void MainWindow::loadSimDataFromFile(const QString &filename)
 {
-
-    QString QfileName = QFileDialog::getOpenFileName(
-                this, tr("Open File"), "",
-                tr("Simulation Playback files (*.xls)"));
-    if (QfileName.isNull()) return;
-    QFileInfo fileInfo(QfileName);
+    QFileInfo fileInfo(filename);
 
     QString pbParams = fileInfo.fileName().split(".").first();
 //  Extract the Flowrate from Filename (Temp KOCTIb/|b)
@@ -548,7 +548,7 @@ void MainWindow::open()
 //  the transcoded filename container must not go out of scope
 //  while it is still referenced by char* fileName
 //  QByteArray encodedFileName = QfileName.toUtf8();
-    QByteArray encodedFileName = QfileName.toLocal8Bit();
+    QByteArray encodedFileName = filename.toLocal8Bit();
     char* fileName = encodedFileName.data();
 
     struct st_row::st_row_data* row;
@@ -597,7 +597,7 @@ void MainWindow::open()
             Control->setPlaybackFileName(fileInfo.fileName());
             initControl();
 
-            EventLog << tr("Opened the playback file: %1").arg(QfileName)
+            EventLog << tr("Opened the playback file: %1").arg(filename)
                      << tr("Please, set the volume flowrate %1 L/hr"
                                " to begin the simulation playback").arg(pbFlowrate);
 
@@ -609,13 +609,66 @@ void MainWindow::open()
     {
         perror("File open failure");
         QMessageBox::warning(this, tr("File open failure"),
-                             tr("Failed to open %1").arg(QfileName));
+                             tr("Failed to open %1").arg(filename));
     }
+}
+void MainWindow::createToolBars()
+{
+    fileToolBar = addToolBar(tr("File"));
+    fileToolBar->addAction(newAct);
+    fileToolBar->addAction(saveAct);
+    fileToolBar->addAction(printAct);
+    fileToolBar->setProperty("objectName", QString("fileToolBar"));
+
+    editToolBar = addToolBar(tr("Edit"));
+    editToolBar->addAction(undoAct);
+    editToolBar->setProperty("objectName", QString("editToolBar"));
+}
+void MainWindow::newFile()
+{
+/*
+    SchemaView* graphicsViewNew = new SchemaView();
+    QGraphicsScene* m_sceneNew = new QGraphicsScene();
+    graphicsViewNew->setScene(m_sceneNew);
+    graphicsViewNew->viewport()->installEventFilter(this);
+    graphicsViewNew->setRenderHint(QPainter::Antialiasing);
+
+    this->setCentralWidget(graphicsViewNew);
+
+    */
+    //this->adjustSize();
+    loadSceneFromFile();
+}
+
+void MainWindow::open()
+{
+
+    QString fileName = QFileDialog::getOpenFileName(
+                this, tr("Open File"), "",
+                tr("Reactors Lab files (*.xls *.xml);;"
+                   "Simulation playback files (*.xls);;"
+                   "Schema files (*.xml)"));
+    if (fileName.isNull()) return;
+    QFileInfo FileInfo(fileName);
+    if(FileInfo.suffix() == "xls")
+        loadSimDataFromFile(fileName);
+    else if(FileInfo.suffix() == "xml")
+        loadSceneFromFile(fileName);
+
+
 }
 
 void MainWindow::save()
 {
-
+    SchemaConfig Config;
+    QString fileName = QFileDialog::getSaveFileName(
+                this, tr("Save File As"), "",
+                tr("Schema files (*.xml)"));
+    if (fileName.isNull()) return;
+    QFile file(fileName);
+    foreach(SchemaItem* item, m_scene->schemaItems()) {
+        Config.serializeObject(item, &file);
+    }
 }
 
 void MainWindow::print()

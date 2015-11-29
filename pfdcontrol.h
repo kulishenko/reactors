@@ -20,8 +20,8 @@ class PFDControl : public QObject
 public:
     explicit PFDControl(QObject *parent = 0);
     ~PFDControl();
-    QVector<SchemaCSTR*> *reactorItems;
-    void addItem(SchemaItem *item);
+//    QVector<SchemaCSTR*> *reactorItems;
+//    void addItem(SchemaItem *item);
     void calcTau();
     void setNumCascade(int Value);
     qreal getCurrentTime();
@@ -55,8 +55,8 @@ signals:
     void started();
 public slots:
     void tick();
-    void flowrate_increase();
-    void flowrate_decrease();
+    void flowrate_increased();
+    void flowrate_decreased();
     void Start();
     void setFlowrate(qreal Value);
     void setPlaybackFlowrate(qreal Value);

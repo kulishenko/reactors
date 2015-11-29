@@ -55,5 +55,6 @@
         <file>qss_icons/rc/up_arrow_disabled.png</file>
         <file>qss_icons/rc/Vmovetoolbar.png</file>
         <file>qss_icons/rc/Vsepartoolbar.png</file>
+        <file>resources/SchemaCascadeCSTR.xml</file>
     </qresource>
 </RCC>

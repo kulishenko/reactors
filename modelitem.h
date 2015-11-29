@@ -9,6 +9,7 @@ class ModelItem : public QObject
     Q_PROPERTY(qreal InletFlowrate MEMBER m_InletFlowrate READ getInletFlowrate WRITE setInletFlowrate)
     Q_PROPERTY(qreal MaxFlowrate MEMBER m_MaxFlowrate READ getMaxFlowrate WRITE setMaxFlowrate)
     Q_PROPERTY(int ElementId MEMBER m_ElementId READ getElementId CONSTANT)
+    friend class SchemaCSTR;
 public:
     explicit ModelItem(QObject *parent = 0);
     ~ModelItem();
@@ -20,7 +21,7 @@ private:
 signals:
 
 public slots:
-private slots:
+protected slots:
     void setInletFlowrate(const qreal Value);
     qreal getInletFlowrate() const;
     void setMaxFlowrate(const qreal Value);
