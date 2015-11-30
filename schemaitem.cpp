@@ -96,3 +96,9 @@ void SchemaItem::activate()
 {
     setActive(true);
 }
+
+
+void SchemaItem::deactivate()
+{
+    m_isActive = false;
+}

@@ -47,6 +47,7 @@ signals:
 public slots:
     void setFlowrate(const qreal Value);
     void activate();
+    void deactivate();
 };
 
 #endif // SCHEMAITEM_H

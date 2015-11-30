@@ -23,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //bgColor = QColor::fromRgb(240, 240, 240);
     bgColor = Qt::gray;
-    //qRegisterMetaType<RunMode>("RunMode");
 
     ui->setupUi(this);
 
@@ -31,8 +30,6 @@ MainWindow::MainWindow(QWidget *parent) :
     createMenus();
     createToolBars();
     createDockWindows();
-
-    //createSchemaScene();
     createSchemaView();
     loadSceneFromFile();
 
@@ -454,12 +451,11 @@ void MainWindow::initControl()
     connect(m_scene->getItemByElementId(reactorItemsElementId->last()), SIGNAL(filled()),
             this, SLOT(Run()));
 
-    //Control->addItem(flowmeterItem);
     SchemaItem* flowmeterItem = m_scene->getItemByElementId(m_scene->getFlowmeterItemElementId());
 
     connect(flowmeterItem, SIGNAL(establishedFlowrate(qreal)),
             Control, SLOT(setFlowrate(qreal)));
-    //Control->calcTau();
+
 
 
     foreach(SchemaItem *item, m_scene->schemaItems()) {
@@ -492,6 +488,8 @@ void MainWindow::initControl()
     connect(Control, SIGNAL(setLevel()), MediaPlayer, SLOT(play()));
 
     connect(Control, SIGNAL(setLevel()), m_scene->getItemByElementId(reactorItemsElementId->first()), SLOT(fill()));
+
+    connect(Control, SIGNAL(setLevel()), valveItem, SLOT(deactivate()));
 
     connect(Control, SIGNAL(doSim()), this, SLOT(updateWidgets()));
   //  connect(Control, SIGNAL(startSim()), this, SLOT(Run())); // Connect the last CSTR
@@ -631,17 +629,7 @@ void MainWindow::createToolBars()
 }
 void MainWindow::newFile()
 {
-/*
-    SchemaView* graphicsViewNew = new SchemaView();
-    QGraphicsScene* m_sceneNew = new QGraphicsScene();
-    graphicsViewNew->setScene(m_sceneNew);
-    graphicsViewNew->viewport()->installEventFilter(this);
-    graphicsViewNew->setRenderHint(QPainter::Antialiasing);
 
-    this->setCentralWidget(graphicsViewNew);
-
-    */
-    //this->adjustSize();
     loadSceneFromFile();
 }
 
@@ -1057,19 +1045,15 @@ void MainWindow::exportFinished(bool result) {
 
 void MainWindow::onlineMode()
 {
-    //m_RunMode = RunMode::Online;
     SchemaItem::SchemaMode = SchemaItem::RunMode::Online;
 }
 
 void MainWindow::offlineMode()
 {
-    //m_RunMode = RunMode::Offline;
     SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
-
 }
 
 void MainWindow::editMode()
 {
-    //m_RunMode = RunMode::Edit;
     SchemaItem::SchemaMode = SchemaItem::RunMode::Edit;
 }
