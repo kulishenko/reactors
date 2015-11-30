@@ -26,7 +26,7 @@ public:
     enum class SchemaItemType {SchemaCSTR, SchemaPFR};
     int getIntType(const SchemaItemType t);
     QMap<QString, SchemaItemType> ElementItemTypes;
-    bool serializeObject(QObject *object, QIODevice *output);
+    bool serializeObject(QObject *object, QIODevice *output); // Deprecated
     template<class T>
     T* deserialize(QDomElement *element, SchemaScene* parent = 0){
         T* object = new T();
@@ -37,6 +37,7 @@ public:
         return NULL;
     }
     SchemaScene* deserializeScene(QIODevice* input, QObject *parent = 0);
+    bool serializeScene(SchemaScene *scene, QIODevice *output);
 private:
     void ParseXMLConfig();
     bool _deserializeObject(QDomElement *element, QObject *object);

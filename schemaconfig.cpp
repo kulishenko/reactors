@@ -44,6 +44,7 @@ void SchemaConfig::ParseXMLConfig(){
     QXmlStreamReader xml(file);
 }
 bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
+    // Deprecated
     QDomDocument doc;
     QDomElement root;
     QString infile;
@@ -157,5 +158,40 @@ SchemaScene* SchemaConfig::deserializeScene(QIODevice *input, QObject *parent)
     input->close();
 
     return Scene;
+}
+
+bool SchemaConfig::serializeScene(SchemaScene *scene, QIODevice *output)
+{
+    QDomDocument doc;
+    QDomElement root;
+
+    output->open(QIODevice::WriteOnly | QIODevice::Text);
+
+    root = doc.createElement("SchemaItems");
+    doc.appendChild(root);
+
+    foreach(SchemaItem* object, scene->schemaItems()){
+        QDomElement objectRoot = doc.createElement(object->metaObject()->className());
+        root.appendChild(objectRoot);
+
+        for(int i = 0; i < object->metaObject()->propertyCount(); i++)
+        {
+            QMetaProperty prop = object->metaObject()->property(i);
+            QString propName = prop.name();
+            if(propName == "objectName")
+                continue;
+            QDomElement el = doc.createElement(propName);
+            QVariant value = object->property(propName.toLocal8Bit().data());
+
+            QDomText txt = doc.createTextNode( value.toString() );
+            qDebug() << propName + " " + value.toString();
+            el.appendChild(txt);
+            objectRoot.appendChild(el);
+        }
+    }
+    QTextStream stream(output);
+    doc.save(stream, 2);
+    output->close();
+    return true;
 }
 

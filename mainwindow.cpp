@@ -659,9 +659,8 @@ void MainWindow::save()
                 tr("Schema files (*.xml)"));
     if (fileName.isNull()) return;
     QFile file(fileName);
-    foreach(SchemaItem* item, m_scene->schemaItems()) {
-        Config.serializeObject(item, &file);
-    }
+
+    Config.serializeScene(m_scene, &file);
 }
 
 void MainWindow::print()
