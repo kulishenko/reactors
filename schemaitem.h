@@ -4,13 +4,11 @@
 #include <schemaport.h>
 #include <schemascene.h>
 #include <QObject>
-//#include <pfdcontrol.h>
 #include <QGraphicsObject>
 #include <QGraphicsSceneMouseEvent>
 #include <QtMath>
 #include <QCursor>
 
-//class PFDControl;
 class SchemaScene;
 class SchemaItem  : public QObject, public QGraphicsPathItem {
 
@@ -24,7 +22,6 @@ public:
     SchemaItem();
     SchemaPort* OutletPort, *InletPort;
     SchemaItem* Descedant;
-//    PFDControl* PFD;
     virtual ~SchemaItem();
     enum class RunMode {Online, Offline, Edit};
     static int s_ElementId;
@@ -34,7 +31,7 @@ public:
     QString getItemType();
 private:
     int m_ElementId;
-//    qreal m_PosX, m_PosY; // Scene coordinates
+    bool m_isActive;
 protected:
     SchemaScene *p_parent;
     QPointF _startPos;
@@ -42,11 +39,14 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    bool isActive() const;
+    void setActive(bool active);
 signals:
     void moved();
     void clicked();
 public slots:
     void setFlowrate(const qreal Value);
+    void activate();
 };
 
 #endif // SCHEMAITEM_H

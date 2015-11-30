@@ -54,7 +54,8 @@ void SchemaValve::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         setCursor(Qt::DragMoveCursor);
         _startPos = event->pos();
         setOpacity(0.75);
-    } else {
+        event->accept();
+    } else if(isActive()) {
         qDebug() << "Valve clicked:" << QString::number(event->pos().x());
         if(event->pos().x() >= m_Length * 0.5 && m_Position <= 0.9){
             m_Position += 0.1 ;
@@ -68,11 +69,9 @@ void SchemaValve::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         //SchemaFlowmeter *tmp = static_cast<SchemaFlowmeter*>(Descedant);
         //tmp->setFlowrate(m_Position * MaxFlow);
         emit FlowrateChanged(m_Position * MaxFlow);
+        event->ignore();
 
-        event->accept();
-        //qDebug() << "Set Flowrate:" << QString::number(tmp->getFlowrateSet());
-
-    } event->ignore();
+    } else event->ignore();
 }
 void SchemaValve::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {

@@ -309,10 +309,13 @@ void MainWindow::createDockWindows()
     MediaPlayer = new QMediaPlayer(this);
     QMediaPlaylist* playlist = new QMediaPlaylist(this);
 
-//    playlist->addMedia(QUrl::fromLocalFile(qApp->applicationDirPath() + "/intro.mts"));
+    playlist->addMedia(QUrl::fromLocalFile(qApp->applicationDirPath() + "/00332.wmv"));
     playlist->setCurrentIndex(1);
+    playlist->setPlaybackMode(QMediaPlaylist::Loop);
     MediaPlayer->setPlaylist(playlist);
     MediaPlayer->setVideoOutput(videoWidget);
+    MediaPlayer->setMuted(true);
+
     dock->setWidget(videoWidget);
     dock->setMinimumHeight(150);
 
@@ -463,6 +466,7 @@ void MainWindow::initControl()
         if(item != flowmeterItem)
             connect(flowmeterItem, SIGNAL(establishedFlowrate(qreal)),
                     item, SLOT(setFlowrate(qreal)));
+        item->activate();
     }
 
     if(thread) thread->deleteLater();
@@ -485,6 +489,7 @@ void MainWindow::initControl()
 
     connect(valveItem, SIGNAL(FlowrateChanged(qreal)), flowmeterItem, SLOT(setFlowrate(qreal)));
 
+    connect(Control, SIGNAL(setLevel()), MediaPlayer, SLOT(play()));
 
     connect(Control, SIGNAL(setLevel()), m_scene->getItemByElementId(reactorItemsElementId->first()), SLOT(fill()));
 
@@ -673,7 +678,28 @@ void MainWindow::save()
 
 void MainWindow::print()
 {
+    QPrinter printer;
 
+    QPrintDialog dialog(&printer, this);
+    dialog.setWindowTitle(tr("Print Document"));
+  /*  if (this->textCursor().hasSelection())
+        dialog.addEnabledOption(QAbstractPrintDialog::PrintSelection);*/
+    if (dialog.exec() != QDialog::Accepted) {
+        return;
+    }
+
+    QPainter painter;
+    painter.begin(&printer);
+    double xscale = printer.pageRect().width()/double(graphicsView->width());
+    double yscale = printer.pageRect().height()/double(graphicsView->height());
+    double scale = qMin(xscale, yscale);
+    painter.translate(printer.paperRect().x() + printer.pageRect().width()/2,
+                       printer.paperRect().y() + printer.pageRect().height()/2);
+    painter.scale(scale, scale);
+    painter.translate(-width()/2, -height()/2);
+
+    graphicsView->render(&painter);
+    painter.end();
 }
 
 void MainWindow::undo()
@@ -795,7 +821,7 @@ void MainWindow::Run()
 {
 
     Control->Start();
-    MediaPlayer->play();
+    //MediaPlayer->play();
 
     EventLog << tr("Simulation playback started");
 }
@@ -999,7 +1025,8 @@ void MainWindow::loadSettings()
         restoreState(settings.value("state", QByteArray()).toByteArray());
     if(settings.contains("view_scale")){
         QPointF view_scale = settings.value("view_scale").toPointF();
-        graphicsView->scale(view_scale.x(),view_scale.y());
+        if (view_scale.x() > 0.25 && view_scale.y() > 0.25)
+            graphicsView->scale(view_scale.x(), view_scale.y());
     }
     else
         graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);

@@ -6,7 +6,7 @@
 int SchemaItem::s_ElementId = 0;
 SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
 SchemaItem::SchemaItem() : QObject(), OutletPort(nullptr), InletPort(nullptr),
-    Descedant(nullptr), m_ElementId(s_ElementId++), p_parent(nullptr), m_Flowrate(0)
+    Descedant(nullptr), m_ElementId(s_ElementId++), m_isActive(false), p_parent(nullptr), m_Flowrate(0)
 {
     setPen(QPen(Qt::black, 1.5f, Qt::SolidLine, Qt::RoundCap));
 }
@@ -78,4 +78,21 @@ QString SchemaItem::getItemType()
     else type = "SchemaItem";
 
     return type;
+}
+
+bool SchemaItem::isActive() const
+{
+    return m_isActive;
+}
+
+void SchemaItem::setActive(bool active)
+{
+    m_isActive = active;
+    QGraphicsPathItem::setActive(active);
+}
+
+
+void SchemaItem::activate()
+{
+    setActive(true);
 }
