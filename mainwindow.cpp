@@ -238,6 +238,52 @@ void MainWindow::createActions()
     alignmentGroup->addAction(justifyAct);
     alignmentGroup->addAction(centerAct);
     leftAlignAct->setChecked(true);
+
+
+    // Schema Drawing Actions
+    addCSTRAct = new QAction(QIcon(":/images/ReactorCSTR.png"),tr("&Add CSTR"), this);
+    addCSTRAct->setStatusTip(tr("Add a continuous stirred-tank reactor to the schema"));
+    connect(addCSTRAct, &QAction::triggered, [this](){
+        editMode();
+        m_scene->addItem(new SchemaCSTR);
+    });
+
+    addPFRAct = new QAction(tr("&Add PFR"), this);
+    addPFRAct->setStatusTip(tr("Add a Plug-Flow reactor to the schema"));
+    connect(addPFRAct, &QAction::triggered, [this](){
+        editMode();
+        m_scene->addItem(new SchemaPFR);
+    });
+
+    addStreamAct = new QAction(tr("&Add Stream"), this);
+    addStreamAct->setStatusTip(tr("Add a Stream to the schema"));
+    connect(addStreamAct, &QAction::triggered, [this](){
+        editMode();
+        m_scene->addItem(new SchemaStream);
+    });
+
+    addValveAct = new QAction(tr("&Add Valve"), this);
+    addValveAct->setStatusTip(tr("Add a Valve to the schema"));
+    connect(addValveAct, &QAction::triggered, [this](){
+        editMode();
+        m_scene->addItem(new SchemaValve);
+    });
+
+    addFlowmeterAct = new QAction(tr("&Add Flowmeter"), this);
+    addFlowmeterAct->setStatusTip(tr("Add a Flowmeter to the schema"));
+    connect(addFlowmeterAct, &QAction::triggered, [this](){
+        editMode();
+        m_scene->addItem(new SchemaFlowmeter);
+    });
+
+    addCellAct = new QAction(tr("&Add Cell"), this);
+    addCellAct->setStatusTip(tr("Add a Measurement Cell to the schema"));
+    connect(addCellAct, &QAction::triggered, [this](){
+        editMode();
+        m_scene->addItem(new SchemaCell);
+    });
+
+
 }
 
 void MainWindow::createMenus()
@@ -328,6 +374,8 @@ void MainWindow::createDockWindows()
     plotWidget->xAxis->setLabel(tr("Time, s"));
     plotWidget->yAxis->setLabel(tr("Conductivity, mS/cm"));
     plotWidget->rescaleAxes();
+    plotWidget->setBackground(Qt::gray);
+
     dock->setWidget(plotWidget);
     dock->setMinimumWidth(500);
     dock->setMaximumHeight(400);
@@ -625,6 +673,12 @@ void MainWindow::createToolBars()
 
     editToolBar = addToolBar(tr("Edit"));
     editToolBar->addAction(undoAct);
+    editToolBar->addAction(addStreamAct);
+    editToolBar->addAction(addValveAct);
+    editToolBar->addAction(addFlowmeterAct);
+    editToolBar->addAction(addCSTRAct);
+    editToolBar->addAction(addPFRAct);
+    editToolBar->addAction(addCellAct);
     editToolBar->setProperty("objectName", QString("editToolBar"));
 }
 void MainWindow::newFile()

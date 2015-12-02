@@ -56,5 +56,7 @@
         <file>qss_icons/rc/Vmovetoolbar.png</file>
         <file>qss_icons/rc/Vsepartoolbar.png</file>
         <file>resources/SchemaCascadeCSTR.xml</file>
+        <file>images/ReactorCSTR.png</file>
+        <file>images/reactors.ico</file>
     </qresource>
 </RCC>

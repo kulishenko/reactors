@@ -33,6 +33,20 @@ SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qrea
     p_Electrode = new QGraphicsRectItem(Width * 0.775, Height * 0.2, Width * 0.05, Height * 1.3, this);
     p_Electrode->setBrush(Qt::black);
 
+
+    // Drawing Motor Block
+    p_Button = new QGraphicsEllipseItem(this);
+    int MotorRadius = 40;
+    p_Button->setRect(QRect(-Width/2+MotorRadius/2, -80, -MotorRadius, -MotorRadius));
+    p_Button->setRotation(180);
+    p_Button->setBrush(Qt::white);
+
+    p_ButtonLabel = new QGraphicsSimpleTextItem("S", p_Button);
+    p_ButtonLabel->setPos(p_Button->boundingRect().topLeft());
+    p_ButtonLabel->moveBy(p_ButtonLabel->boundingRect().width()*2, 0);
+    QFont ButtonLabelFont("Calibri", 22, QFont::Bold);
+    p_ButtonLabel->setFont(ButtonLabelFont);
+
     setRotation(Angle);
     setPos(PosX, PosY);
 

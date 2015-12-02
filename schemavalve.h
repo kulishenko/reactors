@@ -14,7 +14,7 @@ class SchemaValve : public SchemaItem
     Q_OBJECT
   //  Q_INTERFACES(QGraphicsItem)
 public:
-    SchemaValve(qreal Width = 30.0f, qreal Length = 45.0f, qreal PosX = 122.5f, qreal PosY = 350.0f, qreal Angle = -90);
+    SchemaValve(qreal Width = 30.0f, qreal Length = 45.0f, qreal PosX = 0.0f, qreal PosY = 0.0f, qreal Angle = -90);
     ~SchemaValve();
     qreal m_Position;
     qreal MaxFlow;

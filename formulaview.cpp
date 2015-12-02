@@ -83,7 +83,7 @@ void FormulaView::renderFormula( QPainter *painter ) const
     else
     {
         doc.setBackgroundColor( this->palette().color(QPalette::Background) );
-        doc.setForegroundColor( Qt::black );
+        doc.setForegroundColor( this->palette().text().color());
     }
     doc.setBaseFontPointSize( d_fontSize );
 //#ifdef MML_TEST

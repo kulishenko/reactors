@@ -48,6 +48,7 @@
 #include "modelflowmeter.h"
 #include "schemaconfig.h"
 #include "schemascene.h"
+#include <schemapfr.h>
 #include <qwt-mml/qwt_mml_document.h>
 #include <formulaview.h>
 //#include <QGLWidget>
@@ -197,6 +198,14 @@ private:
     QAction *aboutAct;
     QAction *aboutQtAct;
     QLabel *infoLabel;
+
+
+    QAction *addCSTRAct;
+    QAction *addPFRAct;
+    QAction *addFlowmeterAct;
+    QAction *addValveAct;
+    QAction *addStreamAct;
+    QAction *addCellAct;
 
     QCustomPlot *plotWidget;
     QTableWidget *tableWidget;
