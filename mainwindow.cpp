@@ -954,6 +954,7 @@ void MainWindow::paramEstimation(){
     resPlotWidget->setMinimumWidth(600);
     resPlotWidget->setMinimumHeight(400);
     resPlotWidget->legend->setVisible(true);
+    resPlotWidget->setBackground(Qt::gray);
     resPlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     resPlotWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
