@@ -2,11 +2,16 @@
 #include <schemacstr.h>
 #include <schemaflowmeter.h>
 #include <schemavalve.h>
+#include <schemapipeline.h>
+#include <schemapfr.h>
+#include <schemastream.h>
 
 int SchemaItem::s_ElementId = 0;
+bool SchemaItem::AttachMode = false;
 SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
-SchemaItem::SchemaItem() : QObject(), OutletPort(nullptr), InletPort(nullptr),
-    Descedant(nullptr), m_ElementId(s_ElementId++), m_isActive(false), p_parent(nullptr), m_Flowrate(0)
+SchemaItem::SchemaItem() : QObject(), m_ElementId(s_ElementId++),
+    m_isActive(false), m_ItemType(getItemType()),
+    p_OutletPort(nullptr), p_InletPort(nullptr), p_Descedant(nullptr), p_parent(nullptr), m_Flowrate(0)
 {
     setPen(QPen(Qt::black, 1.5f, Qt::SolidLine, Qt::RoundCap));
 }
@@ -39,10 +44,14 @@ void SchemaItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 void SchemaItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
+    emit clicked(m_ElementId);
     if(SchemaMode == RunMode::Edit) {
-        setCursor(Qt::DragMoveCursor);
-        _startPos = event->pos();
-        setOpacity(0.75);
+        if(AttachMode) ;
+
+        else
+            setCursor(Qt::DragMoveCursor);
+            _startPos = event->pos();
+            setOpacity(0.75);
     } else
         event->ignore();
 
@@ -73,8 +82,11 @@ QString SchemaItem::getItemType()
     // KOCTbI/|b
     QString type;
     if (dynamic_cast<SchemaCSTR*>(this)) type = "SchemaCSTR";
+    else if(dynamic_cast<SchemaPFR*>(this)) type = "SchemaPFR";
+    else if(dynamic_cast<SchemaPipeline*>(this)) type = "SchemaPipeline";
     else if(dynamic_cast<SchemaValve*>(this)) type = "SchemaValve";
     else if(dynamic_cast<SchemaFlowmeter*>(this)) type = "SchemaFlowmeter";
+    else if(dynamic_cast<SchemaStream*>(this)) type = "SchemaStream";
     else type = "SchemaItem";
 
     return type;
@@ -101,4 +113,37 @@ void SchemaItem::activate()
 void SchemaItem::deactivate()
 {
     m_isActive = false;
+}
+
+
+void SchemaItem::setDescedant(SchemaItem *item)
+{
+    p_Descedant = item;
+}
+
+
+SchemaItem *SchemaItem::getDescedant()
+{
+    return p_Descedant;
+}
+
+SchemaPort *SchemaItem::getInletPort()
+{
+    return p_InletPort;
+}
+
+SchemaPort *SchemaItem::getOutletPort()
+{
+    return p_OutletPort;
+}
+
+
+void SchemaItem::setInletPort(SchemaPort *port)
+{
+    p_InletPort = port;
+}
+
+void SchemaItem::setOutletPort(SchemaPort *port)
+{
+    p_OutletPort = port;
 }

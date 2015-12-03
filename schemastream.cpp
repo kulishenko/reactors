@@ -13,9 +13,9 @@ SchemaStream::SchemaStream(qreal Size, qreal PosX, qreal PosY, qreal Angle) : Sc
     setPen( QPen(Qt::black) );
     setBrush( Qt::black );
 
-    OutletPort = new SchemaPort(Size*0.75, Size/2, this);
+    setOutletPort(new SchemaPort(Size*0.75, Size/2, this));
+    setInletPort(new SchemaPort(0, Size/2, this));
 
-    InletPort = new SchemaPort(0, Size/2, this);
     setRotation(Angle);
     setPos(PosX, PosY);
 

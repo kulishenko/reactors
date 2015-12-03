@@ -4,9 +4,6 @@
 #include <schemaitem.h>
 #include <QDebug>
 #include <QMultiMap>
-//#include <schemacstr.h>
-//#include <schemavalve.h>
-//#include <schemaflowmeter.h>
 
 class SchemaItem;
 class SchemaScene : public QGraphicsScene
@@ -20,14 +17,19 @@ public:
     int getValveItemElementId() const;
     int getFlowmeterItemElementId() const;
     QList<int> *getReactorItemsList();
+    void sequencing();
+    QList<int> getItemsControlSeq(const QStringList &ItemType);
 private:
     void addItemToMap(const QString &ItemType, const SchemaItem *item);
     QList<int> *m_List;
     QList<SchemaItem* > m_schemaItems;
-//    int m_valveItemElementId;
-//    int m_flowmeterItemElementId;
-    QList<int> m_reactorItemsElementId;
-    QMultiMap<QString, int> m_ItemTypes;
+    QMap<int, QString> m_ItemTypes;
+    QVector<int> *m_schemaItemChain;
+    SchemaItem *p_ItemFrom, *p_ItemTo;
+    int getNextPipelineElementId(const int prevPipelineItemElementId) const;
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // SCHEMASCENE_H

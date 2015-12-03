@@ -15,7 +15,7 @@ SchemaPipeline::SchemaPipeline(SchemaItem* From, SchemaItem* To) :
     drawLine();
 
     // Pointer to the next item in schema
-    From->Descedant = To;
+    From->setDescedant(To);
     connect(From, SIGNAL(moved()), this, SLOT(drawLine()));
     connect(To, SIGNAL(moved()), this, SLOT(drawLine()));
 }
@@ -51,21 +51,21 @@ void SchemaPipeline::setToElementId(int Value)
 
 void SchemaPipeline::drawLine()
 {
-    if(!m_From->Descedant) m_From->Descedant = m_To; // Remove (make via SIGNAL-SLOT)
+    if(!m_From->getDescedant()) m_From->setDescedant(m_To); // Remove (make via SIGNAL-SLOT)
 
     QPainterPath* OldPath;
     OldPath = LinePath;
     LinePath = new QPainterPath();
 
-    QPointF FromPos = m_From->OutletPort->scenePos();
-    QPointF ToPos = m_To->InletPort->scenePos();
+    QPointF FromPos = m_From->getOutletPort()->scenePos();
+    QPointF ToPos = m_To->getInletPort()->scenePos();
 
     LinePath->moveTo(FromPos);
     if((FromPos.x() != ToPos.x()) || (FromPos.y() != ToPos.y()))
     {
-        if(fabs(m_From->OutletPort->getAngle() - m_To->InletPort->getAngle()) > 1e-2)
+        if(fabs(m_From->getOutletPort()->getAngle() - m_To->getInletPort()->getAngle()) > 1e-2)
             LinePath->lineTo(ToPos.x(), FromPos.y());
-        else if(fmod(m_From->OutletPort->getAngle(), 180) < 1e-2)
+        else if(fmod(m_From->getOutletPort()->getAngle(), 180) < 1e-2)
         {
             LinePath->lineTo((ToPos.x() + FromPos.x())/2,  FromPos.y());
             LinePath->lineTo((ToPos.x() + FromPos.x())/2,  ToPos.y());

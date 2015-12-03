@@ -241,28 +241,28 @@ void MainWindow::createActions()
 
 
     // Schema Drawing Actions
-    addCSTRAct = new QAction(QIcon(":/images/ReactorCSTR.png"),tr("&Add CSTR"), this);
+    addCSTRAct = new QAction(QIcon(":/images/iconCSTR.ico"), tr("&Add CSTR"), this);
     addCSTRAct->setStatusTip(tr("Add a continuous stirred-tank reactor to the schema"));
     connect(addCSTRAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaCSTR);
     });
 
-    addPFRAct = new QAction(tr("&Add PFR"), this);
+    addPFRAct = new QAction(QIcon(":/images/iconPFR.ico"), tr("&Add PFR"), this);
     addPFRAct->setStatusTip(tr("Add a Plug-Flow reactor to the schema"));
     connect(addPFRAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaPFR);
     });
 
-    addStreamAct = new QAction(tr("&Add Stream"), this);
+    addStreamAct = new QAction(QIcon(":/images/iconStream.ico"), tr("&Add Stream"), this);
     addStreamAct->setStatusTip(tr("Add a Stream to the schema"));
     connect(addStreamAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaStream);
     });
 
-    addValveAct = new QAction(tr("&Add Valve"), this);
+    addValveAct = new QAction(QIcon(":/images/iconValve.ico"), tr("&Add Valve"), this);
     addValveAct->setStatusTip(tr("Add a Valve to the schema"));
     connect(addValveAct, &QAction::triggered, [this](){
         editMode();
@@ -276,11 +276,24 @@ void MainWindow::createActions()
         m_scene->addItem(new SchemaFlowmeter);
     });
 
-    addCellAct = new QAction(tr("&Add Cell"), this);
+    addCellAct = new QAction(QIcon(":/images/iconCell.ico"), tr("&Add Cell"), this);
     addCellAct->setStatusTip(tr("Add a Measurement Cell to the schema"));
     connect(addCellAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaCell);
+    });
+
+    attachModeAct = new QAction(QIcon(":/images/iconAttach.ico"),tr("&Attach"), this);
+    attachModeAct->setStatusTip(tr("Toggle attach mode"));
+    attachModeAct->setCheckable(true);
+
+    connect(attachModeAct, &QAction::triggered, [this](){
+        editMode();
+        if(!SchemaItem::AttachMode) {
+            SchemaItem::AttachMode = true;
+        }
+        else
+            SchemaItem::AttachMode = false;
     });
 
 
@@ -486,17 +499,17 @@ void MainWindow::createSchemaScene()
 
 void MainWindow::initControl()
 {
+    m_scene->sequencing();
 
-    QList<int> *reactorItemsElementId = m_scene->getReactorItemsList();
+    QList<int> reactorItemsElementId = m_scene->getItemsControlSeq(QStringList() << "SchemaCSTR" << "SchemaPFR");
 
-
-    for(int i = 0; i < reactorItemsElementId->size() - 1; i++)
+    for(int i = 0; i < reactorItemsElementId.size() - 1; i++)
     {
-        connect(m_scene->getItemByElementId(reactorItemsElementId->at(i)), SIGNAL(startedFeed()),
-                m_scene->getItemByElementId(reactorItemsElementId->at(i+1)), SLOT(fill()));
+        connect(m_scene->getItemByElementId(reactorItemsElementId.at(i)), SIGNAL(startedFeed()),
+                m_scene->getItemByElementId(reactorItemsElementId.at(i+1)), SLOT(fill()));
     }
 
-    connect(m_scene->getItemByElementId(reactorItemsElementId->last()), SIGNAL(filled()),
+    connect(m_scene->getItemByElementId(reactorItemsElementId.last()), SIGNAL(filled()),
             this, SLOT(Run()));
 
     SchemaItem* flowmeterItem = m_scene->getItemByElementId(m_scene->getFlowmeterItemElementId());
@@ -535,7 +548,7 @@ void MainWindow::initControl()
 
     connect(Control, SIGNAL(setLevel()), MediaPlayer, SLOT(play()));
 
-    connect(Control, SIGNAL(setLevel()), m_scene->getItemByElementId(reactorItemsElementId->first()), SLOT(fill()));
+    connect(Control, SIGNAL(setLevel()), m_scene->getItemByElementId(reactorItemsElementId.first()), SLOT(fill()));
 
     connect(Control, SIGNAL(setLevel()), valveItem, SLOT(deactivate()));
 
@@ -564,10 +577,11 @@ void MainWindow::loadSceneFromFile(const QString &filename)
 {
 
     SchemaConfig Config;
-    //QFile file(qApp->applicationDirPath() + "/SchemaConfig.xml");
+
     QFile file(filename);
 
-    SchemaScene* scene = Config.deserializeScene(&file, this);
+    SchemaScene* scene = new SchemaScene(this);
+      //      Config.deserializeScene(&file, this);
 
     this->graphicsView->setScene(scene);
 
@@ -591,10 +605,17 @@ void MainWindow::loadSimDataFromFile(const QString &filename)
 {
     QFileInfo fileInfo(filename);
 
-    QString pbParams = fileInfo.fileName().split(".").first();
+    QStringList pbParams = fileInfo.fileName().split(".").first().split("-");
 //  Extract the Flowrate from Filename (Temp KOCTIb/|b)
-    int pbNumCascade = pbParams.split("-").at(1).toInt();
-    int pbFlowrate = pbParams.split("-").at(2).toInt();
+    int pbNumCascade, pbFlowrate;
+    if(pbParams.size() > 1) {
+        pbNumCascade = pbParams.at(1).toInt();
+        pbFlowrate = pbParams.at(2).toInt();
+    } else {
+        pbNumCascade = 1;
+        pbFlowrate = 50;
+    }
+
 
 //  the transcoded filename container must not go out of scope
 //  while it is still referenced by char* fileName
@@ -679,6 +700,7 @@ void MainWindow::createToolBars()
     editToolBar->addAction(addCSTRAct);
     editToolBar->addAction(addPFRAct);
     editToolBar->addAction(addCellAct);
+    editToolBar->addAction(attachModeAct);
     editToolBar->setProperty("objectName", QString("editToolBar"));
 }
 void MainWindow::newFile()
@@ -1109,5 +1131,7 @@ void MainWindow::offlineMode()
 
 void MainWindow::editMode()
 {
+    if(!editModeAct->isChecked())
+         editModeAct->setChecked(true);
     SchemaItem::SchemaMode = SchemaItem::RunMode::Edit;
 }

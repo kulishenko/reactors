@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     formulaview.cpp \
     schemaevent.cpp \
     schemascene.cpp \
-    schemapfr.cpp
+    schemapfr.cpp \
+    diffusemodel.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -80,7 +81,8 @@ HEADERS  += mainwindow.h \
     formulaview.h \
     schemaevent.h \
     schemascene.h \
-    schemapfr.h
+    schemapfr.h \
+    diffusemodel.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 

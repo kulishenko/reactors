@@ -43,7 +43,7 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
     Floater->setPos(boundingRect().bottomLeft());
     Floater->moveBy(0, -0.75 * Width + Pos * Height);
 
-    OutletPort = new SchemaPort(Width/2, -40, this);
+    setOutletPort(new SchemaPort(Width/2, -40, this));
     OutletPipe = new QGraphicsLineItem(Width/2,  -40, Width/2, 0, this);
     QPen gray;
     QBrush graybrush;
@@ -60,7 +60,7 @@ SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal Po
         Labels.at(i-1)->setOpacity(0.75);
     }
 
-    InletPort = new SchemaPort(Width/2, Height, this, 0);
+    setInletPort(new SchemaPort(Width/2, Height, this, 0));
 // TODO: Change to LinePath
     //OutletPipe = new QGraphicsPathItem(this);
 

@@ -207,6 +207,8 @@ private:
     QAction *addStreamAct;
     QAction *addCellAct;
 
+    QAction *attachModeAct;
+
     QCustomPlot *plotWidget;
     QTableWidget *tableWidget;
     QVideoWidget *videoWidget;

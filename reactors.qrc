@@ -58,5 +58,11 @@
         <file>resources/SchemaCascadeCSTR.xml</file>
         <file>images/ReactorCSTR.png</file>
         <file>images/reactors.ico</file>
+        <file>images/iconCSTR.ico</file>
+        <file>images/iconPFR.ico</file>
+        <file>images/iconValve.ico</file>
+        <file>images/iconStream.ico</file>
+        <file>images/iconCell.ico</file>
+        <file>images/iconAttach.ico</file>
     </qresource>
 </RCC>

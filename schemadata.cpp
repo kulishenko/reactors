@@ -151,7 +151,8 @@ qreal SchemaData::dim_dt(const size_t i) const
 }
 qreal SchemaData::Calibrate(qreal x) const
 {
-    x *= 1000; // Conversion to mkS/cm
+    x = (x < 10) ? x * 1000: x;
+  //  x *= 1000; // Conversion to mkS/cm
     return 2.3480623E-18 * pow(x, 5) - 1.3123250E-14 * pow(x, 4) + 2.7014011E-11 * pow(x, 3)
             - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-18;
 }

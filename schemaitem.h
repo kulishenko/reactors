@@ -20,19 +20,27 @@ class SchemaItem  : public QObject, public QGraphicsPathItem {
     Q_PROPERTY(int ElementId MEMBER m_ElementId)
 public:
     SchemaItem();
-    SchemaPort* OutletPort, *InletPort;
-    SchemaItem* Descedant;
     virtual ~SchemaItem();
     enum class RunMode {Online, Offline, Edit};
     static int s_ElementId;
     static RunMode SchemaMode;
+    static bool AttachMode;
     void setParent(SchemaScene* scene);
     SchemaScene* parent() const;
     QString getItemType();
+    void setDescedant(SchemaItem *item);
+    SchemaItem *getDescedant();
+    SchemaPort *getInletPort();
+    SchemaPort *getOutletPort();
+    void setInletPort(SchemaPort* port);
+    void setOutletPort(SchemaPort* port);
 private:
     int m_ElementId;
     bool m_isActive;
+    const QString m_ItemType;
+    SchemaPort* p_OutletPort, *p_InletPort;
 protected:
+    SchemaItem* p_Descedant;
     SchemaScene *p_parent;
     QPointF _startPos;
     qreal m_Flowrate;
@@ -43,7 +51,7 @@ protected:
     void setActive(bool active);
 signals:
     void moved();
-    void clicked();
+    void clicked(int ElementId);
 public slots:
     void setFlowrate(const qreal Value);
     void activate();

@@ -16,6 +16,7 @@ private:
     int _numScheduledScalings;
     qreal scale_factor;
     QPoint lastPos;
+    SchemaItem *p_ItemFrom, *p_ItemTo;
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
