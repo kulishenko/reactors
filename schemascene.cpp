@@ -139,7 +139,7 @@ void SchemaScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
         if(sItem && p_ItemFrom){
             p_ItemTo = sItem;
-            if(p_ItemTo){
+            if(p_ItemTo && p_ItemTo != p_ItemFrom) {
                 addItem(new SchemaPipeline(p_ItemFrom, p_ItemTo));
                 qDebug() << p_ItemTo->property("ElementId").toString();
             }

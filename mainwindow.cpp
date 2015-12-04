@@ -580,7 +580,8 @@ void MainWindow::loadSceneFromFile(const QString &filename)
 
     QFile file(filename);
 
-    SchemaScene* scene = Config.deserializeScene(&file, this);
+    SchemaScene* scene = new SchemaScene(this);
+            //Config.deserializeScene(&file, this);
 
     this->graphicsView->setScene(scene);
 
