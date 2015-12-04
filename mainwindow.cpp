@@ -580,8 +580,7 @@ void MainWindow::loadSceneFromFile(const QString &filename)
 
     QFile file(filename);
 
-    SchemaScene* scene = new SchemaScene(this);
-      //      Config.deserializeScene(&file, this);
+    SchemaScene* scene = Config.deserializeScene(&file, this);
 
     this->graphicsView->setScene(scene);
 
@@ -683,6 +682,11 @@ void MainWindow::loadSimDataFromFile(const QString &filename)
         QMessageBox::warning(this, tr("File open failure"),
                              tr("Failed to open %1").arg(filename));
     }
+}
+
+void MainWindow::connectItems(int ElementId)
+{
+
 }
 void MainWindow::createToolBars()
 {
