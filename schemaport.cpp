@@ -5,9 +5,9 @@ SchemaPort::SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem, qreal 
     QGraphicsLineItem(PosX, PosY, PosX+5*qSin(qDegreesToRadians(Angle)),PosY+5*qCos(qDegreesToRadians(Angle)), parentItem)
 {
     setPen(QPen(Qt::red));
-#ifndef SCHEMA_DEBUG
-    setVisible(false);
-#endif
+
+    setVisible(true);
+
 }
 
 SchemaPort::~SchemaPort()

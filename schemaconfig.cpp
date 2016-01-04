@@ -156,7 +156,6 @@ SchemaScene* SchemaConfig::deserializeScene(QIODevice *input, QObject *parent)
     }
 
     input->close();
-
     return Scene;
 }
 

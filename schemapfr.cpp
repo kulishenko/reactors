@@ -14,6 +14,9 @@ SchemaPFR::SchemaPFR(qreal Width, qreal Height, QObject *parent) : SchemaItem()
 
     setBrush(*Gradient);
 
+    setInletPort(new SchemaPort(0, 0.9*Height, this));
+    setOutletPort(new SchemaPort(Width, 0.1*Height, this));
+
 }
 
 SchemaPFR::~SchemaPFR()

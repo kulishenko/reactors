@@ -148,7 +148,7 @@ private:
 
     void loadSimDataFromFile(const QString &filename);
 
-    void connectItems(int ElementId);
+    void connectItems(int ElementIdFrom, const int ElementIdTo);
 
     QColor bgColor;
     QLinearGradient* p_bgGradient;

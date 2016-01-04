@@ -580,15 +580,16 @@ void MainWindow::loadSceneFromFile(const QString &filename)
 
     QFile file(filename);
 
-    SchemaScene* scene = new SchemaScene(this);
-            //Config.deserializeScene(&file, this);
+        SchemaScene* scene = new SchemaScene(this);
+    if(file.exists())
+        scene = Config.deserializeScene(&file, this);
 
-    this->graphicsView->setScene(scene);
+        this->graphicsView->setScene(scene);
 
-    if(m_scene)
-        m_scene->deleteLater();
+        if(m_scene)
+            m_scene->deleteLater();
 
-    m_scene = scene;
+        m_scene = scene;
 
     if(m_isStarted)
         EventLog << tr("Loaded the Schema file: %1").arg(filename);
@@ -685,7 +686,7 @@ void MainWindow::loadSimDataFromFile(const QString &filename)
     }
 }
 
-void MainWindow::connectItems(int ElementId)
+void MainWindow::connectItems(const int ElementIdFrom, const int ElementIdTo)
 {
 
 }
@@ -711,7 +712,7 @@ void MainWindow::createToolBars()
 void MainWindow::newFile()
 {
 
-    loadSceneFromFile();
+    loadSceneFromFile(QString());
 }
 
 void MainWindow::open()
