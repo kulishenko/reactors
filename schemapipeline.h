@@ -14,6 +14,7 @@ public:
 private:
     SchemaItem *m_From, *m_To;
     QPainterPath* LinePath;
+    QGraphicsPolygonItem* p_Arrow;
     int m_FromElementId, m_ToElementId;
     void setFromElementId(int Value);
     void setToElementId(int Value);

@@ -34,6 +34,7 @@
 #include <QDesktopWidget>
 #include <QPrintDialog>
 #include <QPrinter>
+#include <QToolBar>
 #include "schemacstr.h"
 #include "schemapipeline.h"
 #include "schemaflowmeter.h"
@@ -175,6 +176,8 @@ private:
     QAction *cutAct;
     QAction *copyAct;
     QAction *pasteAct;
+
+    /*
     QAction *boldAct;
     QAction *italicAct;
     QAction *leftAlignAct;
@@ -182,7 +185,7 @@ private:
     QAction *justifyAct;
     QAction *centerAct;
     QAction *setLineSpacingAct;
-    QAction *setParagraphSpacingAct;
+    QAction *setParagraphSpacingAct; */
 
     QAction *zoomInAct;
     QAction *zoomOutAct;

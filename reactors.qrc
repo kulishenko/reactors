@@ -64,5 +64,22 @@
         <file>images/iconStream.ico</file>
         <file>images/iconCell.ico</file>
         <file>images/iconAttach.ico</file>
+        <file>images/document-save.png</file>
+        <file>images/document-new.png</file>
+        <file>images/document-open.png</file>
+        <file>images/document-print.png</file>
+        <file>images/draw-triangle2.png</file>
+        <file>images/edit-undo.png</file>
+        <file>images/document-export.png</file>
+        <file>images/document-import.png</file>
+        <file>images/document-open-remote.png</file>
+        <file>images/zoom-fit-best.png</file>
+        <file>images/zoom-in.png</file>
+        <file>images/zoom-out.png</file>
+        <file>images/draw-flowmeter.png</file>
+        <file>images/draw-valve.png</file>
+        <file>images/draw-cstr.png</file>
+        <file>images/draw-pfr.png</file>
+        <file>images/format-connect-node.png</file>
     </qresource>
 </RCC>

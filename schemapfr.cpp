@@ -24,3 +24,8 @@ SchemaPFR::~SchemaPFR()
 
 }
 
+void SchemaPFR::setIcon(const SchemaPFR::PFRIcon icon)
+{
+    m_IconType = icon;
+}
+

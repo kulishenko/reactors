@@ -9,9 +9,10 @@ class SchemaPFR : public SchemaItem
 public:
     SchemaPFR(qreal Width = 50.0f, qreal Height = 400.0f, QObject* parent = 0);
     ~SchemaPFR();
+    enum class PFRIcon {Empty, FixedBed, Long};
+    void setIcon(const PFRIcon icon);
 private:
-    enum class PFRIconType;
-    PFRIconType m_IconType;
+    PFRIcon m_IconType;
     QPainterPath* p_Path;
 };
 

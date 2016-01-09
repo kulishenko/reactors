@@ -34,11 +34,14 @@ public:
     SchemaPort *getOutletPort();
     void setInletPort(SchemaPort* port);
     void setOutletPort(SchemaPort* port);
+    void setSelected(bool selected);
 private:
     int m_ElementId;
     bool m_isActive;
     const QString m_ItemType;
     SchemaPort* p_OutletPort, *p_InletPort;
+    bool m_isSelected;
+    qreal m_LineWidth;
 protected:
     SchemaItem* p_Descedant;
     SchemaScene *p_parent;

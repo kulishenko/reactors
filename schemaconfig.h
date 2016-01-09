@@ -5,6 +5,7 @@
 #include <QList>
 #include <schemaitem.h>
 #include <schemacstr.h>
+#include <schemapfr.h>
 #include <schemaflowmeter.h>
 #include <schemastream.h>
 #include <schemacell.h>

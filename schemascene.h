@@ -19,6 +19,9 @@ public:
     QList<int> *getReactorItemsList();
     void sequencing();
     QList<int> getItemsControlSeq(const QStringList &ItemType);
+    void selectAllItems();
+    void deSelectAllItems();
+    bool isCorrect() const;
 private:
     void addItemToMap(const QString &ItemType, const SchemaItem *item);
     QList<int> *m_List;

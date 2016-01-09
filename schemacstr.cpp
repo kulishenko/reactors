@@ -16,7 +16,7 @@ SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLev
     // Initial Mixer Angle - adding some randomnicity
     m_MixerAngle = rand();
 
-    setInletPort(new SchemaPort(Width/9, 0.1*Height, this, 180));
+    setInletPort(new SchemaPort(Width/9, 0.1*Height, this, 0));
     setOutletPort(new SchemaPort(Width, Height/3, this));
 
 //  What color is the best?

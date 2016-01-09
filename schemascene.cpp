@@ -162,3 +162,22 @@ QList<int> SchemaScene::getItemsControlSeq(const QStringList &ItemTypes)
     return Sequence;
 }
 
+void SchemaScene::selectAllItems()
+{
+    foreach(SchemaItem *item, m_schemaItems)
+        if(!item->isSelected()) item->setSelected(true);
+}
+
+void SchemaScene::deSelectAllItems()
+{
+    foreach(SchemaItem *item, m_schemaItems)
+       // if(item->isSelected())
+        item->setSelected(false);
+}
+
+bool SchemaScene::isCorrect() const
+{
+
+}
+
+

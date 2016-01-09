@@ -2,11 +2,11 @@
 #include <QDebug>
 
 SchemaPort::SchemaPort(qreal PosX, qreal PosY, QGraphicsItem* parentItem, qreal Angle) :
-    QGraphicsLineItem(PosX, PosY, PosX+5*qSin(qDegreesToRadians(Angle)),PosY+5*qCos(qDegreesToRadians(Angle)), parentItem)
+    QGraphicsLineItem(PosX, PosY, PosX+10*qSin(qDegreesToRadians(Angle)),PosY+10*qCos(qDegreesToRadians(Angle)), parentItem)
 {
-    setPen(QPen(Qt::red));
+    setPen(QPen(Qt::red, 2.0));
 
-    setVisible(true);
+    setVisible(false); // Comment for debug
 
 }
 

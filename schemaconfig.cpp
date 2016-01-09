@@ -143,6 +143,12 @@ SchemaScene* SchemaConfig::deserializeScene(QIODevice *input, QObject *parent)
         Scene->addItem(this->deserialize<SchemaCSTR>(&node));
     }
 
+    nodeList = root.elementsByTagName("SchemaPFR");
+    for(int i = 0; i < nodeList.count(); i++) {
+        QDomElement node = nodeList.at(i).toElement();
+        Scene->addItem(this->deserialize<SchemaPFR>(&node));
+    }
+
     nodeList = root.elementsByTagName("SchemaFlowmeter");
     for(int i = 0; i < nodeList.count(); i++) {
         QDomElement node = nodeList.at(i).toElement();

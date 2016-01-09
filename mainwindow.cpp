@@ -63,22 +63,22 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 
 void MainWindow::createActions()
 {
-    newAct = new QAction(QIcon(":/images/new.png"),tr("&New"), this);
+    newAct = new QAction(QIcon(":/images/document-new.png"),tr("&New"), this);
     newAct->setShortcuts(QKeySequence::New);
     newAct->setStatusTip(tr("Create a new file"));
     connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-    openAct = new QAction(tr("&Open..."), this);
+    openAct = new QAction(QIcon(":/images/document-open.png"),tr("&Open..."), this);
     openAct->setShortcuts(QKeySequence::Open);
     openAct->setStatusTip(tr("Open an existing file"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
-    saveAct = new QAction(QIcon(":/images/save.png"),tr("&Save"), this);
+    saveAct = new QAction(QIcon(":/images/document-save.png"),tr("&Save"), this);
     saveAct->setShortcuts(QKeySequence::Save);
     saveAct->setStatusTip(tr("Save the document to disk"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-    printAct = new QAction(QIcon(":/images/print.png"),tr("&Print..."), this);
+    printAct = new QAction(QIcon(":/images/document-print.png"),tr("&Print..."), this);
     printAct->setShortcuts(QKeySequence::Print);
     printAct->setStatusTip(tr("Print the document"));
     connect(printAct, SIGNAL(triggered()), this, SLOT(print()));
@@ -88,7 +88,7 @@ void MainWindow::createActions()
     exitAct->setStatusTip(tr("Exit the application"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-    undoAct = new QAction(QIcon(":/images/undo.png"),tr("&Undo"), this);
+    undoAct = new QAction(QIcon(":/images/edit-undo.png"),tr("&Undo"), this);
     undoAct->setShortcuts(QKeySequence::Undo);
     undoAct->setStatusTip(tr("Undo the last operation"));
     connect(undoAct, SIGNAL(triggered()), this, SLOT(undo()));
@@ -116,7 +116,7 @@ void MainWindow::createActions()
                               "selection"));
     connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
 
-    boldAct = new QAction(tr("&Bold"), this);
+    /*boldAct = new QAction(tr("&Bold"), this);
     boldAct->setCheckable(true);
     boldAct->setShortcut(QKeySequence::Bold);
     boldAct->setStatusTip(tr("Make the text bold"));
@@ -145,29 +145,29 @@ void MainWindow::createActions()
     setParagraphSpacingAct->setStatusTip(tr("Change the gap between paragraphs"));
     connect(setParagraphSpacingAct, SIGNAL(triggered()),
             this, SLOT(setParagraphSpacing()));
+    */
 
-
-    zoomInAct = new QAction(tr("Zoom &In"),this);
+    zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"),this);
     zoomInAct->setShortcut(QKeySequence::ZoomIn);
     zoomInAct->setStatusTip(tr("Zoom In the schema"));
     connect(zoomInAct,SIGNAL(triggered()),this,SLOT(zoomIn()));
 
-    zoomOutAct = new QAction(tr("Zoom &Out"),this);
+    zoomOutAct = new QAction(QIcon(":/images/zoom-out.png"),tr("Zoom &Out"),this);
     zoomOutAct->setShortcut(QKeySequence::ZoomOut);
     zoomOutAct->setStatusTip(tr("Zoom Out the schema"));
     connect(zoomOutAct,SIGNAL(triggered()),this,SLOT(zoomOut()));
 
-    fitInViewAct = new QAction(tr("&Fit In View"),this);
+    fitInViewAct = new QAction(QIcon(":/images/zoom-fit-best.png"),tr("&Fit In View"),this);
   //  fitInViewAct->setShortcut(QKeySequence::);
     fitInViewAct->setStatusTip(tr("Fit the schema in view"));
     connect(fitInViewAct,SIGNAL(triggered()),this,SLOT(fitInView()));
 
-    exportToServerAct = new QAction(tr("&Export to server..."),this);
+    exportToServerAct = new QAction(QIcon(":/images/document-export.png"),tr("&Export to server..."),this);
     exportToServerAct->setStatusTip(tr("Send the experimental data to server"));
     exportToServerAct->setDisabled(true);
     connect(exportToServerAct,SIGNAL(triggered()),this,SLOT(exportToServer()));
 
-    importFromServerAct = new QAction(tr("&Import from server..."),this);
+    importFromServerAct = new QAction(QIcon(":/images/document-import.png"),tr("&Import from server..."),this);
     importFromServerAct->setStatusTip(tr("Get the experimental data from server"));
     connect(importFromServerAct,SIGNAL(triggered()),this,SLOT(importFromServerDlg()));
 
@@ -208,6 +208,7 @@ void MainWindow::createActions()
     connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(aboutQtAct, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
+    /*
     leftAlignAct = new QAction(tr("&Left Align"), this);
     leftAlignAct->setCheckable(true);
     leftAlignAct->setShortcut(tr("Ctrl+L"));
@@ -237,54 +238,54 @@ void MainWindow::createActions()
     alignmentGroup->addAction(rightAlignAct);
     alignmentGroup->addAction(justifyAct);
     alignmentGroup->addAction(centerAct);
-    leftAlignAct->setChecked(true);
+    leftAlignAct->setChecked(true); */
 
 
     // Schema Drawing Actions
-    addCSTRAct = new QAction(QIcon(":/images/iconCSTR.ico"), tr("&Add CSTR"), this);
-    addCSTRAct->setStatusTip(tr("Add a continuous stirred-tank reactor to the schema"));
+    addCSTRAct = new QAction(QIcon(":/images/draw-cstr.png"), tr("&CSTR"), this);
+    addCSTRAct->setStatusTip(tr("Add a continuous stirred-tank reactor to the Schema"));
     connect(addCSTRAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaCSTR);
     });
 
-    addPFRAct = new QAction(QIcon(":/images/iconPFR.ico"), tr("&Add PFR"), this);
-    addPFRAct->setStatusTip(tr("Add a Plug-Flow reactor to the schema"));
+    addPFRAct = new QAction(QIcon(":/images/draw-pfr.png"), tr("&PFR"), this);
+    addPFRAct->setStatusTip(tr("Add a Plug-Flow reactor to the Schema"));
     connect(addPFRAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaPFR);
     });
 
-    addStreamAct = new QAction(QIcon(":/images/iconStream.ico"), tr("&Add Stream"), this);
-    addStreamAct->setStatusTip(tr("Add a Stream to the schema"));
+    addStreamAct = new QAction(QIcon(":/images/draw-triangle2.png"), tr("&Stream"), this);
+    addStreamAct->setStatusTip(tr("Add a Stream to the Schema"));
     connect(addStreamAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaStream);
     });
 
-    addValveAct = new QAction(QIcon(":/images/iconValve.ico"), tr("&Add Valve"), this);
-    addValveAct->setStatusTip(tr("Add a Valve to the schema"));
+    addValveAct = new QAction(QIcon(":/images/draw-valve.png"), tr("&Valve"), this);
+    addValveAct->setStatusTip(tr("Add a Valve to the Schema"));
     connect(addValveAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaValve);
     });
 
-    addFlowmeterAct = new QAction(tr("&Add Flowmeter"), this);
-    addFlowmeterAct->setStatusTip(tr("Add a Flowmeter to the schema"));
+    addFlowmeterAct = new QAction(QIcon(":/images/draw-flowmeter.png"), tr("&Flowmeter"), this);
+    addFlowmeterAct->setStatusTip(tr("Add a Flowmeter to the Schema"));
     connect(addFlowmeterAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaFlowmeter);
     });
 
-    addCellAct = new QAction(QIcon(":/images/iconCell.ico"), tr("&Add Cell"), this);
-    addCellAct->setStatusTip(tr("Add a Measurement Cell to the schema"));
+    addCellAct = new QAction(QIcon(":/images/iconCell.ico"), tr("&Cell"), this);
+    addCellAct->setStatusTip(tr("Add a Measurement Cell to the Schema"));
     connect(addCellAct, &QAction::triggered, [this](){
         editMode();
         m_scene->addItem(new SchemaCell);
     });
 
-    attachModeAct = new QAction(QIcon(":/images/iconAttach.ico"),tr("&Attach"), this);
-    attachModeAct->setStatusTip(tr("Toggle attach mode"));
+    attachModeAct = new QAction(QIcon(":/images/format-connect-node.png"),tr("&Attach Mode"), this);
+    attachModeAct->setStatusTip(tr("Toggle Attach Mode"));
     attachModeAct->setCheckable(true);
 
     connect(attachModeAct, &QAction::triggered, [this](){
@@ -387,7 +388,22 @@ void MainWindow::createDockWindows()
     plotWidget->xAxis->setLabel(tr("Time, s"));
     plotWidget->yAxis->setLabel(tr("Conductivity, mS/cm"));
     plotWidget->rescaleAxes();
-    plotWidget->setBackground(Qt::gray);
+
+    plotWidget->setBackground(QColor(40, 40, 40));
+    plotWidget->xAxis->setLabelColor(Qt::lightGray);
+    plotWidget->yAxis->setLabelColor(Qt::lightGray);
+    plotWidget->xAxis->setTickLabelColor(Qt::lightGray);
+    plotWidget->yAxis->setTickLabelColor(Qt::lightGray);
+
+    plotWidget->xAxis->setBasePen(QPen(Qt::lightGray));
+    plotWidget->xAxis->setTickPen(QPen(Qt::lightGray));
+    plotWidget->xAxis->setSubTickPen(QPen(Qt::lightGray));
+
+    plotWidget->yAxis->setBasePen(QPen(Qt::lightGray));
+    plotWidget->yAxis->setTickPen(QPen(Qt::lightGray));
+    plotWidget->yAxis->setSubTickPen(QPen(Qt::lightGray));
+
+    plotWidget->graph(0)->setPen(QPen(QColor(0, 255, 0)));
 
     dock->setWidget(plotWidget);
     dock->setMinimumWidth(500);
@@ -584,12 +600,12 @@ void MainWindow::loadSceneFromFile(const QString &filename)
     if(file.exists())
         scene = Config.deserializeScene(&file, this);
 
-        this->graphicsView->setScene(scene);
+    this->graphicsView->setScene(scene);
 
-        if(m_scene)
-            m_scene->deleteLater();
+    if(m_scene)
+        m_scene->deleteLater();
 
-        m_scene = scene;
+    m_scene = scene;
 
     if(m_isStarted)
         EventLog << tr("Loaded the Schema file: %1").arg(filename);

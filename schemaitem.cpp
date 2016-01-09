@@ -11,9 +11,9 @@ bool SchemaItem::AttachMode = false;
 SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
 SchemaItem::SchemaItem() : QObject(), m_ElementId(s_ElementId++),
     m_isActive(false), m_ItemType(getItemType()),
-    p_OutletPort(nullptr), p_InletPort(nullptr), p_Descedant(nullptr), p_parent(nullptr), m_Flowrate(0)
+    p_OutletPort(nullptr), p_InletPort(nullptr), p_Descedant(nullptr), p_parent(nullptr), m_Flowrate(0), m_LineWidth(1.5f)
 {
-    setPen(QPen(Qt::black, 1.5f, Qt::SolidLine, Qt::RoundCap));
+    setPen(QPen(Qt::black, m_LineWidth, Qt::SolidLine, Qt::RoundCap));
 }
 
 SchemaItem::~SchemaItem()
@@ -101,6 +101,16 @@ void SchemaItem::setActive(bool active)
 {
     m_isActive = active;
     QGraphicsPathItem::setActive(active);
+}
+
+void SchemaItem::setSelected(bool selected)
+{
+    if(selected)
+        setPen(QPen(Qt::red, m_LineWidth, Qt::SolidLine, Qt::RoundCap));
+    else
+        setPen(QPen(Qt::black, m_LineWidth, Qt::SolidLine, Qt::RoundCap));
+
+    QGraphicsPathItem::setSelected(selected);
 }
 
 
