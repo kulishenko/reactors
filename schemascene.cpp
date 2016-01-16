@@ -180,4 +180,17 @@ bool SchemaScene::isCorrect() const
 
 }
 
+QPixmap SchemaScene::toPixmap()
+{
+    QRectF r = sceneRect();
+    QPixmap pixmap(r.width(), r.height());
+    pixmap.fill(QColor(0, 0, 0, 0));
+    QPainter painter(&pixmap);
+    painter.fillRect( r, Qt::white );
+
+    render(&painter);
+    painter.end();
+    return pixmap;
+}
+
 

@@ -22,6 +22,7 @@ public:
     void selectAllItems();
     void deSelectAllItems();
     bool isCorrect() const;
+    QPixmap toPixmap();
 private:
     void addItemToMap(const QString &ItemType, const SchemaItem *item);
     QList<int> *m_List;

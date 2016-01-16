@@ -1000,19 +1000,34 @@ void MainWindow::paramEstimation(){
     resPlotWidget->legend->setVisible(true);
     resPlotWidget->setBackground(Qt::gray);
     resPlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    resPlotWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    resPlotWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     wnd->setLayout(layout);
     layout->addWidget(resPlotWidget);
     layout->addWidget(SimParams);
-        layout->addWidget(SimResults);
+    layout->addWidget(SimResults);
 
-    FormulaView* formulaView = new FormulaView(wnd);
-    QFile FormulaFile(":/resources/cellmodel.mml");
+
+
+    QWidget *resultsWnd = new QWidget(this, Qt::Window);
+
+    QVBoxLayout *resultsLayout = new QVBoxLayout(resultsWnd);
+
+    QGraphicsScene* resultsScene = new QGraphicsScene(resultsWnd);
+
+    QGraphicsView* resultsView = new QGraphicsView(resultsScene);
+
+    QGraphicsGridLayout* resultsSceneLayout = new QGraphicsGridLayout;
+
+   // FormulaItem *formulaItem = new FormulaItem;
+    FormulaLayoutItem *formulaItem = new FormulaLayoutItem();
+
+
+    QFile FormulaFile(":/resources/cellmodel2.mml");
     if (FormulaFile.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream in(&FormulaFile);
         QString FormulaString = in.readAll();
-        formulaView->setFormula(FormulaString.arg(tr("Exact solution:"),
+        formulaItem->setFormula(FormulaString.arg(tr("Exact solution:"),
                                                   tr("Average residence time:"),
                                                   QString::number(Data->getAvgTau(),'f', 3),
                                                   tr("Estimated number of cells:"),
@@ -1020,20 +1035,76 @@ void MainWindow::paramEstimation(){
                                                   QString::number(Model->getiNum()),
                                                   tr("Initial tracer concentration:"),
                                                   QString::number(Model->getCin(),'f', 3)));
-        formulaView->setMinimumSize(200,300);
-        formulaView->setFontSize(12);
-        formulaView->setColors(false);
+        resultsView->setMinimumSize(100, 300);
 
-        layout->addWidget(formulaView);
+
+        formulaItem->setFontSize(12);
+        formulaItem->setColors(false);
+
+        // Layout
+        QGraphicsWidget *resultsSceneWidget = new QGraphicsWidget;
+        resultsSceneWidget->setLayout(resultsSceneLayout);
+
+        // Schema
+        QGraphicsPixmapLayoutItem *schemaPixmapItem = new QGraphicsPixmapLayoutItem();
+        schemaPixmapItem->setPixmap(m_scene->toPixmap().scaledToWidth(formulaItem->boundingRect().bottomRight().x()*0.5,
+                                                                      Qt::SmoothTransformation));
+
+        // Plot
+        QGraphicsPlotLayoutItem *resultsPlot = new QGraphicsPlotLayoutItem();
+        resultsPlot->setPlot(resPlotWidget);
+
+        // Rendering the formula and showing it like a Pixmap (way faster)
+        QGraphicsPixmapLayoutItem *formulaPixmapItem = new QGraphicsPixmapLayoutItem();
+        formulaPixmapItem->setPixmap(formulaItem->toPixmap());
+
+        QLabel *schemaLabel = new QLabel(tr("Figure 1 - Experimental Lab's Schema"));
+        //schemaLabel->setFont(QFont("Times New Roman", 12));
+        schemaLabel->setAlignment(Qt::AlignCenter);
+        schemaLabel->setStyleSheet("");
+        QPalette LabelPalette(schemaLabel->palette());
+        LabelPalette.setColor(QPalette::Background, Qt::transparent);
+        LabelPalette.setColor(QPalette::WindowText, Qt::black);
+        schemaLabel->setPalette(LabelPalette);
+
+
+        QGraphicsProxyWidget *schemaLabelItem = resultsScene->addWidget(schemaLabel);
+
+
+        QLabel *plotLabel = new QLabel(tr("Figure 2 - Simulation Results Plot"));
+        //schemaLabel->setFont(QFont("Times New Roman", 12));
+        plotLabel->setAlignment(Qt::AlignCenter);
+        plotLabel->setPalette(QPalette(Qt::black));
+        QGraphicsProxyWidget *plotLabelItem = resultsScene->addWidget(plotLabel);
+
+        resultsSceneLayout->addItem(schemaPixmapItem, 1, 0, Qt::AlignCenter);
+        resultsSceneLayout->addItem(schemaLabelItem, 2, 0, Qt::AlignCenter);
+        resultsSceneLayout->addItem(resultsPlot, 3, 0, Qt::AlignCenter);
+        resultsSceneLayout->addItem(plotLabelItem, 4, 0, Qt::AlignCenter);
+        resultsSceneLayout->addItem(formulaPixmapItem, 5, 0);
+
+        resultsScene->setBackgroundBrush(QBrush(Qt::white));
+        resultsScene->addItem(resultsSceneWidget);
+
+        resultsLayout->addWidget(resultsView);
+        resultsView->setScene(resultsScene);
+        resultsView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        resultsView->setRenderHint(QPainter::Antialiasing);
         FormulaFile.close();
     }
 
-    wnd->setWindowTitle(tr("Cell Model (method 2) simulation results"));
+    wnd->setWindowTitle(tr("Simulation Results"));
 
     QDesktopWidget *desktop = QApplication::desktop();
 
     wnd->show();
-    wnd->move((desktop->width() - wnd->width())/2,(desktop->height() - wnd->height())/2);
+    wnd->move((desktop->width() - wnd->width())/2, (desktop->height() - wnd->height())/2);
+
+
+    resultsWnd->show();
+
+
+
 }
 
 void MainWindow::importFromServerDlg()

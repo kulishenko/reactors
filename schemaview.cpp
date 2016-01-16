@@ -11,6 +11,7 @@ SchemaView::~SchemaView()
 {
 
 }
+
 void SchemaView::mousePressEvent(QMouseEvent *event)
 {
 

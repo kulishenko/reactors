@@ -39,11 +39,15 @@ SOURCES += main.cpp\
     modelflowmeter.cpp \
     qwt-mml/qwt_mml_document.cpp \
     qwt-mml/qwt_mml_entity_table.cpp \
-    formulaview.cpp \
     schemaevent.cpp \
     schemascene.cpp \
     schemapfr.cpp \
-    diffusemodel.cpp
+    diffusemodel.cpp \
+    formulaitem.cpp \
+    qgraphicsplot.cpp \
+    formulalayoutitem.cpp \
+    qgraphicsplotlayoutitem.cpp \
+    qgraphicspixmaplayoutitem.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -78,11 +82,15 @@ HEADERS  += mainwindow.h \
     modelflowmeter.h \
     qwt-mml/qwt_mml_document.h \
     qwt-mml/qwt_mml_entity_table.h \
-    formulaview.h \
     schemaevent.h \
     schemascene.h \
     schemapfr.h \
-    diffusemodel.h
+    diffusemodel.h \
+    formulaitem.h \
+    qgraphicsplot.h \
+    formulalayoutitem.h \
+    qgraphicsplotlayoutitem.h \
+    qgraphicspixmaplayoutitem.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 

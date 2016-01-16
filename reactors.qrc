@@ -81,5 +81,6 @@
         <file>images/draw-cstr.png</file>
         <file>images/draw-pfr.png</file>
         <file>images/format-connect-node.png</file>
+        <file>resources/cellmodel2.mml</file>
     </qresource>
 </RCC>

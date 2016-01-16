@@ -51,8 +51,15 @@
 #include "schemascene.h"
 #include <schemapfr.h>
 #include <qwt-mml/qwt_mml_document.h>
-#include <formulaview.h>
-//#include <QGLWidget>
+#include <formulaitem.h>
+#include <qgraphicsplot.h>
+#include <QGraphicsGridLayout>
+#include <QGraphicsWidget>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsPixmapItem>
+#include <formulalayoutitem.h>
+#include <qgraphicsplotlayoutitem.h>
+#include <qgraphicspixmaplayoutitem.h>
 
 extern "C" {
 #include <libxls/xls.h>
