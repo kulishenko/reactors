@@ -34,7 +34,7 @@ SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qrea
     p_Electrode->setBrush(Qt::black);
 
 
-    // Drawing Motor Block
+    // Drawing the Button
     p_Button = new QGraphicsEllipseItem(this);
     int MotorRadius = 40;
     p_Button->setRect(QRect(-Width/2+MotorRadius/2, -80, -MotorRadius, -MotorRadius));

@@ -46,6 +46,16 @@ qreal SchemaData::getNc() const
     return Nc;
 }
 
+qreal SchemaData::getM2theta() const
+{
+    return M2theta;
+}
+
+qreal SchemaData::getSigma2theta() const
+{
+    return sigma2theta;
+}
+
 void SchemaData::calcAvgTau()
 {
 

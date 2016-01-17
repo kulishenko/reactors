@@ -17,6 +17,8 @@ public:
     qreal getAvgTau();
     qreal getTau() const;
     qreal getNc() const;
+    qreal getM2theta() const;
+    qreal getSigma2theta() const;
     void calcAvgTau();
     void calcConc();
     void calcDimConc();

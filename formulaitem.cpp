@@ -11,7 +11,7 @@ FormulaItem::FormulaItem(QGraphicsItem *parent) :
     d_docRect(0, 0, 0, 0)
 
 {
-    painterCache = toPixmap();
+    //painterCache = toPixmap();
 }
 
 FormulaItem::~FormulaItem()

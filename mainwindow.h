@@ -227,6 +227,7 @@ private:
     QListWidget *eventsWidget;
     QToolBar *fileToolBar;
     QToolBar *editToolBar;
+    QToolBar *controlToolBar;
     QMediaPlayer *MediaPlayer;
     QThread* thread;
     QTimer* timer;

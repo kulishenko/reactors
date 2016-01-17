@@ -714,8 +714,14 @@ void MainWindow::createToolBars()
     fileToolBar->addAction(printAct);
     fileToolBar->setProperty("objectName", QString("fileToolBar"));
 
-    editToolBar = addToolBar(tr("Edit"));
-    editToolBar->addAction(undoAct);
+    controlToolBar = addToolBar(tr("Control"));
+    controlToolBar->addAction(importFromServerAct);
+    controlToolBar->addAction(exportToServerAct);
+    controlToolBar->setProperty("objectName", QString("controlToolBar"));
+
+    editToolBar = new QToolBar(tr("Edit"), this);
+    addToolBar(Qt::LeftToolBarArea, editToolBar);
+  //  editToolBar->addAction(undoAct);
     editToolBar->addAction(addStreamAct);
     editToolBar->addAction(addValveAct);
     editToolBar->addAction(addFlowmeterAct);
@@ -724,6 +730,8 @@ void MainWindow::createToolBars()
     editToolBar->addAction(addCellAct);
     editToolBar->addAction(attachModeAct);
     editToolBar->setProperty("objectName", QString("editToolBar"));
+
+
 }
 void MainWindow::newFile()
 {
@@ -1027,6 +1035,29 @@ void MainWindow::paramEstimation(){
     if (FormulaFile.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream in(&FormulaFile);
         QString FormulaString = in.readAll();
+        // For better view
+        FormulaString.replace("&lt;","&#x02329;");
+        FormulaString.replace("&gt;","&#x0232A;");
+
+        QMap<QString, QString> StringMap;
+        StringMap.insert("%ExactSolution%", tr("Exact solution:"));
+        StringMap.insert("%AverageResidenceTime%", tr("Average residence time:"));
+        StringMap.insert("%AvgTau%", QString::number(Data->getAvgTau(),'f', 3));
+        StringMap.insert("%EstimatedNumberOfCells%", tr("Estimated number of cells:"));
+        StringMap.insert("%Num%", QString::number(Model->getNum(),'f', 3));
+        StringMap.insert("%iNum%",QString::number(Model->getiNum()));
+        StringMap.insert("%InitialTracerConcentration%",tr("Initial tracer concentration:"));
+        StringMap.insert("%Cin%", QString::number(Model->getCin(),'f', 3));
+        StringMap.insert("%Nc%", QString::number(Data->getNc(),'f', 3));
+        StringMap.insert("%M0%", QString::number(Data->getM0(),'f', 3));
+        StringMap.insert("%M2theta%", QString::number(round(Data->getM2theta())));
+        StringMap.insert("%sigma2theta%", QString::number(Data->getSigma2theta(),'f',3));
+
+
+        foreach(const QString &value, StringMap) {
+            FormulaString.replace(StringMap.key(value), value);
+        }
+        /*
         formulaItem->setFormula(FormulaString.arg(tr("Exact solution:"),
                                                   tr("Average residence time:"),
                                                   QString::number(Data->getAvgTau(),'f', 3),
@@ -1034,11 +1065,14 @@ void MainWindow::paramEstimation(){
                                                   QString::number(Model->getNum(),'f', 3),
                                                   QString::number(Model->getiNum()),
                                                   tr("Initial tracer concentration:"),
-                                                  QString::number(Model->getCin(),'f', 3)));
+                                                  QString::number(Model->getCin(),'f', 3),
+                                                  QString::number(Data->getNc(),'f', 3)));
+                                                  */
+        formulaItem->setFormula(FormulaString);
         resultsView->setMinimumSize(100, 300);
 
 
-        formulaItem->setFontSize(12);
+        formulaItem->setFontSize(13);
         formulaItem->setColors(false);
 
         // Layout
@@ -1047,9 +1081,8 @@ void MainWindow::paramEstimation(){
 
         // Schema
         QGraphicsPixmapLayoutItem *schemaPixmapItem = new QGraphicsPixmapLayoutItem();
-        schemaPixmapItem->setPixmap(m_scene->toPixmap().scaledToWidth(formulaItem->boundingRect().bottomRight().x()*0.5,
+        schemaPixmapItem->setPixmap(m_scene->toPixmap().scaledToWidth(formulaItem->boundingRect().bottomRight().x(),
                                                                       Qt::SmoothTransformation));
-
         // Plot
         QGraphicsPlotLayoutItem *resultsPlot = new QGraphicsPlotLayoutItem();
         resultsPlot->setPlot(resPlotWidget);
@@ -1058,14 +1091,18 @@ void MainWindow::paramEstimation(){
         QGraphicsPixmapLayoutItem *formulaPixmapItem = new QGraphicsPixmapLayoutItem();
         formulaPixmapItem->setPixmap(formulaItem->toPixmap());
 
-        QLabel *schemaLabel = new QLabel(tr("Figure 1 - Experimental Lab's Schema"));
+        QLabel *schemaLabel = new QLabel(tr("Figure 1 - Experimental Plant's Schema"));
         //schemaLabel->setFont(QFont("Times New Roman", 12));
         schemaLabel->setAlignment(Qt::AlignCenter);
+
+        /* Doesn't work
         schemaLabel->setStyleSheet("");
         QPalette LabelPalette(schemaLabel->palette());
         LabelPalette.setColor(QPalette::Background, Qt::transparent);
         LabelPalette.setColor(QPalette::WindowText, Qt::black);
         schemaLabel->setPalette(LabelPalette);
+
+        */
 
 
         QGraphicsProxyWidget *schemaLabelItem = resultsScene->addWidget(schemaLabel);
@@ -1181,12 +1218,13 @@ void MainWindow::loadSettings()
     if(settings.contains("state"))
         restoreState(settings.value("state", QByteArray()).toByteArray());
     if(settings.contains("view_scale")){
+        qDebug() << "Reading the view scale";
         QPointF view_scale = settings.value("view_scale").toPointF();
+        qDebug() << view_scale;
         if (view_scale.x() > 0.25 && view_scale.y() > 0.25)
             graphicsView->scale(view_scale.x(), view_scale.y());
-    }
-    else
-        graphicsView->fitInView(m_scene->sceneRect(),Qt::KeepAspectRatio);
+    } else fitInView();
+
     settings.endGroup();
 }
 
