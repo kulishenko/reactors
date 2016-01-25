@@ -5,10 +5,11 @@
 #include <QObject>
 #include <pfdcontrol.h>
 
-class ModelCell;
+class TISModel;
 class SchemaData
 {
-    friend class ModelCell;
+    friend class TISModel;
+    friend class AxialdispersionModel;
 public:
     SchemaData(PFDControl *Ctrl);
     ~SchemaData();
@@ -30,10 +31,17 @@ public:
     qreal getSConcAt(const size_t i) const;
     qreal getDimTimeAt(const size_t i) const;
     const QVector<qreal> &getSConc() const;
+    const QVector<qreal> &getDimConc() const;
+    const QVector<qreal> &getDimExpConc() const;
     const QVector<qreal> &getDimTime() const;
     const QVector<qreal> &getSimConc(const size_t i) const;
     size_t getSimConcCount() const;
+    void calcDimExpConc();
+    qreal getDimExpConcAt(const size_t i) const;
+    const QString &getSimMethod(const int i) const;
+    void addSimData(const QVector<qreal> & simData, const QString& name = QString());
 private:
+    void setSimMethod(QString name);
     const QVector<qreal> &p_ExpDataTime;
     const QVector<qreal> &p_ExpDataConductivity;
     int m_NumCascade;
@@ -56,7 +64,9 @@ private:
     QVector<qreal> Conc, SConc; // Tracer concentration, kmol/m3
     QVector<qreal> DimTime; // Dimensionless time (a.k.a. theta)
     QVector<qreal> DimConc; // Dimensionless tracer concentration (a.k.a. C_theta)
-    QVector<QVector<qreal>> SimConc; // Simulation results - Tracer concentration, kmol/m3
+    QVector<qreal> DimExpConc; // Dimensionless experimental (unsmoothered) concentration
+    QVector<QVector<qreal>> SimConc; // Simulation results - Tracer concentration
+    QVector<QString> SimMethod;
 };
 
 #endif // SCHEMADATA_H

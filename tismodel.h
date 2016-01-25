@@ -1,6 +1,7 @@
-#ifndef MODELCELL_H
-#define MODELCELL_H
+#ifndef TISMODEL_H
+#define TISMODEL_H
 #include <schemadata.h>
+#include <schemamodel.h>
 #include <QDebug>
 
 #define GSL_DLL
@@ -16,11 +17,11 @@
 #include <gsl/gsl_odeiv2.h>
 
 
-class ModelCell
+class TISModel : public SchemaModel
 {
 public:
-    ModelCell(SchemaData *Data);
-    ~ModelCell();
+    TISModel(SchemaData *Data);
+    ~TISModel();
     struct data {
         size_t n;
         const double * y;
@@ -32,19 +33,18 @@ public:
     static int N_fdf(const gsl_vector *x, void *data, gsl_vector *f, gsl_matrix *J);
     void print_state (size_t iter, gsl_multifit_fdfsolver * s);
     void EstimateNumCells();
-    void Sim();
-    void SimODE();
+    void Sim(const bool dimensionless = true);
+    void SimODE(const bool dimensionless = true);
     static int jac_C(double t, const double y[], double *dfdy, double dfdt[], void *params);
     static int func_C(double t, const double y[], double f[], void *params);
     qreal getCin() const;
     qreal getNum() const;
     unsigned int getiNum() const;
 private:
-    SchemaData* p_Data;
     qreal Cin; // Estimated initial tracer concentration, mol/l
     qreal Num; // Estimated number of cells
     unsigned int iNum; // Rounded number of cells
     qreal Conc(const qreal theta) const;
 };
 
-#endif // MODELCELL_H
+#endif // TISMODEL_H

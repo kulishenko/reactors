@@ -165,13 +165,22 @@ void MainWindow::createActions()
     exportToServerAct = new QAction(QIcon(":/images/document-export.png"),tr("&Export to server..."),this);
     exportToServerAct->setStatusTip(tr("Send the experimental data to server"));
     exportToServerAct->setDisabled(true);
-    connect(exportToServerAct,SIGNAL(triggered()),this,SLOT(exportToServer()));
+
+    connect(exportToServerAct, &QAction::triggered, [this](){
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, tr("Export Data to Server"),
+                                      tr("Do you really want to send Data to the Server?"),
+                                      QMessageBox::Yes|QMessageBox::No);
+        if(reply == QMessageBox::Yes)
+            exportToServer();
+    });
+
 
     importFromServerAct = new QAction(QIcon(":/images/document-import.png"),tr("&Import from server..."),this);
     importFromServerAct->setStatusTip(tr("Get the experimental data from server"));
     connect(importFromServerAct,SIGNAL(triggered()),this,SLOT(importFromServerDlg()));
 
-    paramEstimAct = new QAction(tr("&Parameter estimation..."),this);
+    paramEstimAct = new QAction(QIcon(":/images/accessories-calculator.png"), tr("&Parameter estimation..."),this);
     paramEstimAct->setStatusTip(tr("Estimate parameters from experimental data"));
     paramEstimAct->setDisabled(true);
     connect(paramEstimAct,SIGNAL(triggered()),this,SLOT(paramEstimation()));
@@ -717,6 +726,7 @@ void MainWindow::createToolBars()
     controlToolBar = addToolBar(tr("Control"));
     controlToolBar->addAction(importFromServerAct);
     controlToolBar->addAction(exportToServerAct);
+    controlToolBar->addAction(paramEstimAct);
     controlToolBar->setProperty("objectName", QString("controlToolBar"));
 
     editToolBar = new QToolBar(tr("Edit"), this);
@@ -938,21 +948,32 @@ void MainWindow::paramEstimation(){
     Data->calcDimTime();
 
     Data->calcDimConc();
+    Data->calcDimExpConc();
+
     Data->calcM2theta();
 
-    ModelCell *Model = new ModelCell(Data);
+    TISModel *CellModel = new TISModel(Data);
+
 
     EventLog << tr("Started parameter estimation and simulation");
 
-    Model->EstimateNumCells();
-    Model->Sim();
-    Model->SimODE();
+    CellModel->EstimateNumCells();
+    CellModel->Sim();
+    CellModel->SimODE();
+
+    AxialDispersionModel *DiffModel = new AxialDispersionModel(Data);
+
+    DiffModel->CalcPe(true);
+    DiffModel->Sim();
+
+    DiffModel->CalcPe(false);
+    DiffModel->Sim();
 
     EventLog << tr("Cell model parameters have been estimated, see the results...");
     QWidget *wnd = new QWidget(this, Qt::Dialog);
     QVBoxLayout* layout = new QVBoxLayout;
     QCustomPlot *resPlotWidget = new QCustomPlot(wnd);
-    QLabel* SimParams = new QLabel(wnd);
+    /*QLabel* SimParams = new QLabel(wnd);
     SimParams->setText(tr("<h3>Model Summary</h3><br>"
                           "Data Smoothing: Median Filter, Low-Pass Filter<br>"
                           "Paramethers Estimation: Levenberg-Marquardt Method<br>"
@@ -962,19 +983,21 @@ void MainWindow::paramEstimation(){
     QLabel* SimResults = new QLabel(wnd);
     SimResults->setText(tr("N = %1 (rounded to: %2), Cin = %3 mol/L<br>"
                            "tau = %4 sec, avg_tau = %5 sec<br>"
-                           "Method 1: N = %6").arg(QString::number(Model->getNum()),
-                                         QString::number(Model->getiNum()),
-                                         QString::number(Model->getCin()),
+                           "Method 1: N = %6").arg(QString::number(CellModel->getNum()),
+                                         QString::number(CellModel->getiNum()),
+                                         QString::number(CellModel->getCin()),
                                          QString::number(Data->getTau()),
                                          QString::number(Data->getAvgTau()),
                                          QString::number(Data->getNc())));
+                                         */
 
-    const QVector<qreal> &SConc = Data->getSConc();
+   // const QVector<qreal> &SConc = Data->getSConc();
+    const QVector<qreal> &SConc = Data->getDimConc();
     const QVector<qreal> &DimTime = Data->getDimTime();
 
     resPlotWidget->addGraph();
     for(int i = 0; i < DimTime.size(); i++) {
-        resPlotWidget->graph(0)->addData(Data->getDimTimeAt(i),  Data->getConcAt(i));
+        resPlotWidget->graph(0)->addData(Data->getDimTimeAt(i),  Data->getDimExpConcAt(i));
         resPlotWidget->graph(0)->setName(tr("Experiment"));
     }
 
@@ -982,19 +1005,22 @@ void MainWindow::paramEstimation(){
     resPlotWidget->graph(1)->setData(DimTime,  SConc);
     resPlotWidget->graph(1)->setPen(QPen(Qt::red));
     resPlotWidget->graph(1)->setName(tr("Experiment (smoothed)"));
-    Qt::GlobalColor Colors[2] = {Qt::green, Qt::magenta };
+    Qt::GlobalColor Colors[4] = {Qt::green, Qt::magenta, Qt::white, Qt::cyan };
 
     for(size_t i = 0; i < Data->getSimConcCount(); i++) {
        const QVector<qreal> &SimConc = Data->getSimConc(i);
        resPlotWidget->addGraph();
        resPlotWidget->graph(i+2)->setData(DimTime, SimConc);
        resPlotWidget->graph(i+2)->setPen(QPen(Colors[i]));
-       resPlotWidget->graph(i+2)->setName(tr("Simulated by method %1").arg(i+1));
+      // resPlotWidget->graph(i+2)->setName(tr("Simulated by method %1").arg(i+1));
+       resPlotWidget->graph(i+2)->setName(Data->getSimMethod(i));
     }
 
     resPlotWidget->xAxis->setLabel(tr("Dimensionless Time"));
-    resPlotWidget->yAxis->setLabel(tr("Tracer Concentration, mol/L"));
-    bool skipExpDataInScale = false;
+    //resPlotWidget->yAxis->setLabel(tr("Tracer Concentration, mol/L"));
+    resPlotWidget->yAxis->setLabel(tr("Dimensionless Tracer Concentration"));
+
+    bool skipExpDataInScale = true;
 
     if(skipExpDataInScale) {
         resPlotWidget->graph(0)->setVisible(false);
@@ -1009,11 +1035,12 @@ void MainWindow::paramEstimation(){
     resPlotWidget->setBackground(Qt::gray);
     resPlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     resPlotWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    resPlotWidget->legend->setBrush(QBrush(Qt::darkGray));
 
     wnd->setLayout(layout);
     layout->addWidget(resPlotWidget);
-    layout->addWidget(SimParams);
-    layout->addWidget(SimResults);
+    //layout->addWidget(SimParams);
+    //layout->addWidget(SimResults);
 
 
 
@@ -1031,8 +1058,9 @@ void MainWindow::paramEstimation(){
     FormulaLayoutItem *formulaItem = new FormulaLayoutItem();
 
 
-    QFile FormulaFile(":/resources/cellmodel2.mml");
+    QFile FormulaFile(":/resources/tismodel.mml");
     if (FormulaFile.open(QFile::ReadOnly | QFile::Text)) {
+
         QTextStream in(&FormulaFile);
         QString FormulaString = in.readAll();
         // For better view
@@ -1040,23 +1068,32 @@ void MainWindow::paramEstimation(){
         FormulaString.replace("&gt;","&#x0232A;");
 
         QMap<QString, QString> StringMap;
+        StringMap.insert("%TISModelResultsSummary%", tr("Tanks-In-Series Model Results Summary"));
+        StringMap.insert("%Method1%", tr("Method 1 - Probabilistic Characteristics"));
+        StringMap.insert("%DimensionlessTime%", tr("Dimensionless Time:"));
+        StringMap.insert("%NormalizedConcentration%", tr("Normalized Concentration:"));
+        StringMap.insert("%DimensionlessConcentration%", tr("Dimensionless Concentration:"));
+        StringMap.insert("%0OrderMoment%", tr("The 0-order Moment:"));
+        StringMap.insert("%DimensionlessTimeStep%", tr("Dimensionless Time Step:"));
+        StringMap.insert("%Dimensionless2OrderMoment%", tr("Dimensionless C-Curve's the 2nd-order Moment:"));
+        StringMap.insert("%DimensionlessCurveDispersion%",tr("Dimensionless C-Curve's Dispersion:"));
         StringMap.insert("%ExactSolution%", tr("Exact solution:"));
-        StringMap.insert("%AverageResidenceTime%", tr("Average residence time:"));
+        StringMap.insert("%MeanResidenceTime%", tr("Mean residence time:"));
         StringMap.insert("%AvgTau%", QString::number(Data->getAvgTau(),'f', 3));
-        StringMap.insert("%EstimatedNumberOfCells%", tr("Estimated number of cells:"));
-        StringMap.insert("%Num%", QString::number(Model->getNum(),'f', 3));
-        StringMap.insert("%iNum%",QString::number(Model->getiNum()));
-        StringMap.insert("%InitialTracerConcentration%",tr("Initial tracer concentration:"));
-        StringMap.insert("%Cin%", QString::number(Model->getCin(),'f', 3));
+        StringMap.insert("%EstimatedNumberOfCells%", tr("Estimated Number of Cells:"));
+        StringMap.insert("%Num%", QString::number(CellModel->getNum(),'f', 3));
+        StringMap.insert("%iNum%",QString::number(CellModel->getiNum()));
+        StringMap.insert("%InitialTracerConcentration%",tr("Initial Tracer Concentration:"));
+        StringMap.insert("%Cin%", QString::number(CellModel->getCin(),'f', 3));
         StringMap.insert("%Nc%", QString::number(Data->getNc(),'f', 3));
         StringMap.insert("%M0%", QString::number(Data->getM0(),'f', 3));
         StringMap.insert("%M2theta%", QString::number(round(Data->getM2theta())));
         StringMap.insert("%sigma2theta%", QString::number(Data->getSigma2theta(),'f',3));
 
 
-        foreach(const QString &value, StringMap) {
+        foreach(const QString &value, StringMap)
             FormulaString.replace(StringMap.key(value), value);
-        }
+
         /*
         formulaItem->setFormula(FormulaString.arg(tr("Exact solution:"),
                                                   tr("Average residence time:"),
@@ -1094,16 +1131,6 @@ void MainWindow::paramEstimation(){
         QLabel *schemaLabel = new QLabel(tr("Figure 1 - Experimental Plant's Schema"));
         //schemaLabel->setFont(QFont("Times New Roman", 12));
         schemaLabel->setAlignment(Qt::AlignCenter);
-
-        /* Doesn't work
-        schemaLabel->setStyleSheet("");
-        QPalette LabelPalette(schemaLabel->palette());
-        LabelPalette.setColor(QPalette::Background, Qt::transparent);
-        LabelPalette.setColor(QPalette::WindowText, Qt::black);
-        schemaLabel->setPalette(LabelPalette);
-
-        */
-
 
         QGraphicsProxyWidget *schemaLabelItem = resultsScene->addWidget(schemaLabel);
 

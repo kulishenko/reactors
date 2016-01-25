@@ -81,6 +81,8 @@
         <file>images/draw-cstr.png</file>
         <file>images/draw-pfr.png</file>
         <file>images/format-connect-node.png</file>
-        <file>resources/cellmodel2.mml</file>
+        <file>resources/diffusemodel.mml</file>
+        <file>images/accessories-calculator.png</file>
+        <file>resources/tismodel.mml</file>
     </qresource>
 </RCC>

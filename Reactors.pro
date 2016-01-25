@@ -26,7 +26,6 @@ SOURCES += main.cpp\
     libxls/src/ole.c \
     libxls/src/xls.c \
     libxls/src/xlstool.c \
-    modelcell.cpp \
     schemadata.cpp \
     schemadb.cpp \
     modelcstr.cpp \
@@ -42,12 +41,15 @@ SOURCES += main.cpp\
     schemaevent.cpp \
     schemascene.cpp \
     schemapfr.cpp \
-    diffusemodel.cpp \
     formulaitem.cpp \
     qgraphicsplot.cpp \
     formulalayoutitem.cpp \
     qgraphicsplotlayoutitem.cpp \
-    qgraphicspixmaplayoutitem.cpp
+    qgraphicspixmaplayoutitem.cpp \
+    modelpfr.cpp \
+    tismodel.cpp \
+    schemamodel.cpp \
+    axialdispersionmodel.cpp
 
 win32: SOURCES += libxls/src/localcharset.c
 
@@ -69,7 +71,6 @@ HEADERS  += mainwindow.h \
     libxls/include/libxls/xlstool.h \
     libxls/include/libxls/xlstypes.h \
     libxls/include/libxls/config.h \
-    modelcell.h \
     schemadata.h \
     schemadb.h \
     modelcstr.h \
@@ -85,12 +86,15 @@ HEADERS  += mainwindow.h \
     schemaevent.h \
     schemascene.h \
     schemapfr.h \
-    diffusemodel.h \
     formulaitem.h \
     qgraphicsplot.h \
     formulalayoutitem.h \
     qgraphicsplotlayoutitem.h \
-    qgraphicspixmaplayoutitem.h
+    qgraphicspixmaplayoutitem.h \
+    modelpfr.h \
+    tismodel.h \
+    schemamodel.h \
+    axialdispersionmodel.h
 
 win32: HEADERS += libxls/include/libxls/localcharset.h
 

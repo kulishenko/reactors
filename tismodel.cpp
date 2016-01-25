@@ -1,16 +1,16 @@
-#include "modelcell.h"
+#include "tismodel.h"
 
-ModelCell::ModelCell(SchemaData *Data) : p_Data(Data)
+TISModel::TISModel(SchemaData *Data) : SchemaModel(Data)
 {
 
 }
 
-ModelCell::~ModelCell()
+TISModel::~TISModel()
 {
 
 }
 
-int ModelCell::N_f(const gsl_vector *x, void *data, gsl_vector *f)
+int TISModel::N_f(const gsl_vector *x, void *data, gsl_vector *f)
 {
     size_t n = (static_cast<struct data *> (data))->n;
     const double *y = (static_cast<struct data *> (data))->y;
@@ -34,7 +34,7 @@ int ModelCell::N_f(const gsl_vector *x, void *data, gsl_vector *f)
     return GSL_SUCCESS;
 }
 
-int ModelCell::N_df (const gsl_vector * x, void *data,
+int TISModel::N_df (const gsl_vector * x, void *data,
          gsl_matrix * J)
 {
     size_t n = (static_cast<struct data *> (data))->n;
@@ -65,7 +65,7 @@ int ModelCell::N_df (const gsl_vector * x, void *data,
 }
 
 
-int ModelCell::N_fdf(const gsl_vector * x, void *data,
+int TISModel::N_fdf(const gsl_vector * x, void *data,
                      gsl_vector * f, gsl_matrix * J)
 {
     N_f (x, data, f);
@@ -75,7 +75,7 @@ int ModelCell::N_fdf(const gsl_vector * x, void *data,
 
 }
 
-void ModelCell::print_state(size_t iter, gsl_multifit_fdfsolver *s)
+void TISModel::print_state(size_t iter, gsl_multifit_fdfsolver *s)
 {
 
     qDebug() << QObject::tr("iter: %1 x = %2 %3"
@@ -88,7 +88,7 @@ void ModelCell::print_state(size_t iter, gsl_multifit_fdfsolver *s)
 
 }
 
-int ModelCell::func_C (double t, const double y[], double f[],
+int TISModel::func_C (double t, const double y[], double f[],
       void *params)
 {
     Q_UNUSED(t);
@@ -103,21 +103,21 @@ int ModelCell::func_C (double t, const double y[], double f[],
     return GSL_SUCCESS;
 }
 
-qreal ModelCell::getCin() const
+qreal TISModel::getCin() const
 {
     return Cin;
 }
 
-qreal ModelCell::getNum() const
+qreal TISModel::getNum() const
 {
     return Num;
 }
 
-unsigned int ModelCell::getiNum() const
+unsigned int TISModel::getiNum() const
 {
     return iNum;
 }
-int ModelCell::jac_C (double t, const double y[], double *dfdy,
+int TISModel::jac_C (double t, const double y[], double *dfdy,
      double dfdt[], void *params)
 {
     Q_UNUSED(t);
@@ -149,7 +149,7 @@ int ModelCell::jac_C (double t, const double y[], double *dfdy,
 }
 
 
-void ModelCell::EstimateNumCells()
+void TISModel::EstimateNumCells()
 {
     const gsl_multifit_fdfsolver_type *T;
     gsl_multifit_fdfsolver *s;
@@ -229,19 +229,26 @@ void ModelCell::EstimateNumCells()
       gsl_matrix_free (covar);
 }
 
-void ModelCell::Sim()
+void TISModel::Sim(const bool dimensionless)
 {
     QVector<qreal> *CalcConc = new QVector<qreal>();
     const QVector<qreal> &DimTime = p_Data->getDimTime();
 
+    qreal tau = p_Data->getAvgTau();
+    qreal M0 = p_Data->getM0();
+
     auto end = DimTime.constEnd();
     for(auto iter = DimTime.constBegin(); iter != end; ++iter)
-        CalcConc->push_back(Conc(*iter));
+        if(dimensionless)
+            CalcConc->push_back(Conc(*iter) * tau / M0);
+        else
+            CalcConc->push_back(Conc(*iter));
 
-    p_Data->SimConc.push_back(*CalcConc);
+    p_Data->addSimData(*CalcConc,
+                QString(QObject::tr("Tanks-in-Series Model (N = %1), Exact Solution")).arg(Num));
 }
 
-void ModelCell::SimODE()
+void TISModel::SimODE(const bool dimensionless)
 {
     qreal avg_tau = p_Data->getAvgTau();
     qreal params[3] = {static_cast<qreal>(iNum), avg_tau/iNum, Cin};
@@ -258,29 +265,36 @@ void ModelCell::SimODE()
     for (i = 1; i < iNum; i++)
       y[i] = 0.0f;
 
+    qreal tau = p_Data->getAvgTau();
+    qreal M0 = p_Data->getM0();
+
     const QVector<qreal> &DimTime = p_Data->getDimTime();
 
     unsigned int nP = DimTime.size() - 1;
     for (i = 1; i <= nP; i++)
     {
-      qreal ti = DimTime.at(i) * avg_tau;
-      int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
+          qreal ti = DimTime.at(i) * avg_tau;
+          int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
 
-      if (status != GSL_SUCCESS)
-    {
-      printf ("error, return value=%d\n", status);
-      break;
+          if (status != GSL_SUCCESS)
+        {
+          printf ("error, return value=%d\n", status);
+          break;
+        }
+          if(dimensionless)
+            CalcConc->push_back(y[iNum-1] * tau / M0);
+          else
+            CalcConc->push_back(y[iNum-1]);
+
+        //  printf ("%.5e %.5e\n", t, y[iNum-1]);
     }
+    p_Data->addSimData(*CalcConc,
+                QString(QObject::tr("Tanks-in-Series Model (N = %1), Numerical ODE Solution")).arg(iNum));
 
-      CalcConc->push_back(y[iNum-1]);
-
-    //  printf ("%.5e %.5e\n", t, y[iNum-1]);
-    }
-    p_Data->SimConc.push_back(*CalcConc);
     gsl_odeiv2_driver_free (d);
 }
 
-qreal ModelCell::Conc(const qreal theta) const
+qreal TISModel::Conc(const qreal theta) const
 {
     return Cin / gsl_sf_gamma(Num) * pow(theta * Num, Num - 1) * exp(-theta * Num);
 }

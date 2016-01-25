@@ -11,7 +11,8 @@ bool SchemaItem::AttachMode = false;
 SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
 SchemaItem::SchemaItem() : QObject(), m_ElementId(s_ElementId++),
     m_isActive(false), m_ItemType(getItemType()),
-    p_OutletPort(nullptr), p_InletPort(nullptr), p_Descedant(nullptr), p_parent(nullptr), m_Flowrate(0), m_LineWidth(1.5f)
+    p_OutletPort(nullptr), p_InletPort(nullptr), p_Descedant(nullptr),
+    m_LineWidth(1.5f), p_parent(nullptr), m_Flowrate(0)
 {
     setPen(QPen(Qt::black, m_LineWidth, Qt::SolidLine, Qt::RoundCap));
 }

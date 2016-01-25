@@ -93,6 +93,14 @@ void SchemaData::calcDimConc()
         DimConc.push_back(SConc.at(i) * tau / getM0());
 }
 
+void SchemaData::calcDimExpConc()
+{
+    qreal tau = getAvgTau();
+    for(int i = 0; i < Conc.size(); i += m_DataRes)
+        DimExpConc.push_back(Conc.at(i) * tau / getM0());
+}
+
+
 void SchemaData::calcDimTime()
 {
     m_tau = 0.84 * m_NumCascade / m_Flowrate * 3600; // ToDo: remove?
@@ -200,6 +208,29 @@ qreal SchemaData::getSConcAt(const size_t i) const
     return SConc.at(i);
 }
 
+qreal SchemaData::getDimExpConcAt(const size_t i) const
+{
+    return DimExpConc.at(i);
+}
+
+void SchemaData::setSimMethod(QString name)
+{
+    if(name.isEmpty())
+        name.append(QObject::tr("Simulated by method %1").arg(SimMethod.size()));
+
+    SimMethod.push_back(name);
+}
+
+const QString &SchemaData::getSimMethod(const int i) const
+{
+    return SimMethod.at(i);
+}
+
+void SchemaData::addSimData(const QVector<qreal> &simData, const QString &name)
+{
+    SimConc.push_back(simData);
+    setSimMethod(name);
+}
 
 qreal SchemaData::getDimTimeAt(const size_t i) const
 {
@@ -209,6 +240,16 @@ qreal SchemaData::getDimTimeAt(const size_t i) const
 const QVector<qreal> &SchemaData::getSConc() const
 {
     return SConc;
+}
+
+const QVector<qreal> &SchemaData::getDimConc() const
+{
+    return DimConc;
+}
+
+const QVector<qreal> &SchemaData::getDimExpConc() const
+{
+    return DimExpConc;
 }
 
 const QVector<qreal> &SchemaData::getDimTime() const

@@ -1,6 +1,7 @@
 #include "schemapfr.h"
 
-SchemaPFR::SchemaPFR(qreal Width, qreal Height, QObject *parent) : SchemaItem()
+SchemaPFR::SchemaPFR(qreal Width, qreal Height, QObject *parent) : SchemaItem(),
+    p_Path(nullptr), p_Model(nullptr)
 {
     p_Path = new QPainterPath;
     p_Path->addRect(0, 0, Width, Height);
@@ -27,5 +28,20 @@ SchemaPFR::~SchemaPFR()
 void SchemaPFR::setIcon(const SchemaPFR::PFRIcon icon)
 {
     m_IconType = icon;
+}
+
+void SchemaPFR::fill()
+{
+    emit filled();
+}
+
+void SchemaPFR::startFeed()
+{
+
+}
+
+void SchemaPFR::setFlowrate(const qreal Value)
+{
+
 }
 

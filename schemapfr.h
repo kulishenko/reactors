@@ -1,6 +1,7 @@
 #ifndef SCHEMAPFR_H
 #define SCHEMAPFR_H
 #include <schemaitem.h>
+#include <modelpfr.h>
 #include <QPainterPath>
 
 class SchemaPFR : public SchemaItem
@@ -14,6 +15,14 @@ public:
 private:
     PFRIcon m_IconType;
     QPainterPath* p_Path;
+    ModelPFR* p_Model;
+signals:
+    void filled();
+    void startedFeed();
+public slots:
+    void fill();
+    void startFeed();
+    void setFlowrate(const qreal Value);
 };
 
 #endif // SCHEMAPFR_H

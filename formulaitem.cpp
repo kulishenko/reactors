@@ -135,7 +135,7 @@ QPixmap FormulaItem::toPixmap() const
     QPixmap pixmap(r.width(), r.height());
     pixmap.fill(QColor(0, 0, 0, 0));
     QPainter painter(&pixmap);
-     painter.fillRect( r, Qt::white );
+    painter.fillRect( r, Qt::white );
 
     //painter.setBrush(QBrush(QColor(0, 0, 0, 0)));
     //painter.drawRect(r);
