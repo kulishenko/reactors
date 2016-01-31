@@ -76,6 +76,9 @@ class QLabel;
 class QMenu;
 class QListWidget;
 
+/*!
+ * \brief Класс главного окна приложения
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -86,14 +89,13 @@ public:
     MainWindow &operator<<(const QString& Event);
 //private:
     //    bool eventFilter(QObject *, QEvent *);
-public slots:
+protected:
+    void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
+private slots:
     void exportFinished(bool result);
     void onlineMode();
     void offlineMode();
     void editMode();
-protected:
-    void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
-private slots:
     void newFile();
     void open();
     void save();
@@ -134,13 +136,7 @@ private:
 
     SchemaData *p_Data;
 
-//    SchemaFlowmeter* flowmeterItem;
-//    SchemaValve* valveItem1;
-
     QVector<SchemaCSTR*> reactorItems;
-
-
-//    enum class RunMode {Online, Offline, Edit};
 
     void loadSettings();
     void saveSettings();
@@ -238,7 +234,7 @@ private:
     bool isSimRun;
     bool isDBConnected;
     bool m_isStarted;
-//    RunMode m_RunMode;
+
 };
 
 #endif // MAINWINDOW_H

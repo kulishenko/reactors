@@ -3,10 +3,13 @@
 #include "schemacstr.h"
 #include <QGraphicsScene>
 
+/*!
+ * \brief Класс, описывающий соединение элементов графической схемы
+ */
 class SchemaPipeline : public SchemaItem {
     Q_OBJECT
-    Q_PROPERTY(int FromElementId MEMBER m_FromElementId WRITE setFromElementId)
-    Q_PROPERTY(int ToElementId MEMBER m_ToElementId WRITE setToElementId)
+    Q_PROPERTY(int FromElementId MEMBER m_FromElementId WRITE setFromElementId) //!< Начальный графический элемент схемы
+    Q_PROPERTY(int ToElementId MEMBER m_ToElementId WRITE setToElementId) //!< Конечный графический элемент схемы
 public:
     SchemaPipeline();
     SchemaPipeline(SchemaItem *From, SchemaItem *To);

@@ -3,6 +3,9 @@
 #include <formulaitem.h>
 #include <QGraphicsLayoutItem>
 
+/*!
+ * \brief Класс-обертка для использования FormulaItem в Layout
+ */
 class FormulaLayoutItem : public FormulaItem, public QGraphicsLayoutItem
 {
 public:

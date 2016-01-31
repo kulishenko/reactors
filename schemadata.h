@@ -6,6 +6,15 @@
 #include <pfdcontrol.h>
 
 class TISModel;
+/*!
+  \brief Класс, предназначенный для обработки экспериментальных данных и хранения результатов моделирования
+
+  Обеспечивает определение времени начала и конца эксперимента, пересчет электропроводности раствора
+  в концентрацию трассера, сглаживание экспериментальных данных медианным фильтром и фильтром скользящего
+  среднего, расчет моментов концентрации трассера на выходе из аппарата как случайной величины,
+  определение на их основе среднего времени пребывания вещества в аппарате
+
+ */
 class SchemaData
 {
     friend class TISModel;
@@ -41,32 +50,32 @@ public:
     const QString &getSimMethod(const int i) const;
     void addSimData(const QVector<qreal> & simData, const QString& name = QString());
 private:
-    void setSimMethod(QString name);
-    const QVector<qreal> &p_ExpDataTime;
-    const QVector<qreal> &p_ExpDataConductivity;
-    int m_NumCascade;
-    qreal m_Flowrate; // Volume flowrate, L/hr
-    size_t m_DataRes; // Data resolution
-    int i_t0;
-    qreal t0; // Zero time, s
-    qreal tend; // End time, s
-    qreal m_tau; // Residence time, s
-    qreal *avg_tau; // Average residence time, s
-    qreal *M0; // Initial moment
-    qreal M2t, M2theta; // 2-nd order moments
-    qreal sigma2theta;
-    qreal Nc; // Number of cells
-    qreal Calibrate(qreal x) const;
-    qreal dt(const size_t i) const;
-    qreal dim_dt(const size_t i) const;
+    void setSimMethod(QString name); //!< Задает название метода расчета
+    const QVector<qreal> &p_ExpDataTime; //!< Ссылка на массив времени, соответствующего экспериментальным данным
+    const QVector<qreal> &p_ExpDataConductivity; //!< Ссылка на массив экспериментальных данных
+    int m_NumCascade; //!< Количество аппаратов в каскаде (по заданию)
+    qreal m_Flowrate; //!< Оъемный расход вещества на входе экспериментальной установки, л/ч
+    size_t m_DataRes; //!< Разрешение данных
+    int i_t0; //!< Индекс элемента, соответствующего началу опыта
+    qreal t0; //!< Время начала эксперимента, с
+    qreal tend; //!< Время конца эксперимента, с
+    qreal m_tau; //!< Расчетное время пребывания вещества в схеме, с
+    qreal *avg_tau; //!< Среднее время пребывания вещества в схеме, с
+    qreal *M0; //!< Начальный момент 0-го порядка
+    qreal M2t, M2theta; //!< Размерный и безразмерный центральные моменты 2го порядка
+    qreal sigma2theta; //!< Дисперсия безразмерного времени
+    qreal Nc; //!< Число ячеек
+    qreal Calibrate(qreal x) const; //!< Калибровка (пересчет электропроводности раствора в мСм/м в концентрацию трассера, моль/л)
+    qreal dt(const size_t i) const; //!< Текущий шаг размерного времени, с
+    qreal dim_dt(const size_t i) const; //!< Текущий шаг безразмерного времени
     QVector<qreal>::const_iterator t_0() const;
     QVector<qreal>::const_iterator t_last() const;
-    QVector<qreal> Conc, SConc; // Tracer concentration, kmol/m3
-    QVector<qreal> DimTime; // Dimensionless time (a.k.a. theta)
-    QVector<qreal> DimConc; // Dimensionless tracer concentration (a.k.a. C_theta)
-    QVector<qreal> DimExpConc; // Dimensionless experimental (unsmoothered) concentration
-    QVector<QVector<qreal>> SimConc; // Simulation results - Tracer concentration
-    QVector<QString> SimMethod;
+    QVector<qreal> Conc, SConc; //!< Концетрация трассера, моль/л
+    QVector<qreal> DimTime; //!< Безразмерное время (a.k.a. theta)
+    QVector<qreal> DimConc; //!< Безразмерная концентрация трассера (a.k.a. C_theta)
+    QVector<qreal> DimExpConc; //!< Безразмерная экспериментальная (несглаженная) концентрация трассера
+    QVector<QVector<qreal>> SimConc; //!< Результаты моделирования - концентрация трассера
+    QVector<QString> SimMethod; //!< Название методов расчета
 };
 
 #endif // SCHEMADATA_H

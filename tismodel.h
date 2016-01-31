@@ -16,6 +16,16 @@
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_odeiv2.h>
 
+/*!
+ * \brief Класс, предназначенный для расчета схемы с использованием ячеечной модели
+ *
+ * Содержит:
+ * - модуль оценки числа ячеек и начальной концетрации трассера методом Левенберга-Марквардта путем
+ * решения задачи многомерного нелинейного МНК с использованием точного аналитического решения;
+ * - модуль приближенного решения задачи Коши, описывающей модель из N ячеек
+ * - модуль расчета значений функции отлика для ячеечной модели на основе аналитического решения.
+ *
+ */
 
 class TISModel : public SchemaModel
 {
@@ -41,9 +51,9 @@ public:
     qreal getNum() const;
     unsigned int getiNum() const;
 private:
-    qreal Cin; // Estimated initial tracer concentration, mol/l
-    qreal Num; // Estimated number of cells
-    unsigned int iNum; // Rounded number of cells
+    qreal Cin; //!< Estimated initial tracer concentration, mol/l
+    qreal Num; //!< Estimated number of cells
+    unsigned int iNum; //!< Rounded number of cells
     qreal Conc(const qreal theta) const;
 };
 

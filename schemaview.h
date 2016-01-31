@@ -6,6 +6,9 @@
 #include "schemaevent.h"
 #include "schemaitem.h"
 
+/*!
+ * \brief Класс, предназначенный для вывода сцены
+ */
 class SchemaView : public QGraphicsView
 {
     Q_OBJECT
@@ -14,7 +17,7 @@ public:
     ~SchemaView();
 private:
     int _numScheduledScalings;
-    qreal scale_factor;
+    qreal scale_factor; //!< Масштаб окна просмотра
     QPoint lastPos;
     SchemaItem *p_ItemFrom, *p_ItemTo;
 protected:

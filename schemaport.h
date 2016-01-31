@@ -5,6 +5,10 @@
 #include <QGraphicsItem>
 #include <QtMath>
 #include <QPen>
+
+/*!
+ * \brief Класс, описывающий порты графических элементов схемы
+ */
 class SchemaPort : public  QGraphicsLineItem //QPointF
 {
 public:
@@ -13,8 +17,8 @@ public:
 //    void setRotation(qreal Angle);
 //    void setPos(qreal dx, qreal dy);
 //    QGraphicsItem* parent;
-    QPointF scenePos() const;
-    qreal getAngle() const;
+    QPointF scenePos() const; //!< Выводит преобразованные координаты порта в сцене
+    qreal getAngle() const; //!< Выводит угол порта в системе координат сцены
 };
 
 #endif // SCHEMAPORT_H

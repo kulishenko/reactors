@@ -1,7 +1,9 @@
 #ifndef SCHEMAEVENT_H
 #define SCHEMAEVENT_H
 #include <QEvent>
-
+/*!
+ * \brief Класс, описывающий событие графической схемы
+ */
 class SchemaEvent : public QEvent
 {
 public:

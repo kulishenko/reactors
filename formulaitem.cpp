@@ -85,7 +85,10 @@ void FormulaItem::setColors( const bool &colors )
     d_colors = colors;
     update();
 }
-
+/*!
+ * \brief Осуществляет прорисовку формулы, заданной через setFormula()
+ * \param[out] painter указатель на устройство вывода
+ */
 void FormulaItem::renderFormula( QPainter *painter ) const
 {
     QwtMathMLDocument doc;
@@ -129,6 +132,10 @@ void FormulaItem::renderFormula( QPainter *painter ) const
     }
 
 }
+/*!
+ * \brief Сохраняет блок формул в объект QPixmap
+ * \return Объект QPixmap, содержащий блок формул
+ */
 QPixmap FormulaItem::toPixmap() const
 {
     QRectF r = boundingRect();

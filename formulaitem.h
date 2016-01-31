@@ -7,6 +7,12 @@
 #include <QPaintEvent>
 #include <QDebug>
 
+/*!
+ * \brief Класс для рендеринга формул формата MathML с использованием библиотеки Qwt
+ *
+ * Осуществляет отрисовку блока формул формата MathML, используемого для формирования подробного
+ * отчета о лабораторной работе. Используется библиотека Qwt.
+ */
 class FormulaItem: public QGraphicsItem
 {
 public:
@@ -24,7 +30,6 @@ public slots:
     void setRotation(const qreal &rotation);
     void setDrawFrames(const bool &drawFrames);
     void setColors(const bool &colors);
-
 protected:
   //  void paintEvent(QPaintEvent *event);
 private:

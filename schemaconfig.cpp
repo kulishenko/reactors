@@ -3,48 +3,21 @@
 
 SchemaConfig::SchemaConfig()
 {
-/*
-    SchemaItem &sItem;
-
-
-    ElementItemTypes.insert("SchemaCSTR", SchemaCSTR);
-    ElementItemTypes.insert("SchemaPFR", SchemaPFR);
-
-    ElementType *item = new ElementType;
-
-
-    item->insert("type", ElementItemTypes.find(typeid(sItem).name()).value());
-    Config.append(item);*/
 }
 
 SchemaConfig::~SchemaConfig()
 {
 
 }
-
-int SchemaConfig::getIntType(const SchemaConfig::SchemaItemType t)
-{
-    switch(t){
-        case SchemaItemType::SchemaCSTR:
-            return 0;
-            break;
-        case SchemaItemType::SchemaPFR:
-            return 1;
-            break;
-    }
-    return 0;
-}
-void SchemaConfig::ParseXMLConfig(){
-    QFile* file = new QFile("config.xml");
-    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-       qDebug()<< QObject::tr("Unable to open XML-config");
-       return;
-    }
-    QXmlStreamReader xml(file);
-}
+/*!
+ * \brief Сериализует в формат XML объект, унаследованный от QObject
+ * \param[in] object Указатель на объект
+ * \param[in,out] output Указатель на устройство ввода
+ * \deprecated Данная функция будет удалена в дальнейшем
+ * \return Булево значение результата
+ */
 bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
-    // Deprecated
+
     QDomDocument doc;
     QDomElement root;
     QString infile;
@@ -88,7 +61,12 @@ bool SchemaConfig::serializeObject(QObject* object, QIODevice *output){
     output->close();
     return true;
 }
-
+/*!
+ * \brief Десериализует объект QObject
+ * \param[in] element Указатель на элемент DOM XML, содержащий описание объекта
+ * \param[out] object Указатель на десериализованный объект
+ * \return Булево значение результата
+ */
 bool SchemaConfig::_deserializeObject(QDomElement *element, QObject *object)
 {
 
@@ -109,8 +87,15 @@ bool SchemaConfig::_deserializeObject(QDomElement *element, QObject *object)
     return true;
 }
 
+/*!
+ * Десериализует схему из файла формата XML
+ * \param[in] input Указатель на файл схемы
+ * \param[in] parent Указатель на родительский объект
+ * \return Указатель на десериализованный объект SchemaScene
+ */
 SchemaScene* SchemaConfig::deserializeScene(QIODevice *input, QObject *parent)
 {
+
     input->open(QIODevice::ReadOnly | QIODevice::Text);
     SchemaScene* Scene = new SchemaScene(parent);
     QDomDocument doc;
@@ -165,8 +150,15 @@ SchemaScene* SchemaConfig::deserializeScene(QIODevice *input, QObject *parent)
     return Scene;
 }
 
+/*!
+ * Сериализует схему в файла формата XML
+ * \param[in] scene Указатель на сцену схемы
+ * \param[out] output Указатель на устройство вывода
+ * \return булево значение результата
+ */
 bool SchemaConfig::serializeScene(SchemaScene *scene, QIODevice *output)
 {
+
     QDomDocument doc;
     QDomElement root;
 

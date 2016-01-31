@@ -1,10 +1,12 @@
 #ifndef MODELPFR_H
 #define MODELPFR_H
 #include <modelitem.h>
-
+/*!
+ * \brief Класс, описывающий поведение трубчатых реакторов
+ */
 class ModelPFR : public ModelItem
 {
-    friend class SchemaCSTR;
+    friend class SchemaPFR;
     Q_OBJECT
     Q_PROPERTY(qreal Level MEMBER m_Level)
     Q_PROPERTY(bool isWorking MEMBER m_isWorking)

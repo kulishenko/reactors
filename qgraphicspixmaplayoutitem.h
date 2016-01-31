@@ -5,6 +5,9 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsLayoutItem>
 
+/*!
+ * \brief Класс-обертка, предназначенный для вывода QGraphicsPixmapItem в Layout
+ */
 class QGraphicsPixmapLayoutItem : public QGraphicsPixmapItem, public QGraphicsLayoutItem
 {
 public:

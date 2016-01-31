@@ -1,6 +1,13 @@
 #include "schemacell.h"
 #include <QPen>
-
+/*!
+ * \brief Создает объект SchemaCell
+ * \param Width Ширина
+ * \param Height Высота
+ * \param PosX Координата X
+ * \param PosY Координата Y
+ * \param Angle Угол поворота
+ */
 SchemaCell::SchemaCell(  qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Angle) : SchemaItem()
 {
 

@@ -3,7 +3,9 @@
 #include <QGraphicsPolygonItem>
 #include <schemaitem.h>
 
-
+/*!
+ * \brief Класс, описывающий графический элемент, обозначающий входной или выходной материальный поток
+ */
 class SchemaStream : public SchemaItem
 {
     Q_OBJECT

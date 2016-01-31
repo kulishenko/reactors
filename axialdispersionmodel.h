@@ -16,7 +16,16 @@
 
 #include <QtMath>
 
-
+/*!
+ * \brief Класс, предназначенный для расчета схемы с использованием однопараметрической диффузионной модели
+ *
+ * Содержит:
+ * - модуль оценки значения числа Пекле по вероятностным характеристикам, а также методом Левенберга-Марквардта;
+ * - модуль приближенного расчета значения функции отклика с использованием соотношения, представляющего
+ * собой бесконечно медленно сходящийся ряд, а также с использованием нормального закона распределения;
+ * - модуль поиска положительных корней трансцендентного уравнения методом сканирования совместно с методом Ньютона.
+ *
+ */
 
 class AxialDispersionModel : public SchemaModel
 {
@@ -44,12 +53,12 @@ private:
     inline static double lambda_eqn(double lambda, void *params);
     inline static double lambda_eqn_deriv(double lambda, void *params);
     static void lambda_eqn_fdf(double lambda, void *params, double *y, double *dy);
-    static double Pe_eqn(double Pe, void *params);
-    static double Pe_eqn_deriv(double Pe, void *params);
+    inline static double Pe_eqn(double Pe, void *params);
+    inline static double Pe_eqn_deriv(double Pe, void *params);
     static void Pe_eqn_fdf(double Pe, void *params, double *y, double *dy);
-    int m_N;
-    qreal m_Pe;
-    QVector<qreal> *p_Lambda;
+    int m_N; //!< Число первых членов бесконечного ряда, использующихся при суммировании
+    qreal m_Pe; //!< Значение числа Pe
+    QVector<qreal> *p_Lambda; //!< Указатель на массив положительных корней трансцендентного уравнения
     qreal Conc(const qreal theta) const;
     qreal ConcSimp(const qreal theta) const;
     static int C_theta_f(const gsl_vector *x, void *data, gsl_vector *f);

@@ -10,9 +10,18 @@
 #include <QList>
 #include <QFile>
 #include <QApplication>
-//#include <schemacstr.h>
+
 class SchemaItem;
-class SchemaCSTR; // Why doesn't it works from header?
+
+/*!
+ * \brief Класс, описывающий логику работы мнемосхемы (Control)
+ *
+ * Осуществляет:
+ * - управление логикой мнемосхемы;
+ * - воспроизведение результатов предыдущих экспериментов;
+ * - двусторонний обмен данными с серверным модулем.
+ */
+
 class PFDControl : public QObject
 {
     Q_OBJECT
@@ -38,28 +47,28 @@ public:
     const QString &getPlaybackFileName() const;
     int getNumCascade() const;
 private:
-    qreal m_Flowrate;
-    qreal m_PlaybackFlowrate;
-    QString m_PlaybackFileName;
-    int m_NumCascade;
-    QVector<qreal> m_Time;
-    QVector<qreal> m_Parameter;
-    bool isStarted;
-    bool isFlowrateSet;
-    qreal TimeNow;
+    qreal m_Flowrate; //!< Текущий объемный расход вещества, л/ч
+    qreal m_PlaybackFlowrate; //!< Объемный расход вещества для записи опыта, л/ч
+    QString m_PlaybackFileName; //!< Имя файла записи опыта (при чтении исходных данных из файла)
+    int m_NumCascade; //!< Число реакторов в каскаде (по заданию)
+    QVector<qreal> m_Time; //!< Массив значений времени, соответствующего экспериментальным данным
+    QVector<qreal> m_Parameter; //!< Массив значений экспериментального параметра
+    bool isStarted; //!< Установка запущена
+    bool isFlowrateSet; //!< Установлен требуемый объемный расход (режим воспроизведения)
+    qreal TimeNow; //!< Текущее время с момента начала эксперимента
     QVector<qreal> Tau; // Transient times for CSTRs (temp) -> to be moved to ModelCSTR
 signals:
     void setLevel();
-    void doSim();
+    void doSim(); //!< Выполняет шаг воспроизведения опыта
     void startSim();
     void started();
 public slots:
-    void tick();
-    void flowrate_increased();
-    void flowrate_decreased();
-    void Start();
-    void setFlowrate(qreal Value);
-    void setPlaybackFlowrate(qreal Value);
+    void tick(); //!< Опрос параметров
+    void flowrate_increased(); //!< Увеличение объемного расхода
+    void flowrate_decreased(); //!< Уменьшение объемного расхода
+    void Start(); //!< Запуск воспроизведения опыта
+    void setFlowrate(qreal Value); //!< Установить объемный расход, л/ч
+    void setPlaybackFlowrate(qreal Value); //!< Установить объемный расход для режима воспроизведения, л/ч
 };
 
 #endif // PFDCONTROL_H

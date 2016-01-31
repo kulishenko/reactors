@@ -2,7 +2,9 @@
 #define QGRAPHICSPLOTLAYOUTITEM_H
 #include <qgraphicsplot.h>
 #include <QGraphicsLayoutItem>
-
+/*!
+ * \brief Класс-обертка, предназначенный для вывода QGraphicsPlot с использованием Layout
+ */
 class QGraphicsPlotLayoutItem : public QGraphicsPlot, public QGraphicsLayoutItem
 {
 public:

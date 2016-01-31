@@ -12,6 +12,7 @@ TISModel::~TISModel()
 
 int TISModel::N_f(const gsl_vector *x, void *data, gsl_vector *f)
 {
+
     size_t n = (static_cast<struct data *> (data))->n;
     const double *y = (static_cast<struct data *> (data))->y;
     const double *sigma = (static_cast<struct data *> (data))->sigma;
@@ -37,6 +38,15 @@ int TISModel::N_f(const gsl_vector *x, void *data, gsl_vector *f)
 int TISModel::N_df (const gsl_vector * x, void *data,
          gsl_matrix * J)
 {
+
+    /*!
+     * \brief Рассчитывает значение Якобиана векторной функции N(x) в точках x
+     * \param[in] x указатель на первый элемент массива x
+     * \param[in] data указатель на стуктуру, содержащую коэффициенты функции N(x)
+     * \param[in,out] J Якобиан системы N(x)
+     * \return значение GSL_SUCCESS в случае успешного расчета
+     */
+
     size_t n = (static_cast<struct data *> (data))->n;
     const double *sigma = (static_cast<struct data *> (data))->sigma;
     const double *arg = (static_cast<struct data *> (data))->x;

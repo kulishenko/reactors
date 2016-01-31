@@ -11,8 +11,8 @@ bool SchemaItem::AttachMode = false;
 SchemaItem::RunMode SchemaItem::SchemaMode = SchemaItem::RunMode::Offline;
 SchemaItem::SchemaItem() : QObject(), m_ElementId(s_ElementId++),
     m_isActive(false), m_ItemType(getItemType()),
-    p_OutletPort(nullptr), p_InletPort(nullptr), p_Descedant(nullptr),
-    m_LineWidth(1.5f), p_parent(nullptr), m_Flowrate(0)
+    p_OutletPort(nullptr), p_InletPort(nullptr),
+    m_LineWidth(1.5f), p_Descedant(nullptr), p_parent(nullptr), m_Flowrate(0)
 {
     setPen(QPen(Qt::black, m_LineWidth, Qt::SolidLine, Qt::RoundCap));
 }
@@ -61,6 +61,10 @@ void SchemaItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
 void SchemaItem::setParent(SchemaScene *scene)
 {
+    /*!
+    Устанавливает родительский объект
+    \param[in] scene Указатель на родительский объект
+    */
     p_parent = scene;
     QObject::setParent(scene);
 }
@@ -74,12 +78,17 @@ SchemaScene *SchemaItem::parent() const
 
 void SchemaItem::setFlowrate(const qreal Value)
 {
+    /*!
+    Устанавливает объемный расход для элемента схемы
+    \param[in] Value Значение относительного объемного расхода
+    */
     m_Flowrate = Value;
 }
 
 
 QString SchemaItem::getItemType()
 {
+    /*! \return Строковое значение имени графического элемента схемы */
     // KOCTbI/|b
     QString type;
     if (dynamic_cast<SchemaCSTR*>(this)) type = "SchemaCSTR";
@@ -95,6 +104,7 @@ QString SchemaItem::getItemType()
 
 bool SchemaItem::isActive() const
 {
+    /*! \return Активен ли элемент */
     return m_isActive;
 }
 

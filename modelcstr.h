@@ -4,7 +4,9 @@
 #include <schemaitem.h>
 #include <QFile>
 #include <QDebug>
-
+/*!
+ * \brief Класс модели, описывающей поведение реактора с мешалкой
+ */
 class ModelCSTR : public ModelItem
 {
     friend class SchemaCSTR;
@@ -14,7 +16,6 @@ class ModelCSTR : public ModelItem
 public:
     ModelCSTR(SchemaItem* parent = 0);
     ~ModelCSTR();
-//    qreal calcTau();
 private:
     qreal m_Level; // Liquid Phase Fraction
     qreal m_Volume; // Vessel volume in L

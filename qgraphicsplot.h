@@ -3,7 +3,9 @@
 #include <QGraphicsItem>
 #include <QPicture>
 #include <qcustomplot/qcustomplot.h>
-
+/*!
+ * \brief Промежуточный класс, необходимый для наследования QGraphicsPlotLayoutItem от QGraphicsItem
+ */
 class QGraphicsPlot : public QGraphicsItem
 {
 public:

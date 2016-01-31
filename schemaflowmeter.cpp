@@ -1,6 +1,16 @@
 #include "schemaflowmeter.h"
 #include <QLinearGradient>
-
+/*!
+ * \brief Создает объект SchemaFlowmeter
+ *
+ * Осуществляет прорисовку расходомера постоянного перепада
+ * \param[in] Width Ширина
+ * \param[in] Height Высота
+ * \param[in] PosX Координата X
+ * \param[in] PosY Координата Y
+ * \param[in] Pos Положение поплавка
+ * \param[in] MaxFlow Максимальный объемный расход через расходомер, л/ч
+ */
 SchemaFlowmeter::SchemaFlowmeter(qreal Width, qreal Height, qreal PosX, qreal PosY, qreal Pos, int MaxFlow) : SchemaItem(),
     m_FlowrateSet(0), m_FlowrateStepStart(0), m_FlowrateStepStop(0), _numScheduledChanges(0)
 {
@@ -83,7 +93,9 @@ void SchemaFlowmeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     QGraphicsPathItem::paint(painter,option,widget);
 
 }
-
+/*!
+ * \brief Создает цикл анимации для визуализации изменения положения поплавка
+ */
 void SchemaFlowmeter::createAnim()
 {
     m_FlowrateStepStart = m_Flowrate;
@@ -96,18 +108,30 @@ void SchemaFlowmeter::createAnim()
     connect(anim, SIGNAL (finished()), SLOT (animFinished()));
     anim->start();
 }
-
+/*!
+ * \brief SchemaFlowmeter::getFlowrateSet
+ * \return Значение установленного относительного объемного расхода
+ */
 qreal SchemaFlowmeter::getFlowrateSet()
 {
     return m_FlowrateSet;
 }
 
+/*!
+ * \brief Изменяет положение поплавка в цикле анимации
+ * \param[in] Value Новое положение поплавка
+ */
 void SchemaFlowmeter::animFloater(qreal Value)
 {
     m_Flowrate = m_FlowrateStepStart + (m_FlowrateStepStop - m_FlowrateStepStart) * Value;
     Floater->setPos(boundingRect().bottomLeft() + QPointF(0, -0.75 * m_Width - m_Flowrate * m_Height * 0.9));
 
 }
+
+/*!
+ * \brief Устанавливает относительный объемный расход вещества через расходомер
+ * \param[in] Value Относительный объемный расход вещества
+ */
 void SchemaFlowmeter::setFlowrate(qreal Value) {
     //if(PFD) PFD->setFlowrate(Value * m_MaxFlow);
 
@@ -119,6 +143,9 @@ void SchemaFlowmeter::setFlowrate(qreal Value) {
         createAnim();
 }
 
+/*!
+ * \brief Заглушка для завершения анимации и вызова деструктора таймера
+ */
 void SchemaFlowmeter::animFinished()
 {
     _numScheduledChanges--;

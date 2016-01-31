@@ -8,7 +8,9 @@
 #include <QConicalGradient>
 #include <QtMath>
 #include <QGraphicsScene>
-
+/*!
+ * \brief Класс, описывающий графический элемент, обозначающий вентиль
+ */
 class SchemaValve : public SchemaItem
 {
     Q_OBJECT

@@ -3,7 +3,9 @@
 #include <QGraphicsPolygonItem>
 #include <QGraphicsRectItem>
 #include <schemaitem.h>
-
+/*!
+ * \brief Класс, описывающий графический элемент схемы - измерительную ячейку
+ */
 class SchemaCell : public SchemaItem
 {
     Q_OBJECT

@@ -23,24 +23,40 @@ void SchemaData::calcM0()
     for(int i = i_t0; i < p_ExpDataTime.size(); i += m_DataRes)
         *M0 += SConc.at(i - i_t0) * dt(i - i_t0);
 }
-
+/*!
+ * \brief Возвращает значение момента нулевого порядка
+ * Запускает расчет, если необходимо
+ * \return Значение момента нулевого порядка
+ */
 qreal SchemaData::getM0()
 {
     if(!M0) calcM0();
     return (*M0);
 }
 
+/*!
+ * \brief Возвращает значение среднего времени пребывания
+ * Запускает расчет, если необходимо
+ * \return Значение среднего времени пребывания, с
+ */
 qreal SchemaData::getAvgTau()
 {
     if(!avg_tau) calcAvgTau();
     return (*avg_tau);
 }
 
+/*!
+ * \brief Возвращает значение расчетного времени пребывания
+ * \return Значение расчетного времени пребывания, с
+ */
 qreal SchemaData::getTau() const
 {
     return m_tau;
 }
-
+/*!
+ * \brief Возвращает значение числа элементов ячеечной модели
+ * \return Число элементов ячеечной модели
+ */
 qreal SchemaData::getNc() const
 {
     return Nc;
@@ -55,7 +71,9 @@ qreal SchemaData::getSigma2theta() const
 {
     return sigma2theta;
 }
-
+/*!
+ * \brief Рассчитывает среднее время пребывания вещества в аппарате по вероятностным характеристикам
+ */
 void SchemaData::calcAvgTau()
 {
 
@@ -66,7 +84,9 @@ void SchemaData::calcAvgTau()
     if(avg_tau) delete avg_tau;
     avg_tau = new qreal(Sum_tC / getM0());
 }
-
+/*!
+ * \brief Рассчитывает массив значений концетрации трассера в моль/л на основе данных об электропроводности в мСм/см
+ */
 void SchemaData::calcConc()
 {
     t0 = *t_0();
@@ -86,6 +106,9 @@ void SchemaData::calcConc()
 
 }
 
+/*!
+ * \brief Рассчитывает массив значений безразмерной концентрации (сглаженные данные)
+ */
 void SchemaData::calcDimConc()
 {
     qreal tau = getAvgTau();
@@ -93,6 +116,9 @@ void SchemaData::calcDimConc()
         DimConc.push_back(SConc.at(i) * tau / getM0());
 }
 
+/*!
+ * \brief Рассчитывает массив значений безразмерной концентрации (экспериментальные данные)
+ */
 void SchemaData::calcDimExpConc()
 {
     qreal tau = getAvgTau();
@@ -100,7 +126,9 @@ void SchemaData::calcDimExpConc()
         DimExpConc.push_back(Conc.at(i) * tau / getM0());
 }
 
-
+/*!
+ * \brief Рассчитывает массив безразмерного времени
+ */
 void SchemaData::calcDimTime()
 {
     m_tau = 0.84 * m_NumCascade / m_Flowrate * 3600; // ToDo: remove?
@@ -110,6 +138,9 @@ void SchemaData::calcDimTime()
 
 }
 
+/*!
+ * \brief Рассчитывает значение безразмерного центрального момента 2го порядка, а также его дисперсию
+ */
 void SchemaData::calcM2theta()
 {
     M2theta = 0;
@@ -124,6 +155,10 @@ void SchemaData::calcM2theta()
 
 }
 
+/*!
+ * \brief Распознает отрицательную ступень в экспериментальных данных (подключение шунта)
+ * \return Константный итератор, указывающий на время начала эксперимента
+ */
 QVector<qreal>::const_iterator SchemaData::t_0() const
 {
     // Simple method to detect the bypass resistor disconnection time
@@ -175,7 +210,9 @@ qreal SchemaData::Calibrate(qreal x) const
             - 2.4703301E-08 * x * x + 1.7735139E-05 * x + 1e-18;
 }
 
-
+/*!
+ * \brief Сглаживает экспериментальные данные медианным фильтром и фильтром скользящего среднего и формирует соответствующий массив
+ */
 void SchemaData::SmoothData()
 {
     //  Simple median filter

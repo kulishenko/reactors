@@ -5,6 +5,15 @@
 #include <QGraphicsSceneMouseEvent>
 #include <schemaevent.h>
 
+/*!
+ * \brief Создает объект SchemaCSTR
+ * \param[in] Width Ширина
+ * \param[in] Height Высота
+ * \param[in] xPos Координата X
+ * \param[in] yPos Координата Y
+ * \param[in] StartLevel Начальный уровень жидкости
+ * \param[in] Index Индекс элемента (устарело)
+ */
 SchemaCSTR::SchemaCSTR(int Width, int Height, int xPos, int yPos, qreal StartLevel, int Index) :
     SchemaItem(), m_Size(Width, Height), m_numInCascade(Index),
   m_isWorking(false), m_isFeeding(false), m_isReady(false), p_Model(nullptr)
@@ -85,7 +94,11 @@ SchemaCSTR::~SchemaCSTR()
 
 }
 
-
+/*!
+ * \brief Установить уровень жидкости в аппарате
+ * \param[in] Level Относительное значение уровня
+ * \param[in] TransTime Время переходного процесса
+ */
 void SchemaCSTR::setLevel(const qreal Level, const int TransTime) {
 
     m_LiquidLevelSet = Level;
@@ -99,6 +112,10 @@ void SchemaCSTR::setLevel(const qreal Level, const int TransTime) {
 
 }
 
+/*!
+ * \brief Реализует один цикл изменения уровня жидкости в аппарате
+ * \param[in] Value Относительное значение уровня
+ */
 void SchemaCSTR::animLevel(const qreal Value){
     qreal CurrentFrameLevel = m_LiquidLevel + (m_LiquidLevelSet - m_LiquidLevel) * Value;
 

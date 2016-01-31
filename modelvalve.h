@@ -1,7 +1,9 @@
 #ifndef MODELVALVE_H
 #define MODELVALVE_H
 #include "modelitem.h"
-
+/*!
+ * \brief Класс, описывающий логику работу вентиля
+ */
 class ModelValve : public ModelItem
 {
     Q_OBJECT

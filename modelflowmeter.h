@@ -2,6 +2,9 @@
 #define MODELFLOWMETER_H
 #include "modelitem.h"
 
+/*!
+ * \brief Класс, описывающий логику работы расходомера постоянного перепада
+ */
 class ModelFlowmeter : public ModelItem
 {
     Q_OBJECT

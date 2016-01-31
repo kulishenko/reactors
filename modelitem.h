@@ -2,7 +2,9 @@
 #define MODELITEM_H
 
 #include <QObject>
-
+/*!
+ * \brief Базовый класс моделей, описывающих логику элементов схемы
+ */
 class ModelItem : public QObject
 {
     Q_OBJECT

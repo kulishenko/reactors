@@ -8,10 +8,14 @@
 #include <QColor>
 #include <modelcstr.h>
 #include <schemaevent.h>
-
+/*!
+ * \brief Класс, описывающий графический элемент, обозначающий аппарат с мешалкой
+ *
+ * Обеспечивается плавная анимация изменения уровня жидкости, а также вращения перемешивающего устройства;
+ */
 class SchemaCSTR : public SchemaItem {
     Q_OBJECT
-    Q_PROPERTY(qreal LiquidLevel MEMBER m_LiquidLevel)
+    Q_PROPERTY(qreal LiquidLevel MEMBER m_LiquidLevel) //!< Относительный уровень жидкости в аппарате
     Q_PROPERTY(qreal numInCascade MEMBER m_numInCascade) // To be removed (see ModelCSTR)
     friend class ModelCSTR;
 public:
@@ -24,7 +28,7 @@ private:
     QPainterPath* p_Stirpath;
     qreal m_LiquidLevel;
     qreal m_LiquidLevelSet;
-    qreal* p_tau;
+//    qreal* p_tau;
     QGraphicsEllipseItem* p_Motor;
     QGraphicsSimpleTextItem* p_MotorLabel;
     QGraphicsPathItem* p_Stir;
@@ -35,27 +39,27 @@ private:
     QColor m_LiquidTopColor;
     QColor m_GasColor;
     int m_numInCascade;
-    bool m_isWorking;
-    bool m_isFeeding;
-    bool m_isReady;
-    qreal m_MixerAngle;
-    ModelCSTR* p_Model;
+    bool m_isWorking; //!< Аппарат работает
+    bool m_isFeeding; //!< Аппарат имеет ненулевой расход выходного потока
+    bool m_isReady; //!< Аппарат полностью заполнен
+    qreal m_MixerAngle; //!< Текущий угол поворота перемешивающего устройства относительно плоскости экрана
+    ModelCSTR* p_Model; //!< Указатель на модель, описывающую логику работы элемента
 signals:
     void test();
-    void clicked();
-    void filled();
-    void startedFeed();
+    void clicked(); //!< Генерируется при щелчке на элементе
+    void filled(); //!< Элемент заполнен
+    void startedFeed(); //!< Уровень жидкости достиг точки перелива
 public slots:
     void changeLevel();
-    void fill();
-    void activateMotor();
+    void fill(); //!< Начать заполнение
+    void activateMotor(); //!< Активировать перемешивающее устройство
     void startFeed();
-    void setFlowrate(const qreal Value);
+    void setFlowrate(const qreal Value); //!< Установить объемный расход
 private slots:
-    void setLevel(const qreal Level, const int TransTime);
-    void animLevel(const qreal Value);
-    void animMotor(const qreal Value);
-    void animFinished();
+    void setLevel(const qreal Level, const int TransTime); //!< Запустить анимированное изменение уровня жидкости
+    void animLevel(const qreal Value); //!< Шаг анимации уровня
+    void animMotor(const qreal Value); //!< Шаг анимации вращения перемешивающего устройства
+    void animFinished(); //!< Заглушка для завершения анимации
 };
 
 

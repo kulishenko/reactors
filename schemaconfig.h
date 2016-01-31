@@ -17,19 +17,26 @@
 #include <QMetaProperty>
 #include <schemascene.h>
 
+/*! \brief Класс, предназначенный для сериализации и десериализации схемы из файла формата XML
+
+  Для работы с файлами используется DOM XML, сериализация и десериализация обеспечивается
+  работой с Q_PROPERTY с помощью шаблонной функции
+
+*/
+
 class SchemaConfig
 {
 public:
     SchemaConfig();
     ~SchemaConfig();
-    typedef QMap<QString, QVariant> ElementType;
-    QList<ElementType*> Config;
-    enum class SchemaItemType {SchemaCSTR, SchemaPFR};
-    int getIntType(const SchemaItemType t);
-    QMap<QString, SchemaItemType> ElementItemTypes;
-    bool serializeObject(QObject *object, QIODevice *output); // Deprecated
+    bool serializeObject(QObject *object, QIODevice *output); //!< Устаревшая функция
     template<class T>
     T* deserialize(QDomElement *element, SchemaScene* parent = 0){
+        /*!
+         * \brief Десериализует объект шаблонного класса T, унаследованного от QObject
+         * \param[in] element Указатель на элемент DOM XML, содержащий описание объекта
+         * \param[in] parent Указатель на графическую сцену (объект SchemaScene)
+         */
         T* object = new T();
         object->setParent(parent);
         if(_deserializeObject(element, object))
@@ -40,7 +47,6 @@ public:
     SchemaScene* deserializeScene(QIODevice* input, QObject *parent = 0);
     bool serializeScene(SchemaScene *scene, QIODevice *output);
 private:
-    void ParseXMLConfig();
     bool _deserializeObject(QDomElement *element, QObject *object);
 };
 

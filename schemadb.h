@@ -11,6 +11,10 @@
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlRelationalTableModel>
 
+/*! \brief Класс, предназначенный для доступа к СУБД (импорт и экспорт экспериментальных данных)
+
+    Используется в качестве обертки QObject для экспорта данных в отдельном потоке
+*/
 class SchemaDB : public QObject
 {
     Q_OBJECT
@@ -22,14 +26,14 @@ public:
     PFDControl *getData();
     QSqlRelationalTableModel *getLabsModel() const;
 private:
-    static QSqlDatabase m_db;
-    QSqlRelationalTableModel* p_LabsModel;
-    static bool isConnected;
-    PFDControl* p_Control;
-    int LabID;
-    qreal LabFlowrate;
-    int LabNumCascade;
-    bool createConnection();
+    static QSqlDatabase m_db; //!< Указатель на СУБД
+    QSqlRelationalTableModel* p_LabsModel; //!< Указатель на объектную модель СУБД
+    static bool isConnected; //!< Наличие подключения
+    PFDControl* p_Control; //!< Указатель на управление схемой
+    int LabID; //!< Идентификатор опыта
+    qreal LabFlowrate; //!< Объемный расход опыта
+    int LabNumCascade; //!< Число аппаратов в каскаде
+    bool createConnection(); //!< Устаналивает соединение с СУБД, если оно отсутствует
 signals:
     void finished();
     void finishedResult(bool result);
